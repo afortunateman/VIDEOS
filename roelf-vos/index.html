@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>The Story of Roelf Vos</title>
+    <script src="js/vendor/gsap.min.js"></script>
+    <script src="js/vendor/d3-array.min.js"></script>
+    <script src="js/vendor/d3-geo.min.js"></script>
+    <script src="js/data/script-font.js"></script>
+    <script src="js/data/world.js"></script>
+    <script src="js/data/tasmania.js"></script>
+    <script src="js/timing.js"></script>
+    <script src="js/lib.js"></script>
+    <style>
+      @font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500; src: url("assets/fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; src: url("assets/fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; src: url("assets/fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 600; src: url("assets/fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); }
+      @font-face { font-family: "Josefin Sans"; font-style: normal; font-weight: 300; src: url("assets/fonts/josefin-sans-latin-300-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Josefin Sans"; font-style: normal; font-weight: 400; src: url("assets/fonts/josefin-sans-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Josefin Sans"; font-style: normal; font-weight: 600; src: url("assets/fonts/josefin-sans-latin-600-normal.woff2") format("woff2"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #1a1012; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #1a1012; }
+      .clip { position: absolute; inset: 0; }
+      .scene { overflow: hidden; }
+      .frame { position: absolute; inset: 0; overflow: hidden; will-change: transform, clip-path; }
+      .art { position: absolute; inset: 0; display: block; }
+      .hud { position: absolute; inset: 0; pointer-events: none; }
+      .label {
+        position: absolute; font-family: "Josefin Sans", sans-serif; font-weight: 600; font-size: 26px;
+        letter-spacing: 0.42em; text-transform: uppercase; color: #f6ead3; white-space: nowrap;
+      }
+      .caption { display: flex; align-items: flex-end; justify-content: center; padding: 0 220px 84px; pointer-events: none; }
+      .cap-text {
+        display: block; max-width: 1480px; text-align: center; font-family: "Cormorant Garamond", serif; font-style: italic;
+        font-weight: 600; font-size: 54px; line-height: 1.18; color: #fff8ec; letter-spacing: 0.005em;
+        text-shadow: 0 2px 3px rgba(20, 8, 6, 0.55), 0 0 26px rgba(20, 8, 6, 0.55), 0 0 60px rgba(20, 8, 6, 0.35);
+      }
+      .cap-text .w { display: inline-block; will-change: transform, opacity, filter; }
+      #vignette {
+        background:
+          radial-gradient(ellipse 75% 70% at 50% 46%, rgba(0, 0, 0, 0) 55%, rgba(14, 6, 6, 0.42) 100%),
+          linear-gradient(to top, rgba(12, 6, 6, 0.5) 0%, rgba(12, 6, 6, 0.18) 16%, rgba(12, 6, 6, 0) 28%);
+        pointer-events: none;
+      }
+      #grain { pointer-events: none; mix-blend-mode: overlay; opacity: 0.16; background-repeat: repeat; background-size: 256px 256px; }
+      #fade { background: #0d0809; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="118" data-width="1920" data-height="1080">
+      <!-- Scenes: one clip per story beat, on the 100 BPM bar grid in js/timing.js -->
+      <section id="sc-title" class="clip scene" data-start="0" data-duration="7.8" data-track-index="1"></section>
+      <section id="sc-holland" class="clip scene" data-start="6.4" data-duration="8.6" data-track-index="2"></section>
+      <section id="sc-war" class="clip scene" data-start="13.6" data-duration="11" data-track-index="1"></section>
+      <section id="sc-voyage" class="clip scene" data-start="23.2" data-duration="11" data-track-index="2"></section>
+      <section id="sc-arrival" class="clip scene" data-start="32.8" data-duration="11" data-track-index="1"></section>
+      <section id="sc-markets" class="clip scene" data-start="42.4" data-duration="8.6" data-track-index="2"></section>
+      <section id="sc-swiss" class="clip scene" data-start="49.6" data-duration="11" data-track-index="1"></section>
+      <section id="sc-build" class="clip scene" data-start="59.2" data-duration="11" data-track-index="2"></section>
+      <section id="sc-money" class="clip scene" data-start="68.8" data-duration="8.6" data-track-index="1"></section>
+      <section id="sc-rules" class="clip scene" data-start="76" data-duration="8.6" data-track-index="2"></section>
+      <section id="sc-complete" class="clip scene" data-start="83.2" data-duration="8.6" data-track-index="1"></section>
+      <section id="sc-rare" class="clip scene" data-start="90.4" data-duration="8.6" data-track-index="2"></section>
+      <section id="sc-snow" class="clip scene" data-start="97.6" data-duration="11" data-track-index="1"></section>
+      <section id="sc-end" class="clip scene" data-start="107.2" data-duration="10.8" data-track-index="2"></section>
+
+      <!-- Finish: vignette + caption scrim, film grain -->
+      <div id="vignette" class="clip" data-start="0" data-duration="118" data-track-index="20"></div>
+
+      <!-- Captions (edit the text freely; timing is in data-start / data-duration) -->
+      <div id="caption-01" class="clip caption" data-start="8.6" data-duration="4.8" data-track-index="30"><p class="cap-text">Roelf Vos was born in the Netherlands, in 1921.</p></div>
+      <div id="caption-02" class="clip caption" data-start="15" data-duration="4.2" data-track-index="31"><p class="cap-text">He lived through the Second World War…</p></div>
+      <div id="caption-03" class="clip caption" data-start="19.6" data-duration="4.2" data-track-index="30"><p class="cap-text">…and joined the Dutch resistance.</p></div>
+      <div id="caption-04" class="clip caption" data-start="24.8" data-duration="4.2" data-track-index="31"><p class="cap-text">In 1951, he set sail for Tasmania…</p></div>
+      <div id="caption-05" class="clip caption" data-start="29.2" data-duration="4" data-track-index="30"><p class="cap-text">…with his wife and their three children.</p></div>
+      <div id="caption-06" class="clip caption" data-start="34.2" data-duration="3.8" data-track-index="31"><p class="cap-text">He arrived with very little.</p></div>
+      <div id="caption-07" class="clip caption" data-start="38.5" data-duration="2.3" data-track-index="30"><p class="cap-text">He worked all sorts of jobs…</p></div>
+      <div id="caption-08" class="clip caption" data-start="40.9" data-duration="2.5" data-track-index="31"><p class="cap-text">…then opened a little grocery store.</p></div>
+      <div id="caption-09" class="clip caption" data-start="43.5" data-duration="2.8" data-track-index="30"><p class="cap-text">And that little store grew…</p></div>
+      <div id="caption-10" class="clip caption" data-start="46.5" data-duration="3.6" data-track-index="31"><p class="cap-text">…into a chain of thirteen supermarkets.</p></div>
+      <div id="caption-11" class="clip caption" data-start="51" data-duration="4" data-track-index="30"><p class="cap-text">Roelf and his wife adored Switzerland.</p></div>
+      <div id="caption-12" class="clip caption" data-start="55.3" data-duration="4.3" data-track-index="31"><p class="cap-text">Then he had an idea: why not build one back home?</p></div>
+      <div id="caption-13" class="clip caption" data-start="60.4" data-duration="4.2" data-track-index="30"><p class="cap-text">In 1980, he began building his very own Switzerland.</p></div>
+      <div id="caption-14" class="clip caption" data-start="65" data-duration="4.4" data-track-index="31"><p class="cap-text">Swiss houses, shops, restaurants, a chapel by the lake, a resort…</p></div>
+      <div id="caption-15" class="clip caption" data-start="69.8" data-duration="2" data-track-index="30"><p class="cap-text">And the money?</p></div>
+      <div id="caption-16" class="clip caption" data-start="72.1" data-duration="4.4" data-track-index="31"><p class="cap-text">In 1982, Roelf sold all 13 supermarkets to Woolworths.</p></div>
+      <div id="caption-17" class="clip caption" data-start="77" data-duration="3.4" data-track-index="30"><p class="cap-text">Even ordinary homes had to follow strict rules…</p></div>
+      <div id="caption-18" class="clip caption" data-start="80.6" data-duration="3.2" data-track-index="31"><p class="cap-text">…so every house looked like it belonged in the Alps.</p></div>
+      <div id="caption-19" class="clip caption" data-start="84.6" data-duration="3" data-track-index="30"><p class="cap-text">Despite the critics, it was a success.</p></div>
+      <div id="caption-20" class="clip caption" data-start="87.8" data-duration="3.2" data-track-index="31"><p class="cap-text">By 1989, the village was largely complete.</p></div>
+      <div id="caption-21" class="clip caption" data-start="91.6" data-duration="3.1" data-track-index="30"><p class="cap-text">In Switzerland, snow is part of every winter.</p></div>
+      <div id="caption-22" class="clip caption" data-start="95" data-duration="3.2" data-track-index="31"><p class="cap-text">But here, near Launceston, it almost never snows.</p></div>
+      <div id="caption-23" class="clip caption" data-start="98.5" data-duration="2.6" data-track-index="30"><p class="cap-text">Then, shortly before Roelf passed away in 1992…</p></div>
+      <div id="caption-24" class="clip caption" data-start="101.2" data-duration="1.9" data-track-index="31"><p class="cap-text">…it snowed.</p></div>
+      <div id="caption-25" class="clip caption" data-start="103.3" data-duration="4.4" data-track-index="30"><p class="cap-text">For one brief moment, his little Swiss village lay under snow.</p></div>
+      <div id="caption-26" class="clip caption" data-start="108.3" data-duration="3" data-track-index="31"><p class="cap-text">And Roelf got to see it.</p></div>
+
+      <div id="grain" class="clip" data-start="0" data-duration="118" data-track-index="40"></div>
+      <div id="fade" class="clip" data-start="0" data-duration="118" data-track-index="41"></div>
+
+      <!-- Original score, composed in Python: music/compose.py -->
+      <audio id="score" src="assets/audio/score.m4a" data-start="0" data-duration="118" data-track-index="50" data-volume="1"></audio>
+    </div>
+
+    <script src="js/scenes/01-title.js"></script>
+    <script src="js/scenes/02-holland.js"></script>
+    <script src="js/scenes/03-war.js"></script>
+    <script src="js/scenes/04-voyage.js"></script>
+    <script src="js/scenes/05-arrival.js"></script>
+    <script src="js/scenes/06-markets.js"></script>
+    <script src="js/scenes/07-swiss.js"></script>
+    <script src="js/scenes/08-build.js"></script>
+    <script src="js/scenes/09-money.js"></script>
+    <script src="js/scenes/10-rules.js"></script>
+    <script src="js/scenes/11-complete.js"></script>
+    <script src="js/scenes/12-rare.js"></script>
+    <script src="js/scenes/13-snow.js"></script>
+    <script src="js/scenes/14-end.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        RV.SCENES.forEach(([id]) => {
+          const build = RV.scene && RV.scene[id];
+          if (build) build(tl, RV.stage(id));
+        });
+        RV.captions(tl);
+        // film grain: a static noise tile, re-seated three times a second so it "boils" gently
+        // (refreshing it every frame looks the same but makes the encode several times larger)
+        const grain = document.getElementById("grain");
+        grain.style.backgroundImage = "url(" + RV.grainTexture() + ")";
+        const gp = { k: 0 };
+        tl.fromTo(gp, { k: 0 }, {
+          k: 354, duration: 118, ease: "none",
+          onUpdate: () => {
+            const k = Math.floor(gp.k);
+            grain.style.backgroundPosition = ((k * 97) % 256) + "px " + ((k * 61) % 256) + "px";
+          },
+        }, 0);
+        // fade up from black and down to black
+        const fade = document.getElementById("fade");
+        tl.fromTo(fade, { opacity: 1 }, { opacity: 0, duration: 1.2, ease: "sine.out" }, 0);
+        tl.fromTo(fade, { opacity: 0 }, { opacity: 1, duration: 2.6, ease: "sine.inOut", immediateRender: false }, 115.2);
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "roelf-vos-tools",
+  "private": true,
+  "type": "module",
+  "description": "Build-time data generation for the Roelf Vos composition",
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "hersheytext": "^2.0.0",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  }
+}
