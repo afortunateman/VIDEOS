@@ -16,7 +16,7 @@ on in a single gold line.
 ## Structure
 
 ```
-index.html            HyperFrames composition: 14 scene clips, 26 caption clips, grain, score
+index.html            HyperFrames composition: 14 scene clips, grain, score
 js/timing.js          the shared 100 BPM bar grid (1 bar = 2.4 s) used by scenes and music
 js/lib.js             drawing toolkit: script writer, clouds, mountains, chalets, people, snow…
 js/scenes/NN-*.js     one builder per scene (title → end card)
@@ -67,7 +67,7 @@ ffmpeg -i renders/master.mp4 -c:v libx264 -preset slow -b:v 6000k -maxrate 12000
 cd tools && npm install && node build-data.mjs
 ```
 
-Captions are plain HTML clips in `index.html` (`#caption-01` … `#caption-26`). You can edit
+
 their text or timing directly, or in Studio.
 
 ## Credits
