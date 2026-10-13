@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WORLD.EXE — Intro</title>
+<style>
+  :root { --bg: #10151f; --fg: #f7e9c9; --accent: #ffc93c; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  #stage { position: relative; width: min(100vw - 32px, (100vh - 120px) * 16 / 9); aspect-ratio: 16 / 9; }
+  canvas { width: 100%; height: 100%; display: block; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+  #play { position: absolute; inset: 0; margin: auto; width: 96px; height: 96px; border-radius: 50%; border: 3px solid var(--fg);
+          background: rgba(22,35,59,.75); color: var(--fg); font-size: 34px; cursor: pointer; }
+  #bar { display: flex; gap: 12px; align-items: center; width: min(100vw - 32px, (100vh - 120px) * 16 / 9); }
+  #scrub { flex: 1; accent-color: var(--accent); }
+  button.small { background: none; border: 1px solid var(--fg); color: var(--fg); border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+  #time { font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv"></canvas>
+  <button id="play" aria-label="Play">▶</button>
+</div>
+<div id="bar">
+  <button class="small" id="replay">Replay</button>
+  <input id="scrub" type="range" min="0" max="8" step="0.001" value="0">
+  <span id="time">0.00s</span>
+</div>
+<audio id="audio" src="audio/world_exe_score.wav" preload="auto"></audio>
+
+<script src="data/timeline.js"></script>
+<script src="data/geo.js"></script>
+<script src="data/glyphs.js"></script>
+<script src="src/core.js"></script>
+<script src="src/sceneA.js"></script>
+<script src="src/sceneB.js"></script>
+<script src="src/sceneC.js"></script>
+<script src="src/title.js"></script>
+<script src="src/intro.js"></script>
+<script>
+(async () => {
+  const WX = window.WX;
+  const cv = document.getElementById('cv');
+  const params = new URLSearchParams(location.search);
+  if (params.has('render')) { await WX.init(cv); window.WX_READY = true; return; } // offline renderer drives frames
+  // live: draw at the size the canvas is shown (sharp, and kinder to slower machines)
+  const shown = cv.getBoundingClientRect().width * (window.devicePixelRatio || 1);
+  await WX.init(cv, { scale: params.has('full') ? 1 : Math.min(1, Math.max(0.5, shown / 1920)) });
+
+  const audio = document.getElementById('audio');
+  const scrub = document.getElementById('scrub');
+  const timeEl = document.getElementById('time');
+  const playBtn = document.getElementById('play');
+  let playing = false, t0 = 0, startAt = 0;
+  const show = (t) => { WX.renderAt(t); scrub.value = t; timeEl.textContent = t.toFixed(2) + 's'; };
+  const clock = () => (audio.readyState >= 2 && !audio.paused ? audio.currentTime : (performance.now() - t0) / 1000 + startAt);
+  function loop() {
+    if (!playing) return;
+    const t = Math.min(clock(), WX.duration);
+    show(t);
+    if (t >= WX.duration) { playing = false; playBtn.style.display = ''; playBtn.textContent = '↺'; return; }
+    requestAnimationFrame(loop);
+  }
+  function play(from = 0) {
+    startAt = from; t0 = performance.now(); playing = true; playBtn.style.display = 'none';
+    audio.currentTime = from;
+    audio.play().catch(() => {});
+    requestAnimationFrame(loop);
+  }
+  playBtn.onclick = () => play(0);
+  document.getElementById('replay').onclick = () => play(0);
+  scrub.oninput = () => { playing = false; audio.pause(); show(+scrub.value); };
+  show(0.0);
+})();
+</script>
+</body>
+</html>
