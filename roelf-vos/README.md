@@ -56,9 +56,12 @@ python3 music/compose.py
 # preview and edit in HyperFrames Studio
 npx hyperframes preview
 
-# validate and render
+# validate and render (the renderer's master is ~260 MB; the delivery copy is a 2-pass 6 Mbps encode)
 npm run check
-npx hyperframes render --quality standard --output renders/roelf-vos.mp4
+npx hyperframes render --quality standard --output renders/master.mp4
+ffmpeg -i renders/master.mp4 -c:v libx264 -preset slow -b:v 6000k -pass 1 -an -f mp4 /dev/null
+ffmpeg -i renders/master.mp4 -c:v libx264 -preset slow -b:v 6000k -maxrate 12000k -bufsize 16000k -pass 2 \
+  -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 256k renders/roelf-vos.mp4
 
 # optional: regenerate js/data/
 cd tools && npm install && node build-data.mjs
