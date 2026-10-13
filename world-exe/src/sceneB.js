@@ -410,16 +410,14 @@
     return [st[0] + dir[0] * along + perp[0] * side, st[1] + dir[1] * along + perp[1] * side];
   }
   // where the boat sails once the coast has become Africa's: out in the Indian Ocean
-  function boatOffshore(t) {
-    const dt = Math.max(0, t - T.zoomOut);
-    return W().flat(44.5 + 7 * dt, -9 + 2.5 * dt);
-  }
+  const boatOffshoreLL = (t) => { const dt = Math.max(0, t - T.zoomOut); return [44.5 + 7 * dt, -9 + 2.5 * dt]; };
+  // the boat's map position at its own time tau, eased from the local glide onto the offshore course
   function boatMap(t, tau) {
     const m = FRAME.toMap(boatLocal(tau));
     const u = ease.inOut3(inv(T.zoomOut, T.curlStart - 0.1, t));
     if (u <= 0) return m;
-    const o = boatOffshore(t), here = FRAME.toMap(boatLocal(t - T.boatSail));
-    return [m[0] + (o[0] - here[0]) * u, m[1] + (o[1] - here[1]) * u];
+    const o = W().flat(...boatOffshoreLL(T.boatSail + tau));
+    return [lerp(m[0], o[0], u), lerp(m[1], o[1], u)];
   }
   function drawBoat(ctx, x, y, ang, s, t) {
     ctx.save();
@@ -472,26 +470,26 @@
       const lp = boatMap(t, tt);
       pts.push(camPt(cam, [lp[0], lp[1] + 0.5 / ZL]));
     }
-    if (pts.length > 3 && span > 0.04) {
-      const a = pts[N], b2 = pts[N - 1];
-      let dx = a[0] - b2[0], dy = a[1] - b2[1];
-      let L = Math.max(5, Math.hypot(dx, dy)) * 1.5;
-      const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
-      let ang = Math.atan2(dy, dx);
-      const curl = clamp(span / 0.35);
-      let p = a;
-      for (let i = 0; i < 34 * curl; i++) {
-        ang += 0.16 + i * 0.012;
-        L *= 0.95;
-        p = [p[0] + Math.cos(ang) * L, p[1] + Math.sin(ang) * L];
-        pts.push(p);
-      }
-      const wake = pts.slice();
-      ink(ctx, wake, 20 * bs, C.foam, { seed: 90, wvar: 0.35 });
-      ink(ctx, wake, 4 * bs, rgba(C.ink, 0.45), { seed: 91 });
-    }
+    if (pts.length > 3 && span > 0.04) drawWake(ctx, pts, bs, clamp(span / 0.35));
     const b = boatScreen(t, cam);
     drawBoat(ctx, b.sp[0], b.sp[1] - 8 * bs, b.ang, bs, t);
+  }
+  // the wake: the boat's path back in time (pts[0] at the boat), rolling up into a curl at its tail
+  function drawWake(ctx, pts, bs, curl = 1) {
+    if (pts.length < 3) return;
+    const a = pts[pts.length - 1], b2 = pts[pts.length - 2];
+    let L = Math.max(5, Math.hypot(a[0] - b2[0], a[1] - b2[1])) * 1.5;
+    let ang = Math.atan2(a[1] - b2[1], a[0] - b2[0]);
+    let p = a;
+    const out = pts.slice();
+    for (let i = 0; i < 34 * curl; i++) {
+      ang += 0.16 + i * 0.012;
+      L *= 0.95;
+      p = [p[0] + Math.cos(ang) * L, p[1] + Math.sin(ang) * L];
+      out.push(p);
+    }
+    ink(ctx, out, 20 * bs, C.foam, { seed: 90, wvar: 0.35 });
+    ink(ctx, out, 4 * bs, rgba(C.ink, 0.45), { seed: 91 });
   }
 
   function drawCloudShadows(ctx, t, alpha) {
@@ -509,6 +507,9 @@
   // ------------------------------------------------------------------ main
   WX.sceneB = {
     mapCam,
+    drawBoat,
+    drawWake,
+    boatOffshoreLL,
     boatMapAt(t) { if (!FRAME) setupFrame(); return boatScreen(t, { z: 1, th: 0, c: [0, 0] }).map; },
     draw(ctx, t) {
       if (!FRAME) setupFrame();
@@ -545,7 +546,7 @@
       localApply(ctx);
       drawFields(ctx, t, localA);
       drawGroves(ctx, t, localA);
-      const early = 1 - inv(T.zoomOut + 0.04, T.zoomOut + 0.22, t);
+      const early = 1 - inv(T.zoomOut + 0.02, T.zoomOut + 0.12, t);
       drawRoad(ctx, t, localA * early);
       HOUSES.forEach((h) => { ctx.save(); ctx.globalAlpha = localA * early; drawHouse(ctx, h, t); ctx.restore(); });
       ctx.restore();
@@ -556,7 +557,7 @@
         ctx.restore();
       } else {
         // during the pull-back the coastline is re-inked in screen space, staying crisp
-        const seaA = 1 - inv(T.zoomOut, T.zoomOut + 0.16, t);
+        const seaA = 1 - inv(T.zoomOut, T.zoomOut + 0.12, t);
         if (seaA > 0) {
           ctx.save();
           ctx.globalAlpha = seaA;

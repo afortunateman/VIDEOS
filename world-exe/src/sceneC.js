@@ -26,6 +26,8 @@
   const MOUNTAINS = [[86, 29, 1.25], [80, 33, 1], [93, 30, 0.9], [-70, -18, 1.1], [-70, -32, 1], [-76, -6, 0.9], [-112, 44, 1], [-118, 52, 0.9], [9, 46, 0.85], [37, -3, 0.8], [44, 40, 0.8], [-5, 32, 0.7], [70, 37, 0.8]];
   const TREES = [];
   { const r = rng(12); FORESTS.forEach((f) => { for (let i = 0; i < 9; i++) TREES.push([f[0] + (r() - 0.5) * f[2] * 1.6, f[1] + (r() - 0.5) * f[3] * 1.4, 0.7 + r() * 0.5]); }); }
+  const DUNES = [];
+  { const r = rng(31); DESERTS.forEach((e) => { const n = Math.round(e[2] * e[3] / 14) + 2; for (let i = 0; i < n; i++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * 0.75; DUNES.push([e[0] + Math.cos(a) * e[2] * d, e[1] + Math.sin(a) * e[3] * d]); } }); }
   const RIPPLES = [];
   { const r = rng(44); for (let i = 0; i < 70; i++) RIPPLES.push([r() * 360 - 180, r() * 130 - 65, r()]); }
   const GLOBE_CLOUDS = [[-30, 42, 1.0], [-38, -12, 0.85], [8, 12, 0.7], [62, -18, 0.9], [-95, 18, 0.9], [130, 30, 0.9], [160, -20, 0.8], [-150, -35, 0.85], [100, -45, 0.8], [-10, -40, 0.75], [30, 52, 0.7]];
@@ -115,8 +117,12 @@
     const rings = [];
     (o.rings || LAND).forEach((r, i) => {
       if (o.skip && o.skip(r)) return;
-      const pts = P.ring(r.pts);
+      let pts = P.ring(r.pts);
       if (pts.vis === 0) return;
+      if (o.jiggle) {
+        const d = o.jiggle(pts, i);
+        if (d) { const vis = pts.vis; pts = pts.map((p) => [p[0] + d[0], p[1] + d[1], p[2]]); pts.vis = vis; }
+      }
       rings.push({ r, pts, i });
     });
     // coastal halos first, all together, so neighbours' rings never cut across land
@@ -149,6 +155,20 @@
         paint(ctx, (c) => trace(c, pts, true), col, { tex: 0.45, texSeed: seed + i, shade: { dx: -4 * s, dy: -5 * s, color: shade, alpha: 1 } });
       });
       biome(DESERT_RINGS, '#e9c46a', '#d29a4a', 30);
+      // little dune strokes in the deserts
+      ctx.strokeStyle = 'rgba(160,100,40,0.75)';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 1.8 * s;
+      ctx.beginPath();
+      for (const d of DUNES) {
+        const q = P.point(d[0], d[1]);
+        if (q[2] < 0.3) continue;
+        const L = 7 * s * Math.sqrt(q[2]) * (P.V.R / 392);
+        ctx.moveTo(q[0] - L, q[1]);
+        ctx.quadraticCurveTo(q[0] - L * 0.3, q[1] - L * 0.55, q[0], q[1] - L * 0.1);
+        ctx.quadraticCurveTo(q[0] + L * 0.4, q[1] + L * 0.3, q[0] + L, q[1] - L * 0.2);
+      }
+      ctx.stroke();
       biome(FOREST_RINGS, '#2f7a3d', '#215a30', 40);
       biome(ICE_RINGS, C.snow, '#d4dde6', 50);
       ctx.restore();
@@ -418,7 +438,17 @@
         ctx.lineWidth = 3.5; ctx.strokeStyle = rgba(C.foam, 0.7 * (1 - rs / 0.9)); ctx.stroke();
       });
     }
-    const lands = drawLands(ctx, P, { scale: V.R / 392 });
+    const js = t - (T.globeFormed - 0.12);
+    const jiggle = js > 0 && js < 0.9 ? (pts, i) => {
+      // each continent gives a little jelly bounce outward and back as the planet closes
+      let cx = 0, cy = 0;
+      for (const p of pts) { cx += p[0]; cy += p[1]; }
+      cx = cx / pts.length - V.cx; cy = cy / pts.length - V.cy;
+      const l = Math.hypot(cx, cy) || 1;
+      const a = 9 * wobble(js - (i % 7) * 0.015, 3.4, 6.5);
+      return [(cx / l) * a, (cy / l) * a];
+    } : null;
+    const lands = drawLands(ctx, P, { scale: V.R / 392, jiggle });
     drawIcons(ctx, P, {});
     drawGlobeClouds(ctx, t, P);
     drawGlobeBoat(ctx, t, P);
@@ -488,7 +518,7 @@
     const appear = ease.out2(inv(T.curlStart, T.curlStart + 0.35, t));
     if (appear <= 0) return;
     for (const c of GLOBE_CLOUDS) {
-      const q = P.point(c[0] + t * 6, c[1]);
+      const q = P.point(c[0] + t * 3, c[1]);
       if (q[2] < 0.12) continue;
       const z = q[2];
       const sz = 44 * c[2] * s * Math.sqrt(z) * appear;
@@ -501,28 +531,23 @@
       ctx.restore();
     }
   }
-  // the little boat from scene B keeps sailing on the planet
-  let boatLL = null;
+  // the little boat from scene B keeps sailing (and leaving its curling wake) on the planet
   function drawGlobeBoat(ctx, t, P) {
-    if (!boatLL) {
-      const m = WX.sceneB ? WX.sceneB.boatMapAt(T.curlStart) : flat(50, -5);
-      boatLL = [LON0 + m[0] / R0 / D2R, -m[1] / R0 / D2R];
-    }
-    const dt = t - T.curlStart;
-    const lon = boatLL[0] + dt * 9, lat = boatLL[1] + dt * 3;
-    const q = P.point(lon, lat), q2 = P.point(lon + 0.5, lat + 0.15);
+    if (!WX.sceneB) return;
+    const ll = WX.sceneB.boatOffshoreLL;
+    const q = P.point(...ll(t)), q2 = P.point(...ll(t + 0.02));
     if (q[2] < 0.25) return;
-    const s = 0.42 * Math.sqrt(q[2]) * (P.V.R / 392);
+    const fadeEdge = clamp((q[2] - 0.25) * 5);
+    const bs = 0.4 * Math.sqrt(q[2]) * (P.V.R / R0);
     ctx.save();
-    ctx.translate(q[0], q[1]);
-    const flip = q2[0] < q[0] ? -1 : 1;
-    ctx.rotate(0.12 * Math.sin(t * 7));
-    ctx.scale(s * flip, s);
-    ctx.fillStyle = C.terracotta;
-    ctx.beginPath(); ctx.moveTo(-44, -6); ctx.lineTo(44, -10); ctx.lineTo(34, 14); ctx.lineTo(-32, 16); ctx.closePath(); ctx.fill();
-    ctx.lineWidth = 6; ctx.strokeStyle = C.ink; ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(4, -86); ctx.lineTo(44, -20); ctx.lineTo(4, -14); ctx.closePath();
-    ctx.fillStyle = C.creamLight; ctx.fill(); ctx.stroke();
+    ctx.globalAlpha = fadeEdge;
+    const wake = []; // newest (at the boat) to oldest
+    for (let i = 0; i <= 40; i++) {
+      const w = P.point(...ll(t - (0.55 * i) / 40));
+      wake.push([w[0], w[1] + 0.5]);
+    }
+    WX.sceneB.drawWake(ctx, wake, bs);
+    WX.sceneB.drawBoat(ctx, q[0], q[1] - 8 * bs, Math.atan2(q2[1] - q[1], q2[0] - q[0]), bs, t);
     ctx.restore();
   }
 

@@ -620,6 +620,37 @@
     ink(ctx, boil(back, 1.2, 24), 4.6, C.ink, { seed: 10 });
     ink(ctx, boil(face, 1.2, 25), 4, C.ink, { seed: 11 });
     ctx.restore();
+    drawSpray(ctx, t, fade);
+  }
+  // the lip tip at time t (for spray flung off the curl)
+  function lipTip(t) {
+    const p = waveParams(t);
+    const r = p.h * 0.42;
+    const O = [p.xc + r * 0.08, p.y0 - p.h + r + r * 0.9 * p.crash];
+    const a = -Math.PI / 2 + p.curl * Math.PI * (1.55 + 0.3 * p.crash) * 0.55;
+    const rad = r * (1 - 0.58 * 0.55);
+    return [p.xc + (O[0] + Math.cos(a) * rad * 1.18 - p.xc) * p.sx, O[1] + Math.sin(a) * rad];
+  }
+  function drawSpray(ctx, t, fade) {
+    const r = rng(321);
+    for (let j = 0; j < 12; j++) {
+      const born = 0.42 + j * 0.045;
+      const age = t - born;
+      const vx = 380 + r() * 380, vy = -(260 + r() * 360), sz = 4 + r() * 6;
+      if (age <= 0 || age > 0.38) continue;
+      const o = lipTip(born);
+      const x = o[0] + vx * age, y = o[1] + vy * age + 1400 * age * age;
+      const svy = vy + 2800 * age;
+      ctx.save();
+      ctx.globalAlpha = fade * (1 - age / 0.38);
+      ctx.translate(x, y);
+      ctx.rotate(Math.atan2(svy, vx));
+      ctx.scale(1.6, 0.8);
+      ctx.beginPath(); ctx.arc(0, 0, sz, 0, 7);
+      ctx.fillStyle = C.foam; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = C.ink; ctx.stroke();
+      ctx.restore();
+    }
   }
   function drawSplash(ctx, t) {
     const ls = t - T.waveCrash;
@@ -760,12 +791,12 @@
       drawHoppers(ctx, t);
 
       // ground: sea and land composited through the bloom mask
-      const bloomDone = t > T.landBloom + BLOOM_DUR + 0.5;
+      const bloomDone = t > T.landBloom + BLOOM_DUR + 0.02; // bloom now covers the frame
       const bloomStarted = t > T.landBloom;
       if (!bloomStarted) {
         drawSeaRows(ctx, t, cam);
       } else if (bloomDone) {
-        drawLandRows(ctx, t, cam, 1);
+        drawLandRows(ctx, t, cam, 0.5);
       } else {
         drawSeaRows(ctx, t, cam);
         ctx.save();
