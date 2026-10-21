@@ -1,0 +1,25 @@
+{
+  "name": "arguments-against-god",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Arguments Against God — a 2D animated short built in code with Remotion.",
+  "scripts": {
+    "sfx": "node scripts/make-sfx.mjs",
+    "studio": "npm run sfx && remotion studio",
+    "render:s1": "npm run sfx && remotion render S1Office out/s1.mp4",
+    "beats:s1": "node scripts/beat-sheet.mjs S1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/eb-garamond": "^5.2.5",
+    "@fontsource/inter": "^5.2.5",
+    "@remotion/cli": "4.0.537",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.537"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}
