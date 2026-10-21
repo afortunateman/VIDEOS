@@ -32,11 +32,15 @@ export const Soft: React.FC<{d: string; fill: string; o?: number; blur?: number;
   o = 1,
   blur = 10,
   blend,
-}) => <path d={d} fill={fill} opacity={o} filter={`url(#stBlur${blur})`} style={blend ? {mixBlendMode: blend} : undefined} />;
+}) => <path d={d} fill={fill} opacity={o} filter={`url(#stBlur${snapBlur(blur)})`} style={blend ? {mixBlendMode: blend} : undefined} />;
+
+const BLURS = [2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 30, 40, 55, 70];
+/** Blur filters are predefined; snap any requested radius to the nearest one. */
+export const snapBlur = (b: number) => BLURS.reduce((a, c) => (Math.abs(c - b) < Math.abs(a - b) ? c : a), BLURS[0]);
 
 export const BlurDefs: React.FC = () => (
   <defs>
-    {[2, 4, 6, 10, 16, 24, 40, 70].map((b) => (
+    {BLURS.map((b) => (
       <filter key={b} id={`stBlur${b}`} x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur stdDeviation={b} />
       </filter>
