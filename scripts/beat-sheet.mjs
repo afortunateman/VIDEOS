@@ -8,7 +8,7 @@ import {S1} from '../src/timeline/timeline.ts';
 
 const BEATS = {
   S1: [
-    [0.6, 'Fade in: ECU finger on desk'],
+    [0.25, 'Fade in: ECU finger on desk'],
     [S1.taps[0], 'TAP'],
     [S1.taps[1] - 0.15, 'TAP (finger raised)'],
     [S1.taps[2], 'TAP'],
