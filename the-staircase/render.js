@@ -12,7 +12,7 @@ const { spawn } = require('child_process');
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   page.on('pageerror', e => console.error('PAGE ERROR', e.message));
   page.on('console', m => { if (m.type() === 'error') console.error('CONSOLE', m.text()); });
-  await page.goto('file://' + path.join(__dirname, 'index.html') + '?capture&t=0');
+  await page.goto('file://' + path.join(__dirname, process.env.PAGE || 'index.html') + '?capture&t=0');
   await page.waitForFunction(() => window.__film);
   const grab = async t => {
     const url = await page.evaluate(t => { window.__film.render(t); return document.getElementById('film').toDataURL('image/png'); }, t);
