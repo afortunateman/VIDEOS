@@ -684,7 +684,19 @@ function drawHead(g, hx, hy, R, o) {
   // mouth
   if (Math.cos(Y) > 0.05) {
     const mx = hx + Math.sin(Y) * R * 0.78, my = fy + R * 0.42, mw = R * 0.16 * (0.4 + 0.6 * Math.cos(Y));
-    if (o.mouthOpen > 0.05) {
+    if (o.scream > 0.02) {
+      // the scream: a tall, ragged dark oval
+      const sc = o.scream, sh = R * 0.38 * sc, sw = mw * (1.2 + 0.5 * sc);
+      g.fillStyle = rgba(C(hex('#140f0c'), env));
+      g.beginPath(); g.ellipse(mx, my + sh * 0.35, sw, sh, 0, 0, TAU); g.fill();
+      g.fillStyle = rgba(C(hex('#5a2620'), env), 0.7);
+      g.beginPath(); g.ellipse(mx, my + sh * 0.95, sw * 0.6, sh * 0.32, 0, Math.PI, TAU); g.fill();
+      g.strokeStyle = rgba(C(pal.skinDeep, env)); g.lineWidth = R * 0.03;
+      g.beginPath(); g.ellipse(mx, my + sh * 0.35, sw, sh, 0, 0, TAU); g.stroke();
+      // strain lines between the eyes
+      g.lineWidth = R * 0.025; g.strokeStyle = rgba(C(pal.skinDeep, env), 0.6 * sc);
+      for (const d of [-1, 1]) { g.beginPath(); g.moveTo(mx + d * R * 0.08, fy - R * 0.32); g.lineTo(mx + d * R * 0.2, fy - R * 0.46); g.stroke(); }
+    } else if (o.mouthOpen > 0.05) {
       g.fillStyle = rgba(C(hex('#1c1712'), env)); g.beginPath(); g.ellipse(mx, my + R * 0.02, mw * 0.8, R * 0.09 * o.mouthOpen, 0, 0, TAU); g.fill();
     } else {
       g.strokeStyle = rgba(C(pal.skinDeep, env)); g.lineWidth = R * 0.04; g.lineCap = 'round';
@@ -738,6 +750,13 @@ function rimLight(g, x, y, r, env) {
   g.fillStyle = rg; g.fillRect(x - r * 1.5, y - r * 1.5, r * 3, r * 3);
   g.restore();
 }
+/* small pre-drawn caterpillars for crowds: key -> canvas, drawn once */
+const SPRITES = new Map();
+function sprite(key, w, h, draw) {
+  let c = SPRITES.get(key);
+  if (!c) { c = mk(w, h); const sg = c.getContext('2d'); draw(sg); SPRITES.set(key, c); }
+  return c;
+}
 function setDetail(g, o) { const px = pxScale(g) * o.r; o.detail = px < 5 ? 0 : (px < 16 ? 1 : 2); }
 
 /* side view. sp: points head-first. */
@@ -765,7 +784,7 @@ function drawCaterpillarSide(g, sp, o) {
       const d = down[i], t = tan[i], ri = rad(i);
       const off = far ? -0.28 : 0.12;
       const bx = sp[i].x + d.x * ri * 0.55 + t.x * ri * off, by = sp[i].y + d.y * ri * 0.55 + t.y * ri * off;
-      const kick = Math.sin(SF * 0.9 + i * 1.3) * 0.15;
+      const kick = Math.sin(SF * 0.9 + i * 1.3) * 0.15 + (o.tremble ? Math.sin(T * 70 + i * 2.1 + (far ? 1 : 0)) * 0.3 * o.tremble : 0);
       const tx = bx + d.x * ri * 0.75 + t.x * ri * (0.15 + kick) + boil(i * 3 + (far ? 1 : 0), ri * 0.05);
       const ty = by + d.y * ri * 0.75 + t.y * ri * (0.15 + kick);
       drawLeg(g, bx, by, tx, ty, ri * 0.15 * dir, ri * 0.17, o.sil ? (o.silCol || '#000') : (far ? rgba(mul(C(o.pal.leg, o.env), 0.7)) : legCol));
@@ -1244,7 +1263,7 @@ function clipPoly(cs) {
   return out;
 }
 /* fill a planar polygon given in world space. uv: indices [o, u, v] of three vertices that set the texture axes */
-function polyP(g, c, q, tex, shade, fogA, seed, uv) {
+function polyP(g, c, q, tex, shade, fogA, seed, uv, fogCol) {
   const cs = q.map(v => toCam(c, v[0], v[1], v[2]));
   const allIn = cs.every(p => p[2] >= NEAR);
   const pc = allIn ? cs : clipPoly(cs);
@@ -1265,7 +1284,7 @@ function polyP(g, c, q, tex, shade, fogA, seed, uv) {
     } else { g.fillStyle = '#b6af9f'; g.fill(); }
   } else if (fogA < 0.97) { g.fillStyle = '#b6af9f'; g.fill(); }
   if (shade) { g.fillStyle = shade; g.fill(); }
-  if (fogA > 0.004) { g.fillStyle = rgba(FOGC, Math.min(1, fogA)); g.fill(); }
+  if (fogA > 0.004) { g.fillStyle = rgba(fogCol || FOGC, Math.min(1, fogA)); g.fill(); }
 }
 const lerp3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const norm3 = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };

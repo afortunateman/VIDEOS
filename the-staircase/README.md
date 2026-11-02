@@ -6,13 +6,14 @@ An animated short drawn entirely in JavaScript on a `<canvas>`. It uses no image
 | --- | --- | --- |
 | 1: The Promise | `index.html` | 0:45 |
 | 2: The Machine | `act2.html` | 1:17 |
+| 3: The Revelation | `act3.html` | 0:45 |
 
 Open a page in a browser. It plays on load.
 
 Files:
 
 - `engine.js`: everything the acts share. That covers the caterpillar (head, hat, suitcase and body, drawn by the same code in every scene), stairs, cameras, textures, the film-stock layer and the player.
-- `act1.js`, `act2.js`: the scenes of each act.
+- `act1.js`, `act2.js`, `act3.js`: the scenes of each act.
 - `render.js`: exports stills or an MP4.
 
 | Key | Action |
@@ -69,9 +70,23 @@ Each scene dips briefly to black at the cut. The film opens on a 1.8-second fade
 - **10**: A locked-off time-lapse. Days flicker past. Dust and cobwebs build up. Snow falls (about 0:56–0:59), lies on the steps and on his hat, then melts. Plants push up through the concrete (0:59.6–1:02.4) and wither (1:02.6–1:04.2). His hat fades and gathers dust, his suitcase picks up scratches, his eyelids grow heavier and his crawl slows.
 - **11**: An extreme close-up. His eyelids lift as a butterfly appears in his eyes (1:06.4–1:08.4). The reflection wobbles and fades (1:09.4–1:12), and his own tired reflection replaces it (from 1:11.8). He looks up (1:13.8–1:15.6), and the brim of his hat darkens his eyes.
 
+## Act 3, The Revelation: scenes and timings
+
+| # | Scene | In | Out | Narration / voice |
+| --- | --- | --- | --- | --- |
+| 12 | The Scream | 0:00 | 0:11 | "One day, he couldn't take it anymore. He stopped climbing and screamed." |
+| 13 | The Voice | 0:11 | 0:22 | VOICE FROM ABOVE: "You're almost there. Don't give up now. You've come so far!" |
+| 14 | Everyone Hears It | 0:22 | 0:36 | "For the first time, he noticed that every caterpillar was hearing the same voice." |
+| 15 | Almost There | 0:36 | 0:45 | "And every single one of them was almost there." |
+
+- **12**: He stops dead at 0:02.0 and his legs tremble. He collapses onto the step (0:03.3–0:03.9). His suitcase tips over and lands flat on its face (0:03.4–0:04.1), and his hat slips back. He lifts his head and screams from 0:04.9. The camera rushes at his face (0:05.0–0:07.3) while the background warps and smears. At 0:08.8 everything stops on one frame and the colour drains out for the silence. Only the film grain keeps moving.
+- **13**: Opens on him sitting on the bottom step beside his fallen suitcase. He lifts his head (0:11.6–0:13.6), and the camera tilts up the staircase (0:12.3–0:18.4) to a golden-white light that gently breathes from about 0:14. Suggested window for the voice: 0:15–0:20.5.
+- **14**: Seen from above, where the voice is, looking down the staircase. The camera pulls back from him, past hundreds of caterpillars climbing toward us. Some wear hats (grey, black or straw, never his brown one), some carry grey or green suitcases, and some lie flat, too tired to move. Their faces are hopeful, exhausted or set. They stop one by one (0:23.3–0:27.9), then all look up at exactly the same moment, 0:28.6. More staircases fill in around them (from about 0:25.5) until thousands of tiny figures are looking up.
+- **15**: Straight down on a loop of four flights that always climbs. Inside it sits a smaller loop turned 45°, and another inside that. The climbers go round and round, each group with a warm light floating just ahead. Over the 9 seconds the camera turns 45° and moves in by √2. That lands exactly on the next loop in, so the shot could run forever.
+
 ## The character
 
-The protagonist is drawn by the same functions in every scene of both acts: `drawHead`, `drawHat`, `drawSuitcase` and `drawSegment` in `engine.js`. His colours live in one constant, `HERO`. In Act 2 a single `WEAR` value (0 to 1) dusts and fades his hat and scratches his suitcase as the years pass. Their shapes never change. His hat and suitcase are never removed. When the framing is too tight to show the whole suitcase (the end of the push-in), its handle and his leg holding it stay in shot at the lower left.
+The protagonist is drawn by the same functions in every scene of both acts: `drawHead`, `drawHat`, `drawSuitcase` and `drawSegment` in `engine.js`. His colours live in one constant, `HERO`. In Acts 2 and 3 a single `WEAR` value (0 to 1) dusts and fades his hat and scratches his suitcase as the years pass. Their shapes never change. His hat and suitcase are never removed. When the framing is too tight to show the whole suitcase (the end of the push-in), its handle and his leg holding it stay in shot at the lower left.
 
 ## Look
 
@@ -92,6 +107,10 @@ node render.js video act1.mp4 24
 
 ```bash
 PAGE=act2.html node render.js video act2.mp4 24
+```
+
+```bash
+PAGE=act3.html node render.js video act3.mp4 24
 ```
 
 Set `CRF` to trade size for quality. The default is 23, and lower means better. Heavy grain makes files large.
