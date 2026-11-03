@@ -300,7 +300,7 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
   const cy = H * 0.5;
   const ink = '#24152e';
   // Cheeks.
-  ctx.fillStyle = 'rgba(255,120,160,0.7)';
+  ctx.fillStyle = face.mouth === 'scream' ? 'rgba(0,0,0,0)' : 'rgba(255,120,160,0.7)';
   [-1, 1].forEach((s) => {
     ctx.beginPath();
     ctx.ellipse(cx + s * 175, cy + 95, 52, 30, 0, 0, Math.PI * 2);
@@ -313,19 +313,39 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     const rx = 70;
     const ry = 96;
     if (face.squeeze) {
+      // Anguish: eyes screwed shut (thick > <), tears streaming, brows pinched up in the middle.
       ctx.strokeStyle = ink;
-      ctx.lineWidth = 16;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
+      ctx.lineWidth = 22;
       ctx.beginPath();
-      ctx.moveTo(ex - s * 50, ey - 50);
-      ctx.lineTo(ex + s * 40, ey);
-      ctx.lineTo(ex - s * 50, ey + 50);
+      ctx.moveTo(ex - s * 55, ey - 45);
+      ctx.lineTo(ex + s * 35, ey + 5);
+      ctx.lineTo(ex - s * 55, ey + 50);
       ctx.stroke();
-      ctx.lineWidth = 18;
+      ctx.lineWidth = 9;
+      for (let k = 0; k < 3; k++) {
+        ctx.beginPath();
+        ctx.moveTo(ex + s * (40 + k * 6), ey - 70 + k * 40);
+        ctx.lineTo(ex + s * (70 + k * 8), ey - 80 + k * 44);
+        ctx.stroke();
+      }
+      ctx.lineWidth = 20;
       ctx.beginPath();
-      ctx.moveTo(ex - s * 60, ey - ry - 10);
-      ctx.lineTo(ex + s * 55, ey - ry + 30);
+      ctx.moveTo(ex + s * 60, ey - ry - 40);
+      ctx.quadraticCurveTo(ex, ey - ry - 10, ex - s * 60, ey - ry + 5);
+      ctx.stroke();
+      // Tears.
+      ctx.fillStyle = '#8fdcff';
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(ex - s * 30, ey + 40);
+      ctx.bezierCurveTo(ex - s * 60, ey + 120, ex - s * 20, ey + 200, ex - s * 45, ey + 260);
+      ctx.lineTo(ex - s * 75, ey + 255);
+      ctx.bezierCurveTo(ex - s * 55, ey + 190, ex - s * 85, ey + 120, ex - s * 55, ey + 40);
+      ctx.closePath();
+      ctx.fill();
       ctx.stroke();
       return;
     }
@@ -456,6 +476,11 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.ellipse(cx, my + 125, 50, 34, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
+    ctx.beginPath();
+    ctx.moveTo(cx - 70, my - 30);
+    ctx.quadraticCurveTo(cx, my - 50, cx + 70, my - 30);
+    ctx.quadraticCurveTo(cx + 80, my + 120, cx, my + 130);
+    ctx.quadraticCurveTo(cx - 80, my + 120, cx - 70, my - 30);
     ctx.stroke();
   } else if (face.mouth === 'pant' || (face.mouth === 'open' && face.brow > 0.3)) {
     // Tired pant: lopsided open mouth with a tongue.

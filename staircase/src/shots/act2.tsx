@@ -188,12 +188,12 @@ export const ACT2: Shot[] = [
     const keys: Cam[] =
       n === 14
         ? [
-            {pos: [0.7, yc + 0.15, zc + 0.6], target: [WALL_X, yc, zc - 0.1], fov: 40},
+            {pos: [1.1, yc + 0.2, zc + 0.5], target: [WALL_X, yc + 0.1, zc - 0.1], fov: 46},
             {pos: [0.6, yc + 0.35, zc + 1.2], target: [-0.9, yOf(st - 1) + 0.25, zOf(st - 1)], fov: 40},
           ]
         : [
-            {pos: [0.75, yc + 0.1, zc + 0.45], target: [WALL_X, yc, zc + 0.2], fov: 40},
-            {pos: [0.75, yc + 0.1, zc - 0.3], target: [WALL_X, yc, zc - 0.2], fov: 40},
+            {pos: [1.15, yc + 0.12, zc + 0.4], target: [WALL_X, yc, zc + 0.15], fov: 46},
+            {pos: [1.15, yc + 0.12, zc - 0.25], target: [WALL_X, yc, zc - 0.15], fov: 46},
           ];
     return {
       n,
@@ -293,8 +293,8 @@ export const ACT2: Shot[] = [
     look: look('afternoon'),
     cloudSeaY: yOf(MEET) - 12,
     cam: move([
-      {pos: add(HH, [0.32, 0.9, -1.5]), target: add(HH, [0, 0.04, 0]), fov: 30},
-      {pos: add(HH, [0.29, 0.84, -1.38]), target: add(HH, [0, 0.04, 0]), fov: 30},
+      {pos: add(HH, [-0.2, 0.88, -1.5]), target: add(HH, [0, 0.04, 0]), fov: 30},
+      {pos: add(HH, [-0.18, 0.82, -1.38]), target: add(HH, [0, 0.04, 0]), fov: 30},
     ]),
     focus: () => HH,
     actors: (t) => [

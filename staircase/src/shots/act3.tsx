@@ -96,8 +96,8 @@ export const ACT3: Shot[] = [
     look: look('overcast'),
     cloudSeaY: yOf(43) - 12,
     cam: move([
-      {pos: [HX + 0.55, yOf(43) + 1.35, zOf(43) - 1.7], target: [HX, yOf(43) + 0.5, zOf(43) + 0.1], fov: 34},
-      {pos: [HX + 0.55, yOf(43) + 1.4, zOf(43) - 1.95], target: [HX, yOf(43) + 0.6, zOf(43) - 0.2], fov: 34},
+      {pos: [HX + 0.55, yOf(43) + 1.95, zOf(43) - 1.7], target: [HX, yOf(43) + 0.5, zOf(43) + 0.1], fov: 34},
+      {pos: [HX + 0.55, yOf(43) + 2.0, zOf(43) - 1.95], target: [HX, yOf(43) + 0.6, zOf(43) - 0.2], fov: 34},
     ]),
     focus: (t) => headOf(old({t, headZ: zOf(43) - crawlDistance(Math.max(0, t - 0.85) * 1.0, 0.36)})),
     actors: (t) => {
@@ -217,7 +217,7 @@ export const ACT3: Shot[] = [
     shake: (t) => 0.03 * smooth(range(t, 0.35, 0.5)) * (1 - smooth(range(t, 1.5, 1.8))),
     cam: (t) => {
       const h = headOf(old({t, headZ: zOf(52), rear: 0.7 * smooth(range(t, 0.05, 0.4))}));
-      return {pos: add(h, [2.1, 0.05, -0.55]), target: add(h, [0, 0.05, 0]), fov: 30};
+      return {pos: add(h, [1.75, 0.1, -1.05]), target: add(h, [0, 0.05, 0]), fov: 30};
     },
     focus: (t) => headOf(old({t, headZ: zOf(52), rear: 0.7 * smooth(range(t, 0.05, 0.4))})),
     actors: (t) => {
