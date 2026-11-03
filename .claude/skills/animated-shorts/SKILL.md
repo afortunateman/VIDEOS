@@ -134,6 +134,24 @@ What was visible on screen:
 - No captions or labels unless asked. English only. One steady voice tone.
 - Final export: 2K vertical **1440x2560** (render at 1080x1920 with `--scale 1.3333`).
 
+## Lessons from production ("The Staircase")
+
+- **Cut on the voice-over's pauses.** `ffmpeg -af silencedetect=noise=-38dB:d=0.28` splits the
+  voice-over into phrases that map one-to-one onto script lines, even without a speech model.
+- **Write a shot list before code**: one row per line, with time, voice-over and picture. Give the film a
+  visual grammar (camera moves while the character strives and locks off when he stops; keep a
+  consistent screen direction and 180° line; motifs like the suitcase).
+- **Use physics for believability**: contact solving so bodies sit on surfaces, fixed segment
+  spacing, gravity-hung props, and lanes wide enough that props never pass through each other.
+- **Check cameras automatically**: test every shot at several moments for a camera inside
+  geometry or a blocked line to the subject (`staircase/scripts/checkcams.tsx`). Cameras looking back
+  from higher up a staircase easily end up inside the steps.
+- **Keep repeating set pieces (posts, pillars) off the hero's mark**, or they block half the shots.
+- **Review in batches**: render half-resolution stills at mid-shot, tile them in order, critique,
+  and fix. Expect three or four rounds.
+- **Render budget**: software WebGL runs about 2.2 s per 1080p frame on 4 cores. Render video-only
+  chunks and mux the full voice-over at the end.
+
 ## Expectations
 
 The creator said first results won't look as polished as theirs: the quality came

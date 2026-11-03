@@ -16,6 +16,7 @@ export type PostSettings = {
   bloom: number;
   grain: number;
   seed: number;
+  exposure?: number;
 };
 
 export const defaultPost: PostSettings = {
@@ -47,7 +48,7 @@ uniform vec2 res;
 uniform float near, far;
 uniform float focus, focusRange, maxBlur, inkWidth;
 uniform vec3 ink;
-uniform float saturation, vignette, bloom, grain, seed;
+uniform float saturation, vignette, bloom, grain, seed, exposure;
 uniform vec3 lift;
 
 float lin(float d) {
@@ -113,6 +114,7 @@ void main() {
   col = mix(col, ink, edge * fade * 0.92);
 
   col += glow * bloom * vec3(1.0, 0.85, 0.65) * 2.2;
+  col *= exposure;
 
   col = clamp(col, 0.0, 1.0);
   // Grade: saturation, warm lifted blacks, gentle S-curve.
@@ -173,6 +175,7 @@ export const Post: React.FC<{settings: PostSettings}> = ({settings}) => {
         bloom: {value: 0.3},
         grain: {value: 0.03},
         seed: {value: 0},
+        exposure: {value: 1},
       },
       depthTest: false,
       depthWrite: false,
@@ -230,6 +233,7 @@ export const Post: React.FC<{settings: PostSettings}> = ({settings}) => {
     u.bloom.value = settings.bloom;
     u.grain.value = settings.grain;
     u.seed.value = settings.seed;
+    u.exposure.value = settings.exposure ?? 1;
     gl.setRenderTarget(null);
     gl.render(quad.scene, quad.cam);
   }, 1);

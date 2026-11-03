@@ -1,8 +1,8 @@
 import {Composition} from 'remotion';
-import {TestFrame} from './TestFrame';
+import {Film, FILM_SECONDS} from './Film';
 
 export const Root: React.FC = () => (
   <>
-    <Composition id="TestFrame" component={TestFrame} durationInFrames={1} fps={30} width={1080} height={1920} />
+    <Composition id="Film" component={Film} durationInFrames={FILM_SECONDS * 30} fps={30} width={1920} height={1080} />
   </>
 );

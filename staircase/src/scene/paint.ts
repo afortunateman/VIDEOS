@@ -280,8 +280,11 @@ export type Face = {
   look: [number, number]; // pupil offset, -1..1
   lid: number; // 0 open .. 1 closed (upper lid)
   brow: number; // -1 sad/worried .. 1 determined
-  mouth: 'flat' | 'smile' | 'open' | 'grit' | 'o';
+  mouth: 'flat' | 'smile' | 'open' | 'grit' | 'o' | 'scream' | 'soft' | 'pant';
   sweat?: boolean;
+  squeeze?: boolean; // eyes squeezed shut (> <)
+  catchColor?: string; // colour of the eye catch-lights (fire, glow)
+  elder?: boolean; // white bushy brows and a moustache
 };
 
 export const faceTexture = (base: string, light: string, dark: string, face: Face) => {
@@ -309,6 +312,23 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     const ey = cy - 30;
     const rx = 70;
     const ry = 96;
+    if (face.squeeze) {
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 16;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(ex - s * 50, ey - 50);
+      ctx.lineTo(ex + s * 40, ey);
+      ctx.lineTo(ex - s * 50, ey + 50);
+      ctx.stroke();
+      ctx.lineWidth = 18;
+      ctx.beginPath();
+      ctx.moveTo(ex - s * 60, ey - ry - 10);
+      ctx.lineTo(ex + s * 55, ey - ry + 30);
+      ctx.stroke();
+      return;
+    }
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(ex, ey, rx, ry, s * -0.08, 0, Math.PI * 2);
@@ -321,7 +341,7 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.beginPath();
     ctx.ellipse(px, py, 38, 50, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = face.catchColor ?? '#ffffff';
     ctx.beginPath();
     ctx.ellipse(px + 13, py - 18, 13, 16, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -362,6 +382,28 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.quadraticCurveTo(ex, by - 10 + face.brow * 4, ex + s * 58, by - face.brow * 26);
     ctx.stroke();
   });
+  if (face.elder) {
+    ctx.fillStyle = '#f4f1ff';
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 7;
+    [-1, 1].forEach((s) => {
+      // Bushy brow tufts.
+      ctx.beginPath();
+      const bx = cx + s * 92;
+      const by = cy - 165;
+      ctx.ellipse(bx, by, 78, 26, s * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // Moustache wing.
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + 82);
+      ctx.bezierCurveTo(cx + s * 40, cy + 60, cx + s * 110, cy + 70, cx + s * 135, cy + 118);
+      ctx.bezierCurveTo(cx + s * 95, cy + 112, cx + s * 45, cy + 118, cx, cy + 102);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
   if (face.sweat) {
     // Sweat drop on the temple, light blue with a white glint.
     const sx = cx + 178;
@@ -393,7 +435,29 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.moveTo(cx - 34, my);
     ctx.quadraticCurveTo(cx, my + 6, cx + 34, my - 4);
     ctx.stroke();
-  } else if (face.mouth === 'open' && face.brow > 0.3) {
+  } else if (face.mouth === 'soft') {
+    ctx.moveTo(cx - 30, my - 4);
+    ctx.quadraticCurveTo(cx, my + 16, cx + 30, my - 4);
+    ctx.stroke();
+  } else if (face.mouth === 'scream') {
+    ctx.moveTo(cx - 70, my - 30);
+    ctx.quadraticCurveTo(cx, my - 50, cx + 70, my - 30);
+    ctx.quadraticCurveTo(cx + 80, my + 120, cx, my + 130);
+    ctx.quadraticCurveTo(cx - 80, my + 120, cx - 70, my - 30);
+    ctx.closePath();
+    ctx.fillStyle = '#4a0f26';
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    ctx.fillStyle = '#fffaf0';
+    ctx.fillRect(cx - 90, my - 60, 180, 42);
+    ctx.fillStyle = '#ff6f8e';
+    ctx.beginPath();
+    ctx.ellipse(cx, my + 125, 50, 34, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.stroke();
+  } else if (face.mouth === 'pant' || (face.mouth === 'open' && face.brow > 0.3)) {
     // Tired pant: lopsided open mouth with a tongue.
     ctx.moveTo(cx - 44, my - 6);
     ctx.quadraticCurveTo(cx - 6, my - 22, cx + 40, my - 2);
@@ -446,5 +510,76 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.lineWidth = 11;
     ctx.stroke();
   }
+  return c;
+};
+
+// Butterfly-shaped luggage tag: the hero's dream, drawn like a child's sticker.
+export const butterflyTagTexture = () => {
+  const c = canvas(256, 256);
+  const ctx = c.getContext('2d')!;
+  const ink = '#24152e';
+  ctx.translate(128, 128);
+  const wing = (s: number) => {
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.bezierCurveTo(s * 40, -110, s * 125, -80, s * 100, -10);
+    ctx.bezierCurveTo(s * 120, 40, s * 70, 105, 0, 20);
+    ctx.closePath();
+  };
+  [-1, 1].forEach((s) => {
+    wing(s);
+    ctx.fillStyle = '#ffb347';
+    ctx.fill();
+    ctx.lineWidth = 9;
+    ctx.strokeStyle = ink;
+    ctx.stroke();
+    ctx.fillStyle = '#ff6f8e';
+    ctx.beginPath();
+    ctx.arc(s * 62, -35, 18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#7ad3ff';
+    ctx.beginPath();
+    ctx.arc(s * 50, 35, 13, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.fillStyle = ink;
+  ctx.beginPath();
+  ctx.ellipse(0, 5, 10, 48, 0, 0, Math.PI * 2);
+  ctx.fill();
+  return c;
+};
+
+// Sun-bleached bone.
+export const boneTexture = (seed: number) => {
+  const c = canvas(256, 256);
+  const ctx = c.getContext('2d')!;
+  const r = rng(seed);
+  ctx.fillStyle = '#f3ead2';
+  ctx.fillRect(0, 0, 256, 256);
+  brushStrokes(ctx, 256, 256, ['#e2d3b0', '#fffaf0', '#cdbb98'], 160, 20, 0.35, r);
+  return c;
+};
+
+// Worn leather for suitcases.
+export const leatherTexture = (seed: number, base: string) => {
+  const c = canvas(256, 256);
+  const ctx = c.getContext('2d')!;
+  const r = rng(seed);
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, 256, 256);
+  brushStrokes(ctx, 256, 256, [mix(base, '#ffffff', 0.25), mix(base, '#000000', 0.25)], 220, 18, 0.3, r);
+  // Scuffs.
+  ctx.strokeStyle = mix(base, '#ffe9c8', 0.5);
+  ctx.globalAlpha = 0.6;
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 14; i++) {
+    const x = r() * 256;
+    const y = r() * 256;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (r() - 0.5) * 40, y + (r() - 0.5) * 12);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
   return c;
 };
