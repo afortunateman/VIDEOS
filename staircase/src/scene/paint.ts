@@ -460,27 +460,27 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.quadraticCurveTo(cx, my + 16, cx + 30, my - 4);
     ctx.stroke();
   } else if (face.mouth === 'scream') {
-    ctx.moveTo(cx - 70, my - 30);
-    ctx.quadraticCurveTo(cx, my - 50, cx + 70, my - 30);
-    ctx.quadraticCurveTo(cx + 80, my + 120, cx, my + 130);
-    ctx.quadraticCurveTo(cx - 80, my + 120, cx - 70, my - 30);
-    ctx.closePath();
+    // Wail: top lip arched up (corners down), sides flaring to a wide jaw. Reads as anguish, not a laugh.
+    const wail = () => {
+      ctx.beginPath();
+      ctx.moveTo(cx - 52, my - 4);
+      ctx.quadraticCurveTo(cx, my - 78, cx + 52, my - 4);
+      ctx.quadraticCurveTo(cx + 84, my + 44, cx + 94, my + 106);
+      ctx.quadraticCurveTo(cx, my + 132, cx - 94, my + 106);
+      ctx.quadraticCurveTo(cx - 84, my + 44, cx - 52, my - 4);
+      ctx.closePath();
+    };
+    wail();
     ctx.fillStyle = '#4a0f26';
     ctx.fill();
     ctx.save();
     ctx.clip();
-    ctx.fillStyle = '#fffaf0';
-    ctx.fillRect(cx - 90, my - 60, 180, 42);
     ctx.fillStyle = '#ff6f8e';
     ctx.beginPath();
-    ctx.ellipse(cx, my + 125, 50, 34, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, my + 118, 62, 30, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
-    ctx.beginPath();
-    ctx.moveTo(cx - 70, my - 30);
-    ctx.quadraticCurveTo(cx, my - 50, cx + 70, my - 30);
-    ctx.quadraticCurveTo(cx + 80, my + 120, cx, my + 130);
-    ctx.quadraticCurveTo(cx - 80, my + 120, cx - 70, my - 30);
+    wail();
     ctx.stroke();
   } else if (face.mouth === 'pant' || (face.mouth === 'open' && face.brow > 0.3)) {
     // Tired pant: lopsided open mouth with a tongue.
