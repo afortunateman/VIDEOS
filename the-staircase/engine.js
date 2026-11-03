@@ -784,7 +784,7 @@ function drawCaterpillarSide(g, sp, o) {
       const d = down[i], t = tan[i], ri = rad(i);
       const off = far ? -0.28 : 0.12;
       const bx = sp[i].x + d.x * ri * 0.55 + t.x * ri * off, by = sp[i].y + d.y * ri * 0.55 + t.y * ri * off;
-      const kick = Math.sin(SF * 0.9 + i * 1.3) * 0.15 + (o.tremble ? Math.sin(T * 70 + i * 2.1 + (far ? 1 : 0)) * 0.3 * o.tremble : 0);
+      const kick = Math.sin(SF * 0.9 + i * 1.3) * 0.15 + (o.tremble ? Math.sin(T * 70 + i * 2.1 + (far ? 1 : 0)) * 0.3 * o.tremble : 0) + (o.flex ? Math.sin(T * 2.2 + i * 1.1 + (far ? 0.6 : 0)) * 0.45 * o.flex : 0);
       const tx = bx + d.x * ri * 0.75 + t.x * ri * (0.15 + kick) + boil(i * 3 + (far ? 1 : 0), ri * 0.05);
       const ty = by + d.y * ri * 0.75 + t.y * ri * (0.15 + kick);
       drawLeg(g, bx, by, tx, ty, ri * 0.15 * dir, ri * 0.17, o.sil ? (o.silCol || '#000') : (far ? rgba(mul(C(o.pal.leg, o.env), 0.7)) : legCol));
