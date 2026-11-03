@@ -1,0 +1,9 @@
+# first last name   (film frames; only shots changed by the physics/emotion fixes)
+252 467 pA
+594 1163 pB
+1239 1337 pC
+1383 1550 pD
+1620 1871 pE
+1968 2408 pF
+2490 3152 pG
+3225 3929 pH

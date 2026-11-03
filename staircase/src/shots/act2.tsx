@@ -137,7 +137,7 @@ export const ACT2: Shot[] = [
     },
     extras: () => (
       <>
-        <Skeleton spec={{body: {mode: 'stairs', headZ: zOf(81), x: 1.05}, rear: 0.35, rearPivot: 2, segs: 6, headR: 0.32, lookAt: [1.2, yOf(83) + 0.6, zOf(83)]}} />
+        <Skeleton spec={{body: {mode: 'stairs', headZ: zOf(81), x: 1.05}, rear: 0.12, rearPivot: 2, segs: 6, headR: 0.32, lookAt: [1.2, yOf(83) + 0.6, zOf(83)]}} />
         <group position={[1.42, yOf(77) + 0.1, zOf(77)]} rotation={[0, 0.2, Math.PI / 2]}>
           <group position={[0, 0.45, 0]}>
             <Suitcase color="#9a8a7a" />
