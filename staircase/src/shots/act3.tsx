@@ -217,7 +217,7 @@ export const ACT3: Shot[] = [
     shake: (t) => 0.03 * smooth(range(t, 0.35, 0.5)) * (1 - smooth(range(t, 1.5, 1.8))),
     cam: (t) => {
       const h = headOf(old({t, headZ: zOf(52), rear: 0.7 * smooth(range(t, 0.05, 0.4))}));
-      return {pos: add(h, [1.75, 0.1, -1.05]), target: add(h, [0, 0.05, 0]), fov: 30};
+      return {pos: add(h, [1.75, 0.42, -1.05]), target: add(h, [0, 0.05, 0]), fov: 30};
     },
     focus: (t) => headOf(old({t, headZ: zOf(52), rear: 0.7 * smooth(range(t, 0.05, 0.4))})),
     actors: (t) => {

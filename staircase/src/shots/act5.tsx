@@ -471,8 +471,8 @@ export const ACT5: Shot[] = [
     cloudSeaY: yOf(S) - 9,
     cam: move(
       [
-        {pos: add(SH, [0.62, 0.06, -0.6]), target: add(SH, [0, 0.05, 0]), fov: 26},
-        {pos: add(SH, [0.48, 0.05, -0.47]), target: add(SH, [0, 0.06, 0]), fov: 26},
+        {pos: add(SH, [0.42, 0.7, -0.88]), target: add(SH, [0, 0.12, 0]), fov: 34},
+        {pos: add(SH, [0.34, 0.58, -0.72]), target: add(SH, [0, 0.12, 0]), fov: 34},
       ],
       (u) => u,
     ),
@@ -484,7 +484,7 @@ export const ACT5: Shot[] = [
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
-    post: () => ({focusRange: 0.25}),
+    post: () => ({focusRange: 0.3}),
   },
   // 50. What if the top was invented by caterpillars who couldn't bear the thought that climbing was all there was?
   {

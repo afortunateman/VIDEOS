@@ -21,7 +21,9 @@ const Scene: React.FC<{time: number}> = ({time}) => {
   const look = shot.look(t, T);
   const cam = shot.cam(t, T);
   const focus = shot.focus(t, T);
-  const focusDist = new THREE.Vector3(...cam.pos).distanceTo(new THREE.Vector3(...focus));
+  const rawDist = new THREE.Vector3(...cam.pos).distanceTo(new THREE.Vector3(...focus));
+  // Focus targets are usually a head's centre; focus on its near surface for close shots.
+  const focusDist = rawDist < 6 ? Math.max(0.2, rawDist - 0.42) : rawDist;
   const actors = shot.actors?.(t, T) ?? [];
   const center = shot.shadowCenter?.(t, T) ?? focus;
   return (
