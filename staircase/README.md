@@ -26,7 +26,8 @@ An animated short (1920x1080, 30 fps, 2:11) made with Remotion + Three.js for th
 npm run studio                                   # preview in Remotion Studio
 npx tsx scripts/checkcams.tsx                    # flag cameras inside geometry / blocked views
 node scripts/stills.mjs out/review 0.5 12.5 40   # review stills at given seconds
-scripts/render_chunk.sh 0 1299 a                 # render a video-only chunk
+scripts/render_chunk.sh 0 1309 a                 # render a video-only chunk (a: 0-1309, b: 1310-2619, c: 2620-3929)
+scripts/assemble.sh                              # stitch chunks + scream patch, normalise and mux the voice-over
 ```
 
 Rendering uses software WebGL (`swangle`) and needs no GPU, at about 2.2 s per 1080p frame.
