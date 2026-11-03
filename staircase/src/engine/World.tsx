@@ -59,16 +59,38 @@ const glyphStone = (seed: number) => {
   return c;
 };
 
+// Carved slabs: taller than plain wall slabs, with canvases in the slab's true proportions so
+// text keeps its shape. The steps rise across the slab, so everything drawn on it is kept above
+// the highest tread behind it (canvas left = downhill, right = uphill).
+export const CARVED_H = 2.6;
+const CARVED_LEN = DEPTH * 5 + 0.02;
+const CW = 1024;
+const CH = Math.round((CW * CARVED_H) / CARVED_LEN);
+// Lowest canvas y (largest value) a mark spanning canvas x0..x1 may reach without dipping under a tread.
+export const carvedFloor = (x0: number, x1: number, margin = 0.16) => {
+  let top = -Infinity;
+  for (let x = Math.max(0, x0); x <= Math.min(CW, x1); x += 4) {
+    const dz = (0.5 - x / CW) * CARVED_LEN;
+    top = Math.max(top, Math.round(-dz / DEPTH) * RISE);
+  }
+  const yWorld = top + margin; // relative to the tread at the slab centre
+  return ((CARVED_H - 0.6 - yWorld) / CARVED_H) * CH;
+};
+
 // A wall slab covered in many hands' carvings, tally marks and a butterfly doodle.
 const graffitiWall = (seed: number) => {
-  const c = stoneTexture(seed, {blocksX: 3, blocksY: 2, base: '#e58f86'});
+  const c = stoneTexture(seed, {blocksX: 3, blocksY: 2, base: '#e58f86', w: CW, h: CH});
   const ctx = c.getContext('2d')!;
   const r = rng(seed + 1);
   const scratch = (x: number, y: number, txt: string, size: number, rot: number) => {
     ctx.save();
+    ctx.font = `700 ${size}px "DejaVu Sans", sans-serif`;
+    // Keep the word (including its tilt) above the steps behind it.
+    const half = ctx.measureText(txt).width / 2;
+    const dip = Math.abs(Math.sin(rot)) * half + size * 0.25;
+    y = Math.min(y, carvedFloor(x - half, x + half) - dip);
     ctx.translate(x, y);
     ctx.rotate(rot);
-    ctx.font = `700 ${size}px "DejaVu Sans", sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255,236,200,0.85)';
     ctx.fillText(txt, 2, 3);
@@ -76,14 +98,25 @@ const graffitiWall = (seed: number) => {
     ctx.fillText(txt, 0, 0);
     ctx.restore();
   };
-  const words = ['NEARLY', 'DONT STOP', 'HIGHER', 'ONE MORE STEP', 'ALMOST', 'WINGS SOON', 'UP', 'KEEP CLIMBING', 'NOT FAR NOW'];
-  words.forEach((w, i) => scratch(120 + r() * 780, 90 + ((i * 97) % 820), w, 38 + r() * 34, (r() - 0.5) * 0.35));
+  // Hand-placed so nothing overlaps; every mark sits above the steps (canvas is CW x CH).
+  const words: [string, number, number, number, number][] = [
+    ['NEARLY', 220, 130, 44, -0.08],
+    ['DONT STOP', 600, 122, 52, 0.05],
+    ['ONE MORE STEP', 300, 252, 46, 0.06],
+    ['UP', 935, 300, 46, 0.1],
+    ['HIGHER', 225, 378, 40, -0.1],
+    ['ALMOST', 525, 372, 50, -0.05],
+    ['WINGS SOON', 230, 482, 40, -0.07],
+    ['NOT FAR NOW', 565, 474, 40, 0.07],
+    ['KEEP CLIMBING', 330, 592, 50, -0.04],
+  ];
+  words.forEach(([w, x, y, size, rot]) => scratch(x, y, w, size, rot + (r() - 0.5) * 0.04));
   // Tally marks: someone counting steps.
   ctx.strokeStyle = '#4a1f33';
   ctx.lineWidth = 7;
-  for (let g = 0; g < 9; g++) {
-    const gx = 90 + (g % 3) * 300 + r() * 60;
-    const gy = 640 + Math.floor(g / 3) * 110 + r() * 30;
+  for (let g = 0; g < 3; g++) {
+    const gx = 60 + g * 100 + r() * 12;
+    const gy = Math.min(652 + r() * 10, carvedFloor(gx - 12, gx + 84) - 64);
     for (let k = 0; k < 4; k++) {
       ctx.beginPath();
       ctx.moveTo(gx + k * 18, gy);
@@ -97,7 +130,7 @@ const graffitiWall = (seed: number) => {
   }
   // Butterfly doodle.
   ctx.save();
-  ctx.translate(760, 300);
+  ctx.translate(770, Math.min(250, carvedFloor(700, 840) - 90));
   ctx.lineWidth = 8;
   [-1, 1].forEach((s) => {
     ctx.beginPath();
@@ -168,8 +201,8 @@ export const carvedMaterial = (lines: string[], seed: number) => {
   const key = lines.join('/') + seed;
   let m = carvedCache.get(key);
   if (!m) {
-    const c = stoneTexture(41 + seed, {blocksX: 3, blocksY: 2, base: '#e58f86'});
-    carveText(c, lines, 50 + seed);
+    const c = stoneTexture(41 + seed, {blocksX: 3, blocksY: 2, base: '#e58f86', w: CW, h: CH});
+    carveText(c, lines, 50 + seed, carvedFloor);
     m = toon({map: toTexture(c)});
     carvedCache.set(key, m);
   }
@@ -454,7 +487,7 @@ export const World: React.FC<{
       <Instances geometry={geo.postBall} material={a.post} matrices={inst.balls} />
       {carvings.map((c) => {
         const [y, z] = stepTop(c.slab * 5 + 2);
-        const h = 2.1;
+        const h = CARVED_H;
         return (
           <mesh
             key={c.slab}
@@ -463,7 +496,7 @@ export const World: React.FC<{
             castShadow
             receiveShadow
           >
-            <boxGeometry args={[0.5, h, DEPTH * 5 + 0.02]} />
+            <boxGeometry args={[0.5, h, CARVED_LEN]} />
           </mesh>
         );
       })}

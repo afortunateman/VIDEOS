@@ -155,28 +155,49 @@ export const stoneTexture = (
 };
 
 // Carve words into a stone canvas (dark recess, lit lower lip, shaded upper lip).
-export const carveText = (c: HTMLCanvasElement, lines: string[], seed: number) => {
+// Carved words, stacked from the bottom up. `floor(x0, x1)` gives the lowest canvas y a line spanning
+// x0..x1 may reach (so words stay clear of the steps in front of the wall).
+export const carveText = (c: HTMLCanvasElement, lines: string[], seed: number, floor?: (x0: number, x1: number) => number) => {
   const ctx = c.getContext('2d')!;
   const r = rng(seed);
   const W = c.width;
   const H = c.height;
-  ctx.save();
-  ctx.translate(W / 2, H / 2);
-  ctx.rotate((r() - 0.5) * 0.08);
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const size = W / 7.2;
-  ctx.font = `900 ${size}px "Trebuchet MS", "DejaVu Sans", sans-serif`;
+  ctx.textBaseline = 'alphabetic';
+  let size = W / 7.6;
+  const fontFor = (sz: number) => `900 ${sz}px "Trebuchet MS", "DejaVu Sans", sans-serif`;
+  ctx.font = fontFor(size);
+  const widest = Math.max(...lines.map((l) => ctx.measureText(l).width));
+  if (widest > W * 0.82) size *= (W * 0.82) / widest;
+  ctx.font = fontFor(size);
+  const rot = (r() - 0.5) * 0.04;
+  const lead = size * 1.08;
+  // Bottom line first, each line as low as its own span allows, never overlapping the line below.
+  const ys: number[] = [];
+  let ceiling = Infinity;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const half = ctx.measureText(lines[i]).width / 2;
+    const dip = Math.abs(Math.sin(rot)) * half + size * 0.12; // descent + tilt
+    const lim = floor ? floor(W / 2 - half, W / 2 + half) : H * 0.75;
+    const y = Math.min(lim - dip, ceiling);
+    ys[i] = y;
+    ceiling = y - lead;
+  }
+  // If the stack runs off the top, shrink it toward the bottom line.
+  const capTop = ys[0] - size * 0.8;
+  if (capTop < H * 0.06) console.warn('carving touches slab top', lines.join(' / '));
   lines.forEach((line, i) => {
-    const y = (i - (lines.length - 1) / 2) * size * 1.15;
+    ctx.save();
+    ctx.translate(W / 2, ys[i]);
+    ctx.rotate(rot);
     ctx.fillStyle = 'rgba(255,240,200,0.9)';
-    ctx.fillText(line, 3, y + 5);
+    ctx.fillText(line, 3, 5);
     ctx.fillStyle = '#4a1f33';
-    ctx.fillText(line, 0, y);
+    ctx.fillText(line, 0, 0);
     ctx.fillStyle = 'rgba(120,50,70,0.6)';
-    ctx.fillText(line, -2, y - 3);
+    ctx.fillText(line, -2, -3);
+    ctx.restore();
   });
-  ctx.restore();
 };
 
 // A soft painted cloud puff with a pale outline, like a cel-animation background cloud.
@@ -280,7 +301,9 @@ export type Face = {
   look: [number, number]; // pupil offset, -1..1
   lid: number; // 0 open .. 1 closed (upper lid)
   brow: number; // -1 sad/worried .. 1 determined
-  mouth: 'flat' | 'smile' | 'open' | 'grit' | 'o' | 'scream' | 'soft' | 'pant';
+  mouth: 'flat' | 'smile' | 'open' | 'grit' | 'o' | 'scream' | 'soft' | 'pant' | 'frown' | 'tired';
+  lidTilt?: number; // upper-lid slant; positive droops the outer corners (tired, sad). Defaults to brow.
+  blush?: number; // cheek blush 0..1; defaults low for tired or unhappy faces
   sweat?: boolean;
   squeeze?: boolean; // eyes squeezed shut (> <)
   catchColor?: string; // colour of the eye catch-lights (fire, glow)
@@ -300,7 +323,9 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
   const cy = H * 0.5;
   const ink = '#24152e';
   // Cheeks.
-  ctx.fillStyle = face.mouth === 'scream' ? 'rgba(0,0,0,0)' : 'rgba(255,120,160,0.7)';
+  const unhappy = ['scream', 'frown', 'tired', 'pant', 'grit'].includes(face.mouth) || !!face.sweat;
+  const blush = face.blush ?? (face.mouth === 'scream' ? 0 : unhappy ? 0.18 : 1);
+  ctx.fillStyle = `rgba(255,120,160,${0.7 * blush})`;
   [-1, 1].forEach((s) => {
     ctx.beginPath();
     ctx.ellipse(cx + s * 175, cy + 95, 52, 30, 0, 0, Math.PI * 2);
@@ -373,7 +398,7 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
       ctx.fillStyle = mix(base.length === 7 ? base : '#7fd36a', '#2a6b52', 0.15);
       ctx.beginPath();
       const lidY = ey - ry + face.lid * ry * 1.6;
-      const tilt = face.brow * 26 * s;
+      const tilt = (face.lidTilt ?? face.brow) * 26 * s;
       ctx.moveTo(ex - rx - 10, ey - ry - 20);
       ctx.lineTo(ex + rx + 10, ey - ry - 20);
       ctx.lineTo(ex + rx + 10, lidY + tilt);
@@ -452,8 +477,14 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.arc(cx, my - 30, 50, 0.2 * Math.PI, 0.8 * Math.PI);
     ctx.stroke();
   } else if (face.mouth === 'flat') {
-    ctx.moveTo(cx - 34, my);
-    ctx.quadraticCurveTo(cx, my + 6, cx + 34, my - 4);
+    // Neutral: a straight line (no hint of a smile).
+    ctx.moveTo(cx - 32, my + 1);
+    ctx.quadraticCurveTo(cx, my - 1, cx + 32, my + 1);
+    ctx.stroke();
+  } else if (face.mouth === 'frown') {
+    // Sad: corners turned down.
+    ctx.moveTo(cx - 40, my + 14);
+    ctx.quadraticCurveTo(cx, my - 16, cx + 40, my + 14);
     ctx.stroke();
   } else if (face.mouth === 'soft') {
     ctx.moveTo(cx - 30, my - 4);
@@ -482,8 +513,53 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.restore();
     wail();
     ctx.stroke();
-  } else if (face.mouth === 'pant' || (face.mouth === 'open' && face.brow > 0.3)) {
-    // Tired pant: lopsided open mouth with a tongue.
+  } else if (face.mouth === 'tired' || face.mouth === 'pant') {
+    // Exhausted breath: a small open mouth, top lip arched, corners dragged down.
+    const gasp = () => {
+      ctx.beginPath();
+      ctx.moveTo(cx - 40, my + 18);
+      ctx.quadraticCurveTo(cx - 4, my - 30, cx + 38, my + 16);
+      ctx.quadraticCurveTo(cx + 26, my + 44, cx - 2, my + 44);
+      ctx.quadraticCurveTo(cx - 30, my + 46, cx - 40, my + 18);
+      ctx.closePath();
+    };
+    gasp();
+    ctx.fillStyle = '#5a1530';
+    ctx.fill();
+    gasp();
+    ctx.stroke();
+  } else if (face.mouth === 'grit') {
+    // Clenched teeth: a wide, flat bar of teeth with the corners pulled down.
+    const bar = () => {
+      ctx.beginPath();
+      ctx.moveTo(cx - 62, my + 10);
+      ctx.quadraticCurveTo(cx, my - 22, cx + 62, my + 10);
+      ctx.lineTo(cx + 56, my + 30);
+      ctx.quadraticCurveTo(cx, my + 8, cx - 56, my + 30);
+      ctx.closePath();
+    };
+    bar();
+    ctx.fillStyle = '#fffaf0';
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(cx - 60, my + 14);
+    ctx.quadraticCurveTo(cx, my - 6, cx + 60, my + 14);
+    ctx.stroke();
+    for (let k = -2; k <= 2; k++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + k * 22, my - 20);
+      ctx.lineTo(cx + k * 22, my + 34);
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.lineWidth = 11;
+    bar();
+    ctx.stroke();
+  } else if (face.mouth === 'open' && face.brow > 0.3) {
+    // Effort pant: lopsided open mouth with a tongue.
     ctx.moveTo(cx - 44, my - 6);
     ctx.quadraticCurveTo(cx - 6, my - 22, cx + 40, my - 2);
     ctx.quadraticCurveTo(cx + 30, my + 50, cx - 4, my + 48);
@@ -510,27 +586,16 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.fill();
     ctx.stroke();
   } else {
-    // open / grit: a D-shaped mouth with teeth.
+    // open: a D-shaped mouth with teeth (talking, excited).
     ctx.moveTo(cx - 58, my - 12);
-    ctx.quadraticCurveTo(cx, my + (face.mouth === 'open' ? 80 : 40), cx + 58, my - 12);
+    ctx.quadraticCurveTo(cx, my + 80, cx + 58, my - 12);
     ctx.closePath();
     ctx.fillStyle = '#5a1530';
     ctx.fill();
     ctx.save();
     ctx.clip();
     ctx.fillStyle = '#fffaf0';
-    ctx.fillRect(cx - 70, my - 20, 140, face.mouth === 'grit' ? 60 : 22);
-    if (face.mouth === 'grit') {
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      for (let i = -2; i <= 2; i++) {
-        ctx.moveTo(cx + i * 22, my - 20);
-        ctx.lineTo(cx + i * 22, my + 40);
-      }
-      ctx.moveTo(cx - 70, my + 8);
-      ctx.lineTo(cx + 70, my + 8);
-      ctx.stroke();
-    }
+    ctx.fillRect(cx - 70, my - 20, 140, 22);
     ctx.restore();
     ctx.lineWidth = 11;
     ctx.stroke();

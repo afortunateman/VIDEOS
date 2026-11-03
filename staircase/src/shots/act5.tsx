@@ -16,9 +16,9 @@ const old = (o: Partial<HeroOpts> & {t: number}) => hero({headZ: HZ, age: AGE, d
 const restSpec = old({t: 0});
 const restHand = handPoint(layBody(restSpec), radiiFor(7, 0.46));
 const CASE_STEP = Math.round(-restHand.hand.z / 0.62);
-const CASE_REST: V3 = [HX + 0.62, yOf(CASE_STEP), restHand.hand.z];
+const CASE_REST: V3 = [HX + 0.62, yOf(CASE_STEP), zOf(CASE_STEP)]; // middle of the tread, clear of both edges
 
-const SIT = 0.55;
+const SIT = 0.35; // front lifted gently off the steps (lift is measured from the stair slope)
 const seated = (o: Partial<HeroOpts> & {t: number}) =>
   old({rear: SIT, suitcase: {mode: 'placed', pos: CASE_REST, yaw: 0, tag: true}, ...o});
 const SH = headOf(seated({t: 0}));
@@ -34,15 +34,21 @@ const crowdMembers = (exclude: [number, number], density = 1): CrowdMember[] => 
   const r = rngLike(17);
   const out: CrowdMember[] = [];
   const pals = ['hero', 'yellow', 'blue', 'pink', 'orange', 'teal', 'descender'];
+  const last: Record<string, number> = {};
   for (let i = -200; i < 560; i += 1) {
     if (r() > 0.42 * density) continue;
     if (i > exclude[0] && i < exclude[1]) continue;
-    out.push({headZ: zOf(i + r() * 0.6), x: r() > 0.5 ? 0.5 : -0.55, palette: pals[Math.floor(r() * pals.length)], lookUp: 0.6 + r() * 0.4});
+    const m = {headZ: zOf(i + r() * 0.6), x: r() > 0.5 ? 0.5 : -0.55, palette: pals[Math.floor(r() * pals.length)], lookUp: 0.6 + r() * 0.4};
+    // A body is ~4.5 steps long: keep climbers in the same lane at least 5.5 steps apart.
+    const lane = String(m.x);
+    if (last[lane] !== undefined && i - last[lane] < 5.5) continue;
+    last[lane] = i;
+    out.push(m);
   }
   return out;
 };
-const CROWD_WIDE = crowdMembers([S - 24, S + 24]);
-const CROWD_FAR = crowdMembers([S - 8, S + 30], 0.6);
+export const CROWD_WIDE = crowdMembers([S - 24, S + 24]);
+export const CROWD_FAR = crowdMembers([S - 8, S + 30], 0.6);
 
 const NEAR_CLIMBERS = (t: number, faces = true): ActorSpec[] =>
   (
@@ -168,7 +174,7 @@ export const ACT5: Shot[] = [
     ]),
     focus: () => [restHand.hand.x, restHand.hand.y - 0.26, restHand.hand.z],
     actors: (t) => {
-      const s = old({t, swing: 0.05 * Math.sin(t * 3) * Math.exp(-t), face: {look: [0.4, 0.6], lid: 0.3, brow: -0.3, mouth: 'flat'}});
+      const s = old({t, swing: 0.05 * Math.sin(t * 3) * Math.exp(-t), face: {look: [0.4, 0.6], lid: 0.35, lidTilt: 0.6, brow: -0.5, mouth: 'frown'}});
       s.lookAt = [restHand.hand.x + 0.2, restHand.hand.y - 0.4, restHand.hand.z];
       return [s];
     },
@@ -189,14 +195,19 @@ export const ACT5: Shot[] = [
       const sit = easeInOut(range(t, 0.8, 1.7));
       const hand: V3 = [restHand.hand.x, restHand.hand.y, restHand.hand.z];
       const pivotDown: V3 = [CASE_REST[0], CASE_REST[1] + 0.45, CASE_REST[2]];
-      const handNow = lerp3(hand, pivotDown, lower);
+      // Slide it back over its tread first, then lower it straight down, so it never clips a step edge.
+      const handNow: V3 = [
+        lerp(hand[0], pivotDown[0], easeInOut(range(lower, 0, 0.45))),
+        lerp(hand[1], pivotDown[1], easeInOut(range(lower, 0.3, 1))),
+        lerp(hand[2], pivotDown[2], easeInOut(range(lower, 0, 0.45))),
+      ];
       const placed = t > 0.15;
       const s = old({
         t,
         rear: SIT * sit,
         breathe: -0.5 * smooth(range(t, 1.5, 2.1)),
         suitcase: placed ? {mode: 'placed', pos: [handNow[0], handNow[1] - 0.45, handNow[2]], yaw: 0, tag: true} : undefined,
-        face: {look: [0.2, lower < 1 ? 0.5 : -0.1], lid: 0.35 + 0.25 * smooth(range(t, 1.5, 2.1)), brow: -0.3, mouth: 'flat'},
+        face: {look: [0.2, lower < 1 ? 0.5 : -0.1], lid: 0.4 + 0.25 * smooth(range(t, 1.5, 2.1)), lidTilt: 0.7, brow: -0.5, mouth: t > 1.4 && t < 2.0 ? 'tired' : 'frown'},
       });
       if (placed && lower < 0.98) s.armTo = [handNow[0], handNow[1] - 0.02, handNow[2]];
       const h = headOf(s);
@@ -215,7 +226,7 @@ export const ACT5: Shot[] = [
     worldT: (t) => 87.5 + t * 2,
     cam: still({pos: [13, yOf(S) + 3.2, HZ + 7.5], target: [0, yOf(S) + 1.3, HZ - 2.2], fov: 32}),
     focus: () => SH,
-    actors: (t) => [seated({t, face: {look: [0.2, -0.2], lid: 0.35, brow: -0.2, mouth: 'flat'}})],
+    actors: (t) => [seated({t, face: {look: [0.2, -0.2], lid: 0.45, lidTilt: 0.6, brow: -0.4, mouth: 'frown'}})],
     shadowCenter: () => [HX, yOf(S), HZ],
   },
   // 37. He wasn't sure what he expected to happen.
@@ -228,7 +239,7 @@ export const ACT5: Shot[] = [
     cam: still({pos: add(SH, [0.7, 1.0, -1.65]), target: add(SH, [0, -0.2, 0]), fov: 36}),
     focus: () => SH,
     actors: (t) => {
-      const s = seated({t, face: {look: [0, -0.4], lid: 0.15, brow: -0.4, mouth: 'flat'}});
+      const s = seated({t, face: {look: [0, -0.4], lid: 0.2, lidTilt: 0.3, brow: -0.5, mouth: 'flat'}});
       const h = headOf(s);
       const a = smooth(range(t, 0.2, 0.7));
       const b = smooth(range(t, 1.0, 1.4));
@@ -249,7 +260,7 @@ export const ACT5: Shot[] = [
     end: 93.6,
     look: () => blendLooks(LOOKS.dawn, LOOKS.day, 0.4),
     cloudSeaY: yOf(S) - 10,
-    cam: still({pos: add(SH, [0.55, 0.72, -1.1]), target: add(SH, [0, 0.0, 0]), fov: 30}),
+    cam: still({pos: add(SH, [0.5, 0.42, -1.15]), target: add(SH, [0.08, 0.08, -0.3]), fov: 34}), // eye level, aimed at the face
     focus: () => SH,
     actors: (t) => {
       const s = seated({t, face: {look: [0, -0.1], lid: 0.08, brow: 0, mouth: 'flat'}});
@@ -289,7 +300,7 @@ export const ACT5: Shot[] = [
     actors: (t) => {
       const a = climber('pa', 0, -0.8, 'yellow', t, {headZ: crawlZ(zOf(S - 1.5), t, 1.1, 0.5), cycles: t * 1.1});
       const b = climber('pb', 0, -0.8, 'blue', t, {headZ: crawlZ(zOf(S - 5.8), t, 1.1, 0.5), cycles: t * 1.1 + 0.4});
-      const s = seated({t, face: {look: [-0.5, 0], lid: 0.2, brow: -0.1, mouth: 'flat'}});
+      const s = seated({t, face: {look: [-0.5, 0], lid: 0.3, lidTilt: 0.5, brow: -0.35, mouth: 'frown'}});
       const ah = headOf(a);
       s.lookAt = lerp3(ah, [ah[0], ah[1], ah[2] - 1.5], smooth(range(t, 0, 1.9)));
       return [s, a, b];
@@ -306,7 +317,7 @@ export const ACT5: Shot[] = [
     cam: still({pos: add(SH, [0.95, 1.15, -1.0]), target: add(SH, [0, -0.45, 0.45]), fov: 38}),
     focus: () => add(SH, [0, -0.3, 0.4]),
     actors: (t) => {
-      const s = seated({t, face: {look: [0, 0.7], lid: 0.3, brow: -0.3, mouth: 'flat'}});
+      const s = seated({t, face: {look: [0, 0.7], lid: 0.35, lidTilt: 0.7, brow: -0.6, mouth: 'frown'}});
       const pts = layBody(s);
       const look = smooth(range(t, 0.2, 0.9));
       const h = pts[0];
@@ -331,7 +342,7 @@ export const ACT5: Shot[] = [
     focus: () => SH,
     actors: (t) => {
       const beam = smooth(range(t, 0.25, 0.75)) * (1 - smooth(range(t, 1.5, 2.2)));
-      const s = seated({t, face: {look: [0.1, -0.6 * beam], lid: 0.2 - 0.2 * beam, brow: -0.6 * beam, mouth: beam > 0.5 ? 'o' : 'flat', catchColor: beam > 0.3 ? '#fff2c8' : undefined}});
+      const s = seated({t, face: {look: [0.1, -0.6 * beam], lid: 0.3 - 0.3 * beam, lidTilt: 0.6 * (1 - beam), brow: -0.4 - 0.3 * beam, mouth: beam > 0.5 ? 'o' : 'frown', catchColor: beam > 0.3 ? '#fff2c8' : undefined}});
       const h = headOf(s);
       s.lookAt = lerp3([h[0] + 0.3, h[1] + 0.2, h[2] - 2], [h[0] + 1.2, h[1] + 4, h[2] - 2], beam);
       return [s];
@@ -357,7 +368,7 @@ export const ACT5: Shot[] = [
     cam: still({pos: add(SH, [1.45, 0.45, -0.75]), target: add(SH, [-0.05, -0.25, 0.55]), fov: 36}),
     focus: () => add(SH, [0, -0.15, 0.35]),
     actors: (t) => {
-      const s = seated({t, face: {look: [-0.6, 0.3], lid: 0.25, brow: -0.2, mouth: 'flat'}});
+      const s = seated({t, face: {look: [-0.6, 0.3], lid: 0.3, lidTilt: 0.6, brow: -0.5, mouth: 'frown'}});
       const pts = layBody(s);
       const turn = smooth(range(t, 0.1, 0.5));
       const h = pts[0];

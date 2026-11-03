@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import {butterflyTagTexture, Face, faceTexture, leatherTexture, mix, skinTexture, toTexture} from '../scene/paint';
 import {toon} from '../scene/toon';
-import {flatChain, noise1, solveChain, V3, waveLift} from './stairs';
+import {ballY, DEPTH, flatChain, groundY, noise1, RISE, solveChain, V3, waveLift} from './stairs';
 
 export type Palette = {base: string; light: string; dark: string; spot: string; feet: string};
 
@@ -71,7 +71,7 @@ const flat = (color: string) => {
 
 const qz = (v: number, step = 0.1) => Math.round(v / step) * step;
 const faceKey = (p: Palette, f: Face) =>
-  [p.base, qz(f.look[0]), qz(f.look[1]), qz(f.lid), qz(f.brow, 0.2), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0].join('|');
+  [p.base, qz(f.look[0]), qz(f.look[1]), qz(f.lid), qz(f.brow, 0.2), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0, qz(f.lidTilt ?? 99), qz(f.blush ?? 9)].join('|');
 
 const getFace = (p: Palette, f: Face) =>
   faceCache(faceKey(p, f), () =>
@@ -182,24 +182,28 @@ export const layBody = (spec: ActorSpec): V3[] => {
     pts = pts.map((p, i) => (i === 0 ? p : [p[0], p[1] + waveLift(spec.cycles!, i, amp), p[2]]));
   }
 
-  // Rear up: bend the front of the body upward, joint by joint, about the lateral axis.
+  // Rear up: bend the front of the body upward, joint by joint. Each link's lift is measured from
+  // the slope it was resting on (the stairs), so the front rises off the steps instead of bending
+  // into the step above. On flat ground this is the same as lifting from horizontal.
   const rear = spec.rear ?? 0;
   if (rear > 0.001) {
     const p = Math.min(spec.rearPivot ?? 3, pts.length - 1);
     const heading = new THREE.Vector3(pts[0][0] - pts[p][0], 0, pts[0][2] - pts[p][2]).normalize();
-    const lateral = new THREE.Vector3().crossVectors(heading, UP).normalize();
     const out = pts.map((q) => new THREE.Vector3(...q));
     for (let j = p - 1; j >= 0; j--) {
       const v = new THREE.Vector3(...pts[j]).sub(new THREE.Vector3(...pts[j + 1]));
-      // Use the flat heading for the original link so the bend is about the body, not the steps.
       const len = v.length();
-      const flatV = heading.clone().multiplyScalar(len);
-      const angle = (rear * (p - j)) / p;
-      flatV.applyAxisAngle(lateral, angle);
-      out[j] = out[j + 1].clone().add(flatV);
+      const horiz = Math.hypot(v.x, v.z);
+      const slope = Math.atan2(v.y, horiz); // elevation of the resting link
+      // Ease the extra lift off as the link nears vertical so a big rear never folds backwards.
+      const lift = ((rear * (p - j)) / p) * (1 - Math.max(0, slope) / 1.45);
+      const elev = slope + lift;
+      out[j] = out[j + 1].clone().add(heading.clone().multiplyScalar(Math.cos(elev) * len)).add(new THREE.Vector3(0, Math.sin(elev) * len, 0));
     }
     pts = out.map((v) => [v.x, v.y, v.z] as V3);
   }
+  // Contact: nothing may sit lower than resting on the steps.
+  if (b.mode === 'stairs') pts = pts.map((q, i) => [q[0], Math.max(q[1], ballY(q[2], radii[i], b.plaza)), q[2]] as V3);
   return pts;
 };
 
@@ -209,6 +213,41 @@ export const handPoint = (pts: V3[], radii: number[]) => {
   const h = new THREE.Vector3(...pts[0]).sub(n).setY(0).normalize();
   const side = new THREE.Vector3().crossVectors(h, UP).normalize();
   return {neck: n, side, heading: h, hand: n.clone().add(side.multiplyScalar(radii[1] + 0.2)).add(new THREE.Vector3(0, 0.12, 0))};
+};
+
+// Stair height with each riser softened into a short ramp just before it, so anything lifted to
+// clear it rises smoothly as it approaches a step instead of popping up.
+const softGround = (z: number, plaza?: boolean) => {
+  const W = 0.22;
+  let g = groundY(z, plaza);
+  const i = Math.round(-z / DEPTH);
+  for (let k = i - 1; k <= i + 1; k++) {
+    const ze = -(k + 0.5) * DEPTH; // edge up to step k+1
+    if (z >= ze && z < ze + W) {
+      const top = groundY(ze - 1e-4, plaza);
+      g = Math.max(g, top - RISE * ((z - ze) / W));
+    }
+  }
+  return g;
+};
+
+// Pose of a carried suitcase: hangs from the hand, lifted just enough to clear the steps.
+export const carryPose = (spec: ActorSpec, pts: V3[], radii: number[], swing: number) => {
+  const hp = handPoint(pts, radii);
+  const q = new THREE.Quaternion()
+    .setFromUnitVectors(new THREE.Vector3(0, 0, -1), hp.heading)
+    .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), swing));
+  const plaza = spec.body.mode === 'stairs' ? spec.body.plaza : spec.body.mode === 'flat';
+  let lift = 0;
+  if (spec.body.mode !== 'flat') {
+    for (const sx of [-1, 1])
+      for (let sz = -1; sz <= 1; sz += 0.25) {
+        const v = new THREE.Vector3(sx * 0.1, -0.27 - 0.18, sz * 0.25).applyQuaternion(q).add(hp.hand);
+        lift = Math.max(lift, softGround(v.z, plaza) + 0.015 - v.y);
+      }
+  }
+  const hand = hp.hand.clone().add(new THREE.Vector3(0, lift, 0));
+  return {...hp, hand, q, lift};
 };
 
 const Limb: React.FC<{from: THREE.Vector3; to: THREE.Vector3; material: THREE.Material; r?: number}> = ({from, to, material, r = 0.055}) => {
@@ -368,17 +407,17 @@ export const Actor: React.FC<{spec: ActorSpec}> = ({spec}) => {
         );
       })}
       {sc?.mode === 'carry' ? (
-        <>
-          <group
-            position={hp.hand}
-            quaternion={new THREE.Quaternion()
-              .setFromUnitVectors(new THREE.Vector3(0, 0, -1), hp.heading)
-              .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), sc.swing ?? 0))}
-          >
-            <Suitcase color={sc.color} tag={sc.tag} shadows={sh} />
-          </group>
-          <Limb from={hp.neck.clone().add(hp.side.clone().multiplyScalar(radii[1] * 0.6))} to={hp.hand.clone().add(new THREE.Vector3(0, -0.02, 0))} material={skin} r={0.055 * (headR / 0.46)} />
-        </>
+        (() => {
+          const cp = carryPose(spec, pts, radii, sc.swing ?? 0);
+          return (
+            <>
+              <group position={cp.hand} quaternion={cp.q}>
+                <Suitcase color={sc.color} tag={sc.tag} shadows={sh} />
+              </group>
+              <Limb from={hp.neck.clone().add(hp.side.clone().multiplyScalar(radii[1] * 0.6))} to={cp.hand.clone().add(new THREE.Vector3(0, -0.02, 0))} material={skin} r={0.055 * (headR / 0.46)} />
+            </>
+          );
+        })()
       ) : null}
       {sc?.mode === 'placed' ? (
         <group position={sc.pos} rotation={[0, sc.yaw, sc.tilt ?? 0]}>

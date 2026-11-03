@@ -83,7 +83,7 @@ export const ACT2: Shot[] = [
       const hz = crawlZ(zOf(59.2), t, 1.1, 0.42);
       const h = headOf(hero({t, headZ: hz, x: -0.05}));
       const q1 = quitter('q1', 62, 1.0, {lookAt: [6, yOf(61) - 2, zOf(62) + 1]}, t);
-      q1.suitcase = {mode: 'placed', pos: [1.42, yOf(60.5) + 0.1, zOf(60.5)], yaw: 0, tilt: Math.PI / 2, open: 1, color: '#b0705a'};
+      q1.suitcase = {mode: 'placed', pos: [1.42, yOf(60) + 0.1, zOf(60)], yaw: 0, tilt: Math.PI / 2, open: 1, color: '#b0705a'};
       const q1h = headOf(q1);
       const glance = smooth(range(t, 0.5, 1.1)) * (1 - smooth(range(t, 1.7, 2.2)));
       return [
@@ -183,7 +183,7 @@ export const ACT2: Shot[] = [
     [14, 31.2, 32.8, 23, ["YOU'RE ALMOST", 'THERE']],
   ] as [number, number, number, number, string[]][]).map(([n, a, b, slab, lines]): Shot => {
     const st = slab * 5 + 2;
-    const yc = yOf(st) + 0.45;
+    const yc = yOf(st) + 1.18; // centre of the carved text, which sits clear of the steps
     const zc = zOf(st);
     const keys: Cam[] =
       n === 14

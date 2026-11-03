@@ -56,7 +56,7 @@ export const ACT3: Shot[] = [
         t,
         headZ: crawlZ(zOf(40), t, 0.55, 0.3),
         cycles: t * 0.55,
-        face: {look: [0, 0.25], lid: 0.55, brow: -0.45, mouth: 'pant', sweat: true},
+        face: {look: [0, 0.25], lid: 0.55, lidTilt: 0.7, brow: -0.55, mouth: 'tired', sweat: true},
         breathe: 0.25 * Math.sin(t * 5),
       }),
     ],
@@ -80,7 +80,7 @@ export const ACT3: Shot[] = [
         t,
         headZ: zOf(41.25) + 0.13 * smooth(range(t, 0.85, 1.0)),
         tremble: 1,
-        face: {look: [0, 0.4], lid: 0.5, brow: -0.6, mouth: t > 0.85 ? 'o' : 'pant', sweat: true},
+        face: {look: [0, 0.4], lid: 0.5, lidTilt: 0.7, brow: -0.65, mouth: t > 0.85 ? 'o' : 'tired', sweat: true},
         look: undefined,
         rear: 0.08 * smooth(range(t, 0.85, 1.0)),
       }),
@@ -110,7 +110,7 @@ export const ACT3: Shot[] = [
         cycles: go * 1.0,
         breathe,
         rear: 0.18 * smooth(range(t, 0.85, 1.1)) * (1 - smooth(range(t, 1.6, 2.1))),
-        face: {look: [0, -0.3 + 0.6 * droopHead], lid: 0.45 + 0.35 * droopHead, brow: lerp(-0.5, 0.7, smooth(range(t, 0.85, 1.2))), mouth: t > 0.85 ? 'grit' : 'flat', sweat: true},
+        face: {look: [0, -0.3 + 0.6 * droopHead], lid: 0.45 + 0.35 * droopHead, brow: lerp(-0.5, 0.7, smooth(range(t, 0.85, 1.2))), lidTilt: t > 0.85 ? undefined : 0.7, mouth: t > 0.85 ? 'grit' : 'frown', sweat: true},
       });
       const h = headOf(spec);
       spec.lookAt = lerp3([h[0] + 0.2, h[1] + 0.9, h[2] - 2.5], [h[0], h[1] - 1.2, h[2] - 1], droopHead);
@@ -199,7 +199,7 @@ export const ACT3: Shot[] = [
         rear: 0.45 * push * (1 - fall),
         breathe: -0.6 * fall,
         tremble: push * (1 - fall),
-        face: {look: [0.1, -0.5 + 0.9 * fall], lid: 0.3 + 0.4 * fall, brow: 0.9 - 1.5 * fall, mouth: fall > 0.3 ? 'flat' : 'grit', sweat: true},
+        face: {look: [0.1, -0.5 + 0.9 * fall], lid: 0.3 + 0.4 * fall, brow: 0.9 - 1.5 * fall, lidTilt: fall > 0.3 ? 0.7 : undefined, mouth: fall > 0.3 ? 'frown' : 'grit', sweat: true},
       });
       const h = headOf(s);
       s.lookAt = lerp3([h[0] + 0.2, h[1] + 1.2, h[2] - 2.0], [h[0] + 0.3, h[1] - 0.6, h[2] - 1.2], fall);
@@ -228,7 +228,7 @@ export const ACT3: Shot[] = [
         rear: 0.7 * up,
         breathe: 0.7 * up,
         droop: 0.65 * (1 - up),
-        face: up > 0.6 ? {look: [0, 0], lid: 0, brow: 1, mouth: 'scream', squeeze: true} : {look: [0, -0.3], lid: 0.4, brow: 0.6, mouth: 'flat'},
+        face: up > 0.6 ? {look: [0, 0], lid: 0, brow: 1, mouth: 'scream', squeeze: true} : {look: [0, -0.3], lid: 0.45, lidTilt: 0.7, brow: -0.4, mouth: 'frown'},
       });
       const h = headOf(s);
       s.lookAt = [h[0] + 1.4, h[1] + 2.0, h[2] - 0.6];
@@ -277,7 +277,7 @@ export const ACT3: Shot[] = [
     focus: (t, T) => lerp3([HX, yOf(52) + 0.6, zOf(52)], [0, yOf(52) + 20, zOf(52) - 40], easeInOut(t / T)),
     actors: (t) => {
       const lift = smooth(range(t, 1.2, 2.8));
-      const s = old({t, headZ: zOf(52), breathe: -0.4, face: {look: [0, -0.4 - 0.4 * lift], lid: 0.5 - 0.4 * lift, brow: -0.5, mouth: 'flat'}});
+      const s = old({t, headZ: zOf(52), breathe: -0.4, face: {look: [0, -0.4 - 0.4 * lift], lid: 0.5 - 0.4 * lift, lidTilt: 0.7 * (1 - lift), brow: -0.5, mouth: lift > 0.5 ? 'flat' : 'frown'}});
       const h = headOf(s);
       s.lookAt = lerp3([h[0] + 0.2, h[1] - 0.6, h[2] - 1.5], [h[0] + 0.3, h[1] + 3, h[2] - 3], lift);
       return [s];

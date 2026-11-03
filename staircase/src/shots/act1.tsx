@@ -41,12 +41,12 @@ const fireCircle = (t: number, o: {elderRear?: number; elderArm?: number; heroLo
     face: {look: [0, -0.1], lid: blink(t, 1, 0.05), brow: -0.3, mouth: 'flat', catchColor: '#ffc070', ...(o.heroFace ?? {})},
     t,
     seed: 1,
-    suitcase: {mode: 'placed', pos: [HERO_SEAT[0] + 0.55, 0, HERO_SEAT[1] + 0.75], yaw: 0.7, tag: true},
+    suitcase: {mode: 'placed', pos: [HERO_SEAT[0] + 0.75, 0, HERO_SEAT[1] + 0.75], yaw: 0.3, tag: true},
   };
   const elder: ActorSpec = {
     id: 'elder',
     palette: PALETTES.elder,
-    body: {mode: 'flat', head: ELDER_HEAD, yaw: yawFacing(ELDER_HEAD, [FIRE[0] + 0.6, FIRE[2] + 1.2]), curl: 0.15},
+    body: {mode: 'flat', head: ELDER_HEAD, yaw: yawFacing(ELDER_HEAD, [FIRE[0] + 0.6, FIRE[2] + 1.2]), curl: 0.65}, // tail curled round, clear of the cornerstone
     segs: 7,
     headR: 0.44,
     rear: o.elderRear ?? 0.25,
