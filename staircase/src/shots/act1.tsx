@@ -140,8 +140,8 @@ export const ACT1: Shot[] = [
     plaza: true,
     look: look('fire'),
     cam: move([
-      {pos: [3.5, 1.0, 2.65], target: [-0.6, 1.6, 0.4], fov: 42},
-      {pos: [3.25, 1.05, 2.45], target: [-0.6, 1.75, 0.35], fov: 42},
+      {pos: [3.6, 1.32, 3.0], target: [-0.6, 1.6, 0.4], fov: 42},
+      {pos: [3.35, 1.36, 2.8], target: [-0.6, 1.75, 0.35], fov: 42},
     ]),
     focus: () => [-1.6, 1.7, -0.5],
     actors: (t) => fireCircle(t + 2.8, {elderRear: 0.25 + 0.6 * easeInOut(range(t, 0.1, 0.9)), elderArm: 0.4 + 0.6 * easeInOut(range(t, 0.2, 1.0))}),
