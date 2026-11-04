@@ -22,7 +22,7 @@ const Scene: React.FC<{frame: number}> = ({frame}) => {
   return (
     <>
       <CameraDriver cam={cam} handheld={shot.handheld ?? 0} shake={shot.shake?.(t, T) ?? 0} t={time} />
-      <Rig look={look} center={center} size={shot.shadowSize ?? 7} voice={shot.voice?.(t, T) ?? 0} />
+      <Rig look={look} center={center} size={shot.shadowSize ?? 7} voice={shot.voice?.(t, T) ?? 0} shadow={shot.sunShadow?.(t, T) ?? 1} keyFrom={shot.keyDir} />
       <World
         key={shot.plaza ? 'plaza' : `stairs-${shot.iRange?.join('-') ?? 'd'}`}
         look={look}

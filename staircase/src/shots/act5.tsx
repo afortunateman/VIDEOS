@@ -23,6 +23,8 @@ const SIT = 0.35; // front lifted gently off the steps (lift is measured from th
 const seated = (o: Partial<HeroOpts> & {t: number}) =>
   old({rear: SIT, suitcase: {mode: 'placed', pos: CASE_REST, yaw: 0, tag: true}, ...o});
 const SH = headOf(seated({t: 0}));
+// The poster shot (47): his silhouette and suitcase against the sunset.
+const POSTER_CAM: Cam = {pos: [HX - 2.7, yOf(S) + 0.78, HZ + 2.9], target: [HX + 8, yOf(S) + 0.45, HZ - 1.6], fov: 34};
 
 // Same hopeful face on everyone who hears the voice.
 const hearing = {look: [0.1, -0.6] as [number, number], lid: 0, brow: -0.7, mouth: 'soft' as const, catchColor: '#ffe2a0'};
@@ -472,17 +474,19 @@ export const ACT5: Shot[] = [
     holdCut: 114.2,
     look: (t, T) => blendLooks(LOOKS.golden, LOOKS.sunset, smooth(range(t, 0, T))),
     cloudSeaY: yOf(S) - 9,
+    // The rise over the sunset settles into the poster framing of shot 47, so the two play as one scene.
     cam: move([
       {pos: [HX - 1.7, yOf(S) + 0.95, HZ + 0.9], target: [HX + 6, yOf(S) + 0.6, HZ - 0.6], fov: 40},
-      {pos: [HX - 2.0, yOf(S) + 2.1, HZ + 1.3], target: [HX + 12, yOf(S) - 0.6, HZ - 1.2], fov: 42},
-      {pos: [HX - 2.35, yOf(S) + 2.9, HZ + 1.75], target: [HX + 13, yOf(S) - 1.3, HZ - 1.4], fov: 43},
+      {pos: [HX - 2.3, yOf(S) + 2.6, HZ + 1.6], target: [HX + 12, yOf(S) - 1.0, HZ - 1.3], fov: 42},
+      POSTER_CAM,
     ]),
     focus: () => SH,
     actors: (t) => {
-      const turn = smooth(range(t, 0.2, 1.2));
+      // He stays as he was at the end of shot 45 for a moment, then slowly turns to the sun.
+      const turn = smooth(range(t, 1.3, 3.3));
       const s = seated({t, droop: 0.3, face: {look: [0, -0.1], lid: 0.25, brow: -0.1, mouth: 'soft'}});
       const h = headOf(s);
-      s.lookAt = lerp3([h[0] + 0.4, h[1] + 1.2, h[2] - 2.5], [h[0] + 4, h[1] - 0.2, h[2] - 0.3], turn);
+      s.lookAt = lerp3([h[0] + 1.4, h[1] + 0.3, h[2] - 1.2], [h[0] + 4, h[1] - 0.2, h[2] - 0.3], turn);
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
@@ -495,10 +499,10 @@ export const ACT5: Shot[] = [
     end: 115.5,
     look: look('sunset'),
     cloudSeaY: yOf(S) - 9,
-    cam: still({pos: [HX - 2.7, yOf(S) + 0.78, HZ + 2.9], target: [HX + 8, yOf(S) + 0.45, HZ - 1.6], fov: 34}),
+    cam: still(POSTER_CAM),
     focus: () => SH,
     actors: (t) => {
-      const s = seated({t, droop: 0.3, face: {look: [0, -0.1], lid: 0.3, brow: -0.1, mouth: 'soft'}});
+      const s = seated({t, droop: 0.3, face: {look: [0, -0.1], lid: 0.25, brow: -0.1, mouth: 'soft'}});
       const h = headOf(s);
       s.lookAt = [h[0] + 4, h[1] - 0.2, h[2] - 0.3];
       return [s];
@@ -523,6 +527,9 @@ export const ACT5: Shot[] = [
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
+    // The sun sets during this shot: its shadows fade away, and night has none.
+    sunShadow: (t) => 1 - smooth(range(t, 0.3, 2.3)),
+    keyDir: LOOKS.sunset.sunDir,
     post: () => ({focusRange: 0.5}),
   },
   // 49. And for the first time, he wondered...
@@ -547,6 +554,8 @@ export const ACT5: Shot[] = [
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
+    sunShadow: () => 0,
+    keyDir: LOOKS.sunset.sunDir,
     post: () => ({focusRange: 0.3}),
   },
   // 50. What if the top was invented by caterpillars who couldn't bear the thought that climbing was all there was?
@@ -581,6 +590,8 @@ export const ACT5: Shot[] = [
     extras: () => <Crowd members={CROWD_FAR} />,
     shadowCenter: () => [HX, yOf(S), HZ],
     shadowSize: 10,
+    sunShadow: () => 0,
+    keyDir: LOOKS.sunset.sunDir,
     post: () => ({maxBlur: 4}),
   },
 ];

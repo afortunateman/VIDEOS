@@ -39,6 +39,10 @@ export type Shot = {
   carvings?: Carving[];
   shadowCenter?: (t: number, T: number) => V3;
   shadowSize?: number;
+  // Strength of the sun's cast shadows, 0-1 (default 1). Fades them out as the sun sets.
+  sunShadow?: (t: number, T: number) => number;
+  // Fixed direction for the key light, so it stays on the sunset side through dusk into night.
+  keyDir?: V3;
   post?: (t: number, T: number) => Partial<PostSettings>;
   topGlow?: (t: number, T: number) => number;
   voice?: (t: number, T: number) => number; // warm light from above
@@ -96,14 +100,21 @@ export const CameraDriver: React.FC<{cam: Cam; handheld: number; shake: number; 
   return null;
 };
 
-export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number}> = ({look, center, size, voice}) => {
+export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number; shadow?: number; keyFrom?: V3}> = ({
+  look,
+  center,
+  size,
+  voice,
+  shadow = 1,
+  keyFrom,
+}) => {
   const {scene} = useThree();
   if (!(scene.fog instanceof THREE.Fog)) scene.fog = new THREE.Fog('#ffffff', 50, 300);
   const fog = scene.fog as THREE.Fog;
   fog.color.set(look.fogColor);
   fog.near = look.fogNear;
   fog.far = look.fogFar;
-  const sun = new THREE.Vector3(...look.sunDir).normalize();
+  const sun = new THREE.Vector3(...(keyFrom ?? look.sunDir)).normalize();
   // Keep the key light above the horizon even when the sun sits low.
   const keyDir = sun.clone();
   keyDir.y = Math.max(keyDir.y, 0.28);
@@ -130,7 +141,8 @@ export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number}
         color={look.keyColor}
         intensity={look.keyIntensity}
         position={kp}
-        castShadow
+        castShadow={shadow > 0.001}
+        shadow-intensity={shadow}
         shadow-mapSize={[SHADOW_MAP, SHADOW_MAP]}
         shadow-radius={2.5}
         shadow-camera-left={-size}
