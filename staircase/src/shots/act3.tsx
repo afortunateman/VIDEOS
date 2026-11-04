@@ -331,7 +331,7 @@ export const INSERT_TOP: Shot = {
   cloudSeaY: yOf(43) - 12,
   cam: (t) => {
     // Glides up the stair slope a little slower than he climbs, so he moves up through the frame.
-    const z = lerp(TOP_Z0 + 0.95, TOP_Z0 + 0.65, t / 2);
+    const z = lerp(TOP_Z0 + 0.5, TOP_Z0 + 0.2, t / 2);
     const y = (-z / 0.62) * 0.34;
     return {pos: [HX + 0.15, y + 5.2, z], target: [HX, y, z - 0.05], fov: 38, up: [0, 0, -1]};
   },
