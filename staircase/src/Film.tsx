@@ -2,15 +2,15 @@ import {ThreeCanvas} from '@remotion/three';
 import {AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import * as THREE from 'three';
 import {Actor} from './engine/Actor';
-import {CameraDriver, postFor, Rig} from './engine/director';
+import {CameraDriver, postFor, Rig, Shot} from './engine/director';
 import {World} from './engine/World';
 import {Post} from './scene/Post';
 import {AUDIO_PIECES, FILM_SECONDS, locate} from './timeline';
 
 export {FILM_SECONDS};
 
-const Scene: React.FC<{frame: number}> = ({frame}) => {
-  const {shot, t, T, time} = locate(frame);
+export const Scene: React.FC<{frame: number; at?: {shot: Shot; t: number; T: number; time: number}}> = ({frame, at}) => {
+  const {shot, t, T, time} = at ?? locate(frame);
   const look = shot.look(t, T);
   const cam = shot.cam(t, T);
   const focus = shot.focus(t, T);

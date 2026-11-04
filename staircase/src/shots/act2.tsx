@@ -359,3 +359,34 @@ export const ACT2: Shot[] = [
 ];
 
 export const _unused = {Dust, lerp};
+
+// Insert (not in the film's timeline): right after "Glory", the same spot and light. He looks from the
+// descender up the staircase toward the top, and his face sets: brows down, eyes narrowed, mouth firm.
+export const INSERT_DETERMINED: Shot = {
+  n: 17.5,
+  start: 41.3,
+  end: 44.3,
+  look: look('afternoon'),
+  cloudSeaY: yOf(MEET) - 12,
+  cam: move([
+    // Three-quarter front view from just right of the descender, slow push-in.
+    {pos: add(HH, [0.5, 0.62, -1.7]), target: add(HH, [0, 0.04, 0]), fov: 34},
+    {pos: add(HH, [0.44, 0.57, -1.5]), target: add(HH, [0, 0.05, 0]), fov: 34},
+  ]),
+  focus: () => HH,
+  actors: (t) => {
+    const lift = smooth(range(t, 0.5, 1.4));
+    const set = smooth(range(t, 0.8, 1.6));
+    const top: V3 = [HH[0] - 0.2, HH[1] + 2.5, HH[2] - 9];
+    return [
+      heroMeet(t, {
+        look: lerp3(DH, top, lift),
+        // Brows down hard, lids lowered at the inner corners: resolve, not tiredness.
+        face: {look: [lerp(-0.1, -0.05, lift), lerp(-0.5, -0.15, lift)], lid: lerp(0, 0.22, set), lidTilt: lerp(0, -0.6, set), brow: lerp(-0.5, 0.9, set), mouth: 'flat'},
+      }),
+      descMeet(t, {look: HH}),
+    ];
+  },
+  shadowCenter: () => HH,
+  post: () => ({focusRange: 0.45}),
+};
