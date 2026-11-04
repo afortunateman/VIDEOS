@@ -474,12 +474,8 @@ export const ACT5: Shot[] = [
     holdCut: 114.2,
     look: (t, T) => blendLooks(LOOKS.golden, LOOKS.sunset, smooth(range(t, 0, T))),
     cloudSeaY: yOf(S) - 9,
-    // The rise over the sunset settles into the poster framing of shot 47, so the two play as one scene.
-    cam: move([
-      {pos: [HX - 1.7, yOf(S) + 0.95, HZ + 0.9], target: [HX + 6, yOf(S) + 0.6, HZ - 0.6], fov: 40},
-      {pos: [HX - 2.3, yOf(S) + 2.6, HZ + 1.6], target: [HX + 12, yOf(S) - 1.0, HZ - 1.3], fov: 42},
-      POSTER_CAM,
-    ]),
+    // One steady move that settles into the poster framing of shot 47, so the two play as one scene.
+    cam: move([{pos: [HX - 1.7, yOf(S) + 0.95, HZ + 0.9], target: [HX + 6, yOf(S) + 0.6, HZ - 0.6], fov: 40}, POSTER_CAM], smooth),
     focus: () => SH,
     actors: (t) => {
       // He stays as he was at the end of shot 45 for a moment, then slowly turns to the sun.
