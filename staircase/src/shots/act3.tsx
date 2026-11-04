@@ -2,7 +2,7 @@
 import {Cam, move, Shot} from '../engine/director';
 import {blendLooks, LOOKS} from '../engine/look';
 import {crawlDistance, easeInOut, lerp, lerp3, range, smooth, V3} from '../engine/stairs';
-import {add, crawlZ, easeStart, headOf, hero, HX, HeroOpts, look, lookKeys, yOf, zOf} from './common';
+import {add, crawlZ, easeStart, headOf, hero, HX, HeroOpts, look, lookKeys, withLook, yOf, zOf} from './common';
 
 const AGE = 0.6;
 const old = (o: HeroOpts) => hero({age: AGE, droop: 0.65, ...o});
@@ -327,13 +327,15 @@ export const INSERT_TOP: Shot = {
   n: 24.5,
   start: 51.7,
   end: 53.7,
-  look: look('overcast'),
+  // Same overcast colours, with more key and less fill so the steps and his body read in 3D.
+  look: () => withLook(LOOKS.overcast, {keyIntensity: 1.35, hemiIntensity: 1.1, ambientIntensity: 0.4}),
   cloudSeaY: yOf(43) - 12,
+  // High three-quarter view from behind him on the open side, wide enough to show the stairs
+  // running on above him and falling away below. Drifts up the slope a little slower than he climbs.
   cam: (t) => {
-    // Glides up the stair slope a little slower than he climbs, so he moves up through the frame.
-    const z = lerp(TOP_Z0 + 0.5, TOP_Z0 + 0.2, t / 2);
+    const z = lerp(TOP_Z0 + 0.35, TOP_Z0 + 0.05, t / 2);
     const y = (-z / 0.62) * 0.34;
-    return {pos: [HX + 0.15, y + 5.2, z], target: [HX, y, z - 0.05], fov: 38, up: [0, 0, -1]};
+    return {pos: [HX + 3.4, y + 5.8, z + 4.4], target: [HX - 0.15, y + 0.1, z - 0.4], fov: 40};
   },
   focus: (t) => headOf(old({t, headZ: topHeadZ(t)})),
   actors: (t) => [
@@ -344,5 +346,6 @@ export const INSERT_TOP: Shot = {
       face: {look: [0, -0.2], lid: 0.45, brow: 0.7, mouth: 'grit', sweat: true},
     }),
   ],
-  shadowCenter: () => [HX, yOf(43), TOP_Z0 - 0.3],
+  shadowCenter: () => [HX, yOf(43), TOP_Z0 + 0.3],
+  shadowSize: 8,
 };
