@@ -2,8 +2,9 @@
 import {ActorSpec, gapsFor, handPoint, layBody, PALETTES, radiiFor} from '../engine/Actor';
 import {Cam, move, Shot, still} from '../engine/director';
 import {blendLooks, LOOKS} from '../engine/look';
-import {Crowd, CrowdMember, Sunbeam} from '../engine/Props';
+import {Crowd, CrowdMember, GhostWings, Sunbeam} from '../engine/Props';
 import {Card, assets} from '../engine/World';
+import {ACT3} from './act3';
 import {crawlDistance, easeInOut, lerp, lerp3, range, rngLike, smooth, V3} from './act5util';
 import {add, blink, crawlZ, headOf, hero, HeroOpts, HX, look, lookKeys, withLook, yOf, zOf} from './common';
 
@@ -70,34 +71,68 @@ const NEAR_CLIMBERS = (t: number, faces = true): ActorSpec[] =>
 
 const night = LOOKS.night;
 
+// Where shot 29 leaves off, so shot 30 can pick up without a cut.
+const S29 = ACT3.find((s) => s.n === 29)!;
+const S29_END = (() => {
+  const T = S29.end - S29.start;
+  return {T, cam: S29.cam(T, T), focus: S29.focus(T, T), voice: S29.voice!(T, T), topGlow: S29.topGlow!(T, T)};
+})();
+// Shot 50's crane: the original 11.1 s move up to 8 s in, then it eases to a stop at 12 s and holds.
+const CRANE_T = 11.1;
+const craneU = (t: number) => {
+  const t1 = 8;
+  const t2 = 12;
+  if (t <= t1) return t / CRANE_T;
+  if (t >= t2) return 1;
+  const L = t2 - t1;
+  const x = (t - t1) / L;
+  const p0 = t1 / CRANE_T;
+  const m0 = L / CRANE_T; // matching speed at t1, coming to rest at t2 (cubic Hermite)
+  return (2 * x ** 3 - 3 * x ** 2 + 1) * p0 + (x ** 3 - 2 * x ** 2 + x) * m0 + (-2 * x ** 3 + 3 * x ** 2) * 1;
+};
+
+// Dotted wings: a quick flick on and off, then on again, hold, and fade away.
+const wingsBlink = (t: number) => {
+  const flick = smooth(range(t, 0.6, 0.66)) * (1 - smooth(range(t, 0.78, 0.84)));
+  const stay = smooth(range(t, 0.9, 0.96)) * (1 - smooth(range(t, 1.5, 1.95)));
+  return 0.9 * Math.max(flick, stay);
+};
+const ebb = (t: number) => smooth(range(t, 0.1, 2.0));
+
 export const ACT5: Shot[] = [
   // 30. But something was different this time.
   {
     n: 30,
     start: 70.0,
     end: 72.4,
+    // Continues straight on from shot 29 (same camera, light and face), so there is no cut:
+    // the warm light ebbs, the smile slowly fades and his eyes drift to the side.
     look: () => night,
     cloudSeaY: yOf(S) - 12,
-    topGlow: () => 0.6,
-    voice: () => 0.4,
-    cam: move([
-      {pos: add(headOf(old({t: 0})), [0.68, 0.75, -1.5]), target: add(headOf(old({t: 0})), [0, 0.05, 0]), fov: 32},
-      {pos: add(headOf(old({t: 0})), [0.64, 0.7, -1.4]), target: add(headOf(old({t: 0})), [0, 0.05, 0]), fov: 32},
-    ]),
-    focus: () => headOf(old({t: 0})),
+    topGlow: (t) => lerp(S29_END.topGlow, 0.6, ebb(t)),
+    voice: (t) => lerp(S29_END.voice, 0.4, ebb(t)),
+    cam: (t, T) => {
+      const u = smooth(range(t, 0, T));
+      const h = headOf(old({t: 0}));
+      return {pos: lerp3(S29_END.cam.pos, add(h, [0.64, 0.7, -1.4]), u), target: lerp3(S29_END.cam.target, add(h, [0, 0.05, 0]), u), fov: 32};
+    },
+    focus: (t, T) => lerp3(S29_END.focus, headOf(old({t: 0})), smooth(range(t, 0, T))),
     actors: (t) => {
-      const notice = smooth(range(t, 0.9, 1.6));
+      const notice = smooth(range(t, 0.8, 2.0));
+      const fade = smooth(range(t, 0.2, 1.6));
       const s = old({
-        t,
+        t: t + S29_END.T, // keep shot 29's blink and breathing rhythm
+        age: lerp(0.6, AGE, smooth(range(t, 0, 2.4))),
         droop: 0.25,
-        face: {look: [lerp(0.1, 0.6, notice), lerp(-0.6, -0.3, notice)], lid: 0.05, brow: lerp(-0.7, 0.2, notice), mouth: notice > 0.3 ? 'flat' : 'soft', catchColor: '#ffe2a0'},
+        breathe: 0.2 * (1 - fade),
+        face: {look: [lerp(0.1, 0.6, notice), lerp(-0.6, -0.3, notice)], lid: lerp(0, 0.05, notice), brow: lerp(-0.7, 0.2, notice), mouth: 'soft', smile: 1 - fade, catchColor: '#ffe2a0'},
       });
       const h = headOf(s);
       s.lookAt = lerp3([h[0] + 0.25, h[1] + 3.2, h[2] - 3], [h[0] + 2.2, h[1] + 1.2, h[2] - 3.5], notice);
       return [s, ...NEAR_CLIMBERS(t).slice(0, 2)];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
-    post: () => ({focusRange: 0.5}),
+    post: (t) => ({focusRange: lerp(0.4, 0.5, ebb(t))}),
   },
   // 31. For the first time, he noticed that every caterpillar was hearing the same voice.
   {
@@ -314,14 +349,14 @@ export const ACT5: Shot[] = [
     end: 101.2,
     look: () => LOOKS.day,
     cloudSeaY: yOf(S) - 10,
-    cam: still({pos: add(SH, [0.95, 1.15, -1.0]), target: add(SH, [0, -0.45, 0.45]), fov: 38}),
-    focus: () => add(SH, [0, -0.3, 0.4]),
+    // He looks down at himself (head tipped down, facing the camera, so we see his face), then up again.
+    cam: still({pos: add(SH, [0.95, 0.24, -1.0]), target: add(SH, [0.05, -0.3, 0.25]), fov: 42}),
+    focus: () => SH,
     actors: (t) => {
-      const s = seated({t, face: {look: [0, 0.7], lid: 0.35, lidTilt: 0.7, brow: -0.6, mouth: 'frown'}});
-      const pts = layBody(s);
-      const look = smooth(range(t, 0.2, 0.9));
-      const h = pts[0];
-      s.lookAt = lerp3([h[0] + 0.3, h[1] + 0.2, h[2] - 2], [pts[4][0] + 0.2, pts[4][1] - 0.2, pts[4][2]], look);
+      const down = smooth(range(t, 0.2, 0.9)) * (1 - smooth(range(t, 2.1, 2.8)));
+      const s = seated({t, face: {look: [0.05, lerp(0.1, 0.75, down)], lid: lerp(0.3, 0.4, down), lidTilt: 0.7, brow: -0.6, mouth: 'frown'}});
+      const h = headOf(s);
+      s.lookAt = lerp3([h[0] + 0.4, h[1] + 0.2, h[2] - 2], [h[0] + 0.75, h[1] - 0.95, h[2] - 1.0], down);
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
@@ -363,6 +398,9 @@ export const ACT5: Shot[] = [
     n: 43,
     start: 103.9,
     end: 105.1,
+    // He glances back, and a dotted outline of wings blinks on his back: the wings that aren't there.
+    hold: 1.0,
+    holdCut: 105.17,
     look: () => withLook(LOOKS.day, {keyIntensity: 2.2}),
     cloudSeaY: yOf(S) - 10,
     cam: still({pos: add(SH, [1.45, 0.45, -0.75]), target: add(SH, [-0.05, -0.25, 0.55]), fov: 36}),
@@ -374,6 +412,11 @@ export const ACT5: Shot[] = [
       const h = pts[0];
       s.lookAt = lerp3([h[0] + 0.5, h[1] + 0.2, h[2] - 2], [pts[3][0] + 0.9, pts[3][1] + 0.5, pts[3][2] + 0.8], turn);
       return [s];
+    },
+    extras: (t) => {
+      const pts = layBody(seated({t}));
+      const back: V3 = [pts[3][0], pts[3][1] + 0.72, pts[3][2]];
+      return <GhostWings pos={back} size={1.15 * (0.92 + 0.08 * smooth(range(t, 0.55, 0.8)))} opacity={wingsBlink(t)} facing={add(SH, [1.45, 0.45, -0.75])} />;
     },
     shadowCenter: () => [HX, yOf(S), HZ],
     post: () => ({focusRange: 0.6}),
@@ -400,6 +443,9 @@ export const ACT5: Shot[] = [
     n: 45,
     start: 107.5,
     end: 111.2,
+    // A breath after "he wasn't miserable" so the smile can land.
+    hold: 1.5,
+    holdCut: 111.25,
     look: look('golden'),
     cloudSeaY: yOf(S) - 10,
     cam: still({pos: add(SH, [0.55, 0.72, -1.25]), target: add(SH, [0, 0.0, 0]), fov: 30}),
@@ -419,11 +465,15 @@ export const ACT5: Shot[] = [
     n: 46,
     start: 111.2,
     end: 114.1,
-    look: (t) => blendLooks(LOOKS.golden, LOOKS.sunset, smooth(range(t, 0, 2.9))),
+    // The voice-over pauses after "he was just there": a long, sweeping rise over the sunset (room for music).
+    hold: 4.0,
+    holdCut: 114.2,
+    look: (t, T) => blendLooks(LOOKS.golden, LOOKS.sunset, smooth(range(t, 0, T))),
     cloudSeaY: yOf(S) - 9,
     cam: move([
       {pos: [HX - 1.7, yOf(S) + 0.95, HZ + 0.9], target: [HX + 6, yOf(S) + 0.6, HZ - 0.6], fov: 40},
       {pos: [HX - 2.0, yOf(S) + 2.1, HZ + 1.3], target: [HX + 12, yOf(S) - 0.6, HZ - 1.2], fov: 42},
+      {pos: [HX - 2.35, yOf(S) + 2.9, HZ + 1.75], target: [HX + 13, yOf(S) - 1.3, HZ - 1.4], fov: 43},
     ]),
     focus: () => SH,
     actors: (t) => {
@@ -502,19 +552,22 @@ export const ACT5: Shot[] = [
     n: 50,
     start: 120.4,
     end: 131.5,
+    // After the last line the crane eases to a stop and we linger on the endless stairs before the fade.
+    hold: 4.0,
     look: (t) => lookKeys([[0, blendLooks(LOOKS.dusk, LOOKS.night, 0.5)], [4.5, 'night']])(t),
     cloudSeaY: yOf(S) - 9,
     topGlow: () => 0.25,
-    cam: move(
-      [
-        {pos: [HX + 1.6, yOf(S) + 1.0, HZ + 2.3], target: SH, fov: 36},
-        {pos: [5, yOf(S) + 14, HZ - 10], target: [0, yOf(S + 40), zOf(S + 40)], fov: 40},
-        {pos: [9, yOf(S) + 55, HZ - 85], target: [0, yOf(S + 230), zOf(S + 230)], fov: 44},
-        {pos: [12, yOf(S) + 100, HZ - 160], target: [0, yOf(S + 420), zOf(S + 420)], fov: 46},
-      ],
-      (u) => easeInOut(u) * 0.7 + u * 0.3,
-    ),
-    focus: (t, T) => lerp3(SH, [0, yOf(S + 230), zOf(S + 230)], smooth(t / T)),
+    cam: (t) =>
+      move(
+        [
+          {pos: [HX + 1.6, yOf(S) + 1.0, HZ + 2.3], target: SH, fov: 36},
+          {pos: [5, yOf(S) + 14, HZ - 10], target: [0, yOf(S + 40), zOf(S + 40)], fov: 40},
+          {pos: [9, yOf(S) + 55, HZ - 85], target: [0, yOf(S + 230), zOf(S + 230)], fov: 44},
+          {pos: [12, yOf(S) + 100, HZ - 160], target: [0, yOf(S + 420), zOf(S + 420)], fov: 46},
+        ],
+        (u) => easeInOut(u) * 0.7 + u * 0.3,
+      )(craneU(t) * CRANE_T, CRANE_T),
+    focus: (t) => lerp3(SH, [0, yOf(S + 230), zOf(S + 230)], smooth(craneU(t))),
     actors: (t) => [
       (() => {
         const s = seated({t, droop: 0.3, face: {look: [0.15, -0.5], lid: blink(t, 1, 0.12), brow: -0.25, mouth: 'flat', catchColor: '#dfe8ff'}});

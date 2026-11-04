@@ -1,0 +1,8 @@
+# film frames to re-render for the v3 cut (holds + revised shots), from scripts/plan.tsx
+336 662 v3_r1
+1746 1814 v3_r2
+2295 2366 v3_r3
+3144 3230 v3_r4
+3312 3377 v3_r5
+3450 3812 v3_r6
+4002 4439 v3_r7

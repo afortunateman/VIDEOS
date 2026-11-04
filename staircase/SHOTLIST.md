@@ -1,6 +1,19 @@
 # The Staircase: Shooting Script
 
-1920x1080, 30 fps, 2:11 (voice-over 2:08 plus a 3 s tail). Cuts land in the pauses of the voice-over.
+1920x1080, 30 fps, 2:28 (voice-over 2:08, plus 17 s of held moments where the voice-over pauses for music).
+Cuts land in the pauses of the voice-over. Times in the shot table are voice-over times; the holds below push
+everything after them later in the film (see `src/timeline.ts`, `npx tsx scripts/timeline.tsx`).
+
+## Holds (music windows)
+
+| After shot | Hold | Film time (no voice) | Picture |
+|---|---|---|---|
+| 5 "they said," | +2.0 s | 13.2–15.4 | The butterfly shadow holds on the wall; the elder holds his pose. |
+| 6 "…a butterfly." | +4.5 s | 17.3–22.1 | Slow push-in on his face: awe settles into a small, determined smile; one blink. |
+| 43 "There were no wings." | +1.0 s | 111.4–112.6 | A dotted outline of wings blinks on his back, then fades. |
+| 45 "…he wasn't miserable." | +1.5 s | 118.7–120.2 | The small smile lands. |
+| 46 "…he was just there." | +4.0 s | 123.1–127.1 | The camera keeps rising over the sunset. |
+| 50 (end) | +4.0 s | 140.5–148.0 | The crane eases to a stop on the stairs climbing into the stars; fade out from 145.6. |
 
 ## Visual grammar
 
@@ -51,12 +64,12 @@
 | 22 | 46.1–47.7 | His body grew tired. | Close-up: older, paler, drooping antennae, heavy lids, sweat. Overcast. |
 | 23 | 47.7–49.5 | His legs weakened. | Insert: his little feet tremble and slip on the edge of a step. |
 | 24 | 49.5–51.7 | (sigh) But he kept climbing | He exhales (his body deflates), then heaves himself onto the next step. Low angle. |
-| 25 | 51.7–56.4 | because the thought of remaining a caterpillar terrified him more than the staircase. | He glances over the edge: a dolly zoom down the endless drop. He turns back to the stairs, sets his jaw, and climbs into gathering wind. |
+| 25 | 51.7–56.4 | because the thought of remaining a caterpillar terrified him more than the staircase. | He peers over the edge, scared: a dolly zoom on his face from uphill as the stairs fall away behind him. He turns back to the stairs, sets his jaw, and climbs into gathering wind. |
 | 26 | 56.4–58.8 | One day, he couldn't take it anymore. | Red dusk. He tries a step and slides back. |
 | 27 | 58.8–62.4 | He stopped climbing and screamed at the top of his lungs. | He rears up and screams (shaking close-up), then cut to an extreme wide where he's a speck. Swallowed by scale. |
 | 28 | 62.4–65.6 | Then, from somewhere above, a voice called out. | Night. Slow tilt up the stairs into the clouds, which begin to glow. |
 | 29 | 65.6–70.0 | "You're almost there. Don't give up now. You've come so far!" | Close-up: warm light from above pulses with each phrase and washes over his face. Hope returns. |
-| 30 | 70.0–72.4 | But something was different this time. | His smile fades. He notices something to the side. |
+| 30 | 70.0–72.4 | But something was different this time. | No cut from shot 29: the warm light ebbs, his smile slowly fades, and he notices something to the side. |
 | 31 | 72.4–77.3 | For the first time, he noticed that every caterpillar was hearing the same voice. | Slow track along the stairs: climber after climber, each lit by the same light, each looking up with the same face. |
 | 32 | 77.3–80.3 | And every single one of them was almost there. | Huge pull-back: hundreds of climbers dotted along an endless staircase, all lit by the same pulse. |
 | 33 | 80.3–83.0 | He looked up at the endless staircase. | Pre-dawn. His point of view up the stairs, into forever. |
@@ -67,9 +80,9 @@
 | 38 | 92.0–93.6 | But nothing did. | Close-up. A blink. Nothing. |
 | 39 | 93.6–96.4 | The staircase carried on as it always had. | Locked-off wide of the staircase. Clouds roll by. |
 | 40 | 96.4–98.3 | The other caterpillars did too. | Climbers crawl past him without looking. |
-| 41 | 98.3–101.2 | And he was still just as he was before. | He looks down at his own body: still a caterpillar. |
+| 41 | 98.3–101.2 | And he was still just as he was before. | He looks down at himself (we see his face): still a caterpillar. |
 | 42 | 101.2–103.9 | There was no revelation or enlightenment. | A sunbeam breaks through and lands on him… then a cloud slides over it. |
-| 43 | 103.9–105.1 | There were no wings. | He glances over his shoulder at his back. Just segments. |
+| 43 | 103.9–105.1 | There were no wings. | He glances over his shoulder at his back. A dotted outline of wings blinks there: missing. |
 | 44 | 105.1–107.5 | And certainly, there was no glory. | The top: just clouds, as distant as ever. |
 | 45 | 107.5–111.2 | But for the first time in his life, he wasn't miserable. | Golden hour. His face softens into a small, real smile. |
 | 46 | 111.2–114.1 | For the first time, he was just there. | He turns from the stairs to the view. Behind him, the camera rises to reveal the sunset over the clouds. |

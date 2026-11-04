@@ -30,7 +30,7 @@ const solidAt = (p: V, plaza: boolean): string | null => {
 
 let problems = 0;
 for (const s of SHOTS) {
-  const T = s.end - s.start;
+  const T = s.end - s.start + (s.hold ?? 0);
   for (const f of [0.02, 0.35, 0.7, 0.98]) {
     const t = f * T;
     const cam = s.cam(t, T);

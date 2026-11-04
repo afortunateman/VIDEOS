@@ -125,23 +125,25 @@ export const ACT3: Shot[] = [
     end: 54.0,
     look: look('overcast'),
     cloudSeaY: yOf(47) - 16,
+    // Dolly zoom on his face from uphill on the open side: he peers over the edge, scared,
+    // while the staircase falling away behind him stretches.
     cam: (t, T) => {
       const h = headOf(old({t, headZ: zOf(47)}));
       const u = easeInOut(t / T);
       const d = lerp(3.0, 1.3, u);
-      const back: V3 = [-0.25, 0.62, -1];
-      const n = Math.hypot(...back);
+      const out: V3 = [0.62, 0.5, -0.6];
+      const n = Math.hypot(...out);
       return {
-        pos: add(h, [(back[0] / n) * d, (back[1] / n) * d, (back[2] / n) * d]),
-        target: add(h, [0.12, -0.45, 1.1]),
-        fov: (2 * Math.atan(0.8 / d) * 180) / Math.PI,
+        pos: add(h, [(out[0] / n) * d, (out[1] / n) * d, (out[2] / n) * d]),
+        target: add(h, [0.05, -0.2, 0]),
+        fov: (2 * Math.atan(0.85 / d) * 180) / Math.PI,
       } as Cam;
     },
     focus: () => headOf(old({t: 0, headZ: zOf(47)})),
     actors: (t) => {
-      const s = old({t, headZ: zOf(47), face: {look: [0, 0.6], lid: 0, brow: -0.8, mouth: 'o', sweat: true}});
+      const s = old({t, headZ: zOf(47), face: {look: [0.1, 0.55], lid: 0, brow: -0.85, mouth: 'o', sweat: true}});
       const h = headOf(s);
-      s.lookAt = [h[0] + 0.7, h[1] - 1.8, h[2] + 2.4];
+      s.lookAt = [h[0] + 1.9, h[1] - 0.55, h[2] - 0.7];
       return [s];
     },
     shadowCenter: () => [HX, yOf(47), zOf(47)],

@@ -137,14 +137,19 @@ export const ACT1: Shot[] = [
     n: 5,
     start: 11.2,
     end: 13.4,
+    // The voice-over pauses after "they said," and the butterfly shadow holds on the wall.
+    hold: 2.0,
+    holdCut: 13.17,
     plaza: true,
     look: look('fire'),
     cam: move([
       {pos: [3.6, 1.32, 3.0], target: [-0.6, 1.6, 0.4], fov: 42},
       {pos: [3.35, 1.36, 2.8], target: [-0.6, 1.75, 0.35], fov: 42},
+      {pos: [3.15, 1.42, 2.55], target: [-0.6, 1.85, 0.25], fov: 42},
     ]),
     focus: () => [-1.6, 1.7, -0.5],
-    actors: (t) => fireCircle(t + 2.8, {elderRear: 0.25 + 0.6 * easeInOut(range(t, 0.1, 0.9)), elderArm: 0.4 + 0.6 * easeInOut(range(t, 0.2, 1.0))}),
+    // The elder stops talking once the line is done and holds the pose.
+    actors: (t) => fireCircle(t + 2.8, {elderTalk: t < 1.95, elderRear: 0.25 + 0.6 * easeInOut(range(t, 0.1, 0.9)), elderArm: 0.4 + 0.6 * easeInOut(range(t, 0.2, 1.0))}),
     extras: (t) => (
       <>
         <Campfire pos={FIRE} t={t + 11.2} shadows={false} />
@@ -160,17 +165,27 @@ export const ACT1: Shot[] = [
     n: 6,
     start: 13.4,
     end: 15.6,
+    // The voice-over pauses after "butterfly." and we stay on his face (room for music):
+    // the awe settles into a small, determined smile, and he blinks once.
+    hold: 4.5,
+    holdCut: 15.5,
     plaza: true,
     look: look('fire'),
     cam: move([
       {pos: [HERO_SEAT[0] + 0.78, 0.66, HERO_SEAT[1] - 2.15], target: [HERO_SEAT[0], 0.62, HERO_SEAT[1]], fov: 30},
       {pos: [HERO_SEAT[0] + 0.62, 0.64, HERO_SEAT[1] - 1.72], target: [HERO_SEAT[0], 0.64, HERO_SEAT[1]], fov: 30},
+      {pos: [HERO_SEAT[0] + 0.5, 0.64, HERO_SEAT[1] - 1.42], target: [HERO_SEAT[0], 0.66, HERO_SEAT[1]], fov: 30},
     ]),
     focus: () => [HERO_SEAT[0], 0.5, HERO_SEAT[1]],
     actors: (t) => {
       const up = easeInOut(range(t, 0.9, 1.7));
+      const dream = smooth(range(t, 3.0, 4.2)); // awe -> resolve
       const lookAt: V3 = [ELDER_HEAD[0] * (1 - up) + 0.4 * up, 0.9 * (1 - up) + 4.5 * up, ELDER_HEAD[1] * (1 - up) - 5 * up];
-      return fireCircle(t + 5, {heroLook: lookAt, heroFace: {look: [0.05, -0.2 - up * 0.5], lid: 0.0, brow: -0.6 * up, mouth: up > 0.5 ? 'o' : 'flat'}});
+      const lid = Math.max(0, 1 - Math.abs(t - 5.3) / 0.13) * 0.95 + 0.08 * dream;
+      return fireCircle(t + 5, {
+        heroLook: lookAt,
+        heroFace: {look: [0.05, -0.2 - up * 0.5], lid, brow: -0.6 * up + 0.35 * dream, mouth: up <= 0.5 ? 'flat' : dream > 0.5 ? 'soft' : 'o', blush: 1},
+      });
     },
     extras: (t) => (
       <>

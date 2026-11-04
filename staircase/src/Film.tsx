@@ -1,23 +1,16 @@
 import {ThreeCanvas} from '@remotion/three';
-import {AbsoluteFill, Audio, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import * as THREE from 'three';
 import {Actor} from './engine/Actor';
-import {CameraDriver, postFor, Rig, Shot} from './engine/director';
+import {CameraDriver, postFor, Rig} from './engine/director';
 import {World} from './engine/World';
 import {Post} from './scene/Post';
-import {SHOTS} from './shots';
+import {AUDIO_PIECES, FILM_SECONDS, locate} from './timeline';
 
-export const FILM_SECONDS = 131;
+export {FILM_SECONDS};
 
-const shotAt = (time: number): Shot => {
-  for (const s of SHOTS) if (time >= s.start && time < s.end) return s;
-  return SHOTS[SHOTS.length - 1];
-};
-
-const Scene: React.FC<{time: number}> = ({time}) => {
-  const shot = shotAt(time);
-  const T = shot.end - shot.start;
-  const t = time - shot.start;
+const Scene: React.FC<{frame: number}> = ({frame}) => {
+  const {shot, t, T, time} = locate(frame);
   const look = shot.look(t, T);
   const cam = shot.cam(t, T);
   const focus = shot.focus(t, T);
@@ -57,12 +50,16 @@ export const Film: React.FC = () => {
   const {fps, width, height} = useVideoConfig();
   const time = frame / fps;
   const fadeIn = interpolate(time, [0, 1.4], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const fadeOut = interpolate(time, [FILM_SECONDS - 2.6, FILM_SECONDS - 0.4], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const fadeOut = interpolate(time, [FILM_SECONDS - 2.4, FILM_SECONDS - 0.2], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <AbsoluteFill style={{backgroundColor: '#000'}}>
-      <Audio src={staticFile('vo.mp3')} />
+      {AUDIO_PIECES.map((p) => (
+        <Sequence key={p.voFrom} from={p.filmAt} layout="none">
+          <Audio src={staticFile('vo.mp3')} startFrom={p.voFrom} endAt={p.voTo ?? undefined} />
+        </Sequence>
+      ))}
       <ThreeCanvas width={width} height={height} shadows gl={{antialias: false, preserveDrawingBuffer: true}}>
-        <Scene time={time} />
+        <Scene frame={frame} />
       </ThreeCanvas>
       <AbsoluteFill style={{backgroundColor: '#000', opacity: Math.max(fadeIn, fadeOut), pointerEvents: 'none'}} />
     </AbsoluteFill>

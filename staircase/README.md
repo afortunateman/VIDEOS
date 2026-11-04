@@ -1,6 +1,6 @@
 # The Staircase
 
-An animated short (1920x1080, 30 fps, 2:11) made with Remotion + Three.js for the
+An animated short (1920x1080, 30 fps, 2:28) made with Remotion + Three.js for the
 "caterpillar on the staircase" voice-over (`public/vo.mp3`).
 
 - `SHOTLIST.md`: the shooting script, with every voice-over line mapped to a shot
@@ -18,6 +18,7 @@ An animated short (1920x1080, 30 fps, 2:11) made with Remotion + Three.js for th
 | `src/engine/director.tsx` | Camera paths (Catmull-Rom + easing), handheld/shake, lighting rig |
 | `src/scene/Post.tsx` | Post pass: ink outlines from depth/normal edges, depth of field, bloom, grade, vignette, grain |
 | `src/shots/*.tsx` | The 51 shots, each timed to the voice-over |
+| `src/timeline.ts` | Film timeline: shots in voice-over time plus holds (voice-over pauses), and the voice-over pieces |
 | `src/Film.tsx` | Composition: voice-over, canvas, shot switching, fades |
 
 ## Commands
@@ -27,8 +28,14 @@ npm run studio                                   # preview in Remotion Studio
 npx tsx scripts/checkcams.tsx                    # flag cameras inside geometry / blocked views
 node scripts/stills.mjs out/review 0.5 12.5 40   # review stills at given seconds
 scripts/render_chunk.sh 0 1309 a                 # render a video-only chunk (a: 0-1309, b: 1310-2619, c: 2620-3929)
-scripts/assemble.sh                              # stitch chunks + scream patch, normalise and mux the voice-over
+scripts/assemble.sh                              # (original 131 s cut) stitch chunks + scream patch, normalise and mux the voice-over
+npx tsx scripts/timeline.tsx                     # film frames of every shot, holds, voice-over pieces
+npx tsx scripts/plan.tsx 5,6,25 > out/plan.json  # re-cut plan: re-render these shots, reuse the rest of the base master
+scripts/render_patches.sh scripts/v3_ranges.txt  # render the ranges in a ranges file
+scripts/assemble_plan.sh out/plan.json out/The_Staircase_1080p_v2.mp4 v3_   # splice, rebuild the voice-over, share copy, stem
 ```
+
+Shots without a hold render exactly as before, only later, so a re-cut re-renders just the changed shots.
 
 Rendering uses software WebGL (`swangle`) and needs no GPU, at about 2.2 s per 1080p frame.
 `concurrency=1` is fastest on a 4-core machine.

@@ -1,6 +1,6 @@
 import {useLayoutEffect, useMemo, useRef} from 'react';
 import * as THREE from 'three';
-import {boneTexture, glowTexture, leatherTexture, rng, toTexture} from '../scene/paint';
+import {boneTexture, ghostWingsTexture, glowTexture, leatherTexture, rng, toTexture} from '../scene/paint';
 import {toon} from '../scene/toon';
 import {ActorSpec, gapsFor, layBody, PALETTES, radiiFor} from './Actor';
 import {noise1, solveChain, V3, WALL_X} from './stairs';
@@ -171,6 +171,20 @@ export const ButterflyShadow: React.FC<{pos: V3; size: number; t: number; opacit
   // Wall's inner face points +x; plane faces +x.
   return (
     <mesh position={pos} rotation={[0, Math.PI / 2, 0]} scale={[size * flap, size, 1]} material={mat} layers={1}>
+      <planeGeometry args={[1, 1]} />
+    </mesh>
+  );
+};
+
+// The missing wings: a dotted outline on his back, turned to face the camera. Kept out of the
+// outline passes (layer 1) so it reads as a drawn overlay, not an object.
+export const GhostWings: React.FC<{pos: V3; size: number; opacity: number; facing: V3}> = ({pos, size, opacity, facing}) => {
+  const mat = useMemo(() => new THREE.MeshBasicMaterial({map: toTexture(ghostWingsTexture()), transparent: true, depthWrite: false, toneMapped: false}), []);
+  mat.opacity = opacity;
+  const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(...facing), new THREE.Vector3(...pos), new THREE.Vector3(0, 1, 0)));
+  if (opacity <= 0.001) return null;
+  return (
+    <mesh position={pos} quaternion={q} scale={[size * 1.333, size, 1]} material={mat} layers={1} renderOrder={5}>
       <planeGeometry args={[1, 1]} />
     </mesh>
   );

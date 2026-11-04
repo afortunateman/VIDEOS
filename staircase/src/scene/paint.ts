@@ -304,6 +304,7 @@ export type Face = {
   mouth: 'flat' | 'smile' | 'open' | 'grit' | 'o' | 'scream' | 'soft' | 'pant' | 'frown' | 'tired';
   lidTilt?: number; // upper-lid slant; positive droops the outer corners (tired, sad). Defaults to brow.
   blush?: number; // cheek blush 0..1; defaults low for tired or unhappy faces
+  smile?: number; // curve of the 'soft' mouth: 1 (default) a small smile .. 0 a straight line
   sweat?: boolean;
   squeeze?: boolean; // eyes squeezed shut (> <)
   catchColor?: string; // colour of the eye catch-lights (fire, glow)
@@ -487,8 +488,11 @@ export const faceTexture = (base: string, light: string, dark: string, face: Fac
     ctx.quadraticCurveTo(cx, my - 16, cx + 40, my + 14);
     ctx.stroke();
   } else if (face.mouth === 'soft') {
-    ctx.moveTo(cx - 30, my - 4);
-    ctx.quadraticCurveTo(cx, my + 16, cx + 30, my - 4);
+    // k = 1 is the small smile; k = 0 matches the straight 'flat' mouth, so the smile can fade out.
+    const k = face.smile ?? 1;
+    const end = my - 4 * k + (1 - k);
+    ctx.moveTo(cx - 30 - 2 * (1 - k), end);
+    ctx.quadraticCurveTo(cx, my + 16 * k - (1 - k), cx + 30 + 2 * (1 - k), end);
     ctx.stroke();
   } else if (face.mouth === 'scream') {
     // Wail: top lip arched up (corners down), sides flaring to a wide jaw. Reads as anguish, not a laugh.
@@ -671,5 +675,44 @@ export const leatherTexture = (seed: number, base: string) => {
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
+  return c;
+};
+
+// The wings he doesn't have: a dotted outline of butterfly wings, like a placeholder.
+export const ghostWingsTexture = () => {
+  const W = 1024;
+  const H = 768;
+  const c = canvas(W, H);
+  const ctx = c.getContext('2d')!;
+  const cx = W / 2;
+  const wing = (sx: number) => {
+    ctx.beginPath();
+    // upper wing
+    ctx.moveTo(cx + sx * 18, 330);
+    ctx.bezierCurveTo(cx + sx * 120, 120, cx + sx * 330, 30, cx + sx * 440, 110);
+    ctx.bezierCurveTo(cx + sx * 500, 170, cx + sx * 430, 330, cx + sx * 300, 380);
+    // lower wing
+    ctx.bezierCurveTo(cx + sx * 400, 450, cx + sx * 410, 640, cx + sx * 290, 690);
+    ctx.bezierCurveTo(cx + sx * 190, 730, cx + sx * 60, 560, cx + sx * 18, 420);
+    ctx.closePath();
+  };
+  for (const sx of [-1, 1]) {
+    wing(sx);
+    ctx.fillStyle = 'rgba(255,248,225,0.10)';
+    ctx.fill();
+    ctx.save();
+    ctx.setLineDash([30, 26]);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(58,30,74,0.85)'; // ink edge so the dashes read against a bright sky
+    ctx.lineWidth = 25;
+    ctx.stroke();
+    ctx.shadowColor = 'rgba(255,240,200,0.9)';
+    ctx.shadowBlur = 14;
+    ctx.strokeStyle = '#fff6e0';
+    ctx.lineWidth = 14;
+    ctx.stroke();
+    ctx.restore();
+  }
   return c;
 };

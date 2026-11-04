@@ -71,7 +71,7 @@ const flat = (color: string) => {
 
 const qz = (v: number, step = 0.1) => Math.round(v / step) * step;
 const faceKey = (p: Palette, f: Face) =>
-  [p.base, qz(f.look[0]), qz(f.look[1]), qz(f.lid), qz(f.brow, 0.2), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0, qz(f.lidTilt ?? 99), qz(f.blush ?? 9)].join('|');
+  [p.base, qz(f.look[0]), qz(f.look[1]), qz(f.lid), qz(f.brow, 0.2), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0, qz(f.lidTilt ?? 99), qz(f.blush ?? 9), qz(f.smile ?? 1)].join('|');
 
 const getFace = (p: Palette, f: Face) =>
   faceCache(faceKey(p, f), () =>

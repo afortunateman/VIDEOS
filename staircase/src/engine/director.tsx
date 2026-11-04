@@ -30,6 +30,10 @@ export type Shot = {
   highClouds?: boolean;
   handheld?: number; // amplitude
   shake?: (t: number, T: number) => number;
+  // Extra seconds added to the end of the shot while the voice-over pauses (room for music).
+  // The shot's T includes it. holdCut is where vo.mp3 is split (seconds), inside a silence near the shot's end.
+  hold?: number;
+  holdCut?: number;
 };
 
 // Smooth path through camera keys (Catmull-Rom), progress eased over the whole shot.

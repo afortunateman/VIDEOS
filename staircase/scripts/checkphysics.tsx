@@ -28,7 +28,7 @@ const caseCorners = (center: THREE.Vector3, q: THREE.Quaternion, half: V3): THRE
 
 for (const s of SHOTS) {
   if (only !== null && s.n !== only) continue;
-  const T = s.end - s.start;
+  const T = s.end - s.start + (s.hold ?? 0);
   const plaza = !!s.plaza;
   for (let t = 0; t <= T; t += 0.1) {
     const actors: ActorSpec[] = s.actors?.(t, T) ?? [];
