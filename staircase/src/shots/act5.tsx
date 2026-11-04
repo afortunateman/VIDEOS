@@ -592,4 +592,22 @@ export const ACT5: Shot[] = [
   },
 ];
 
+// Insert (not in the film's timeline): shot 32's pull-back carried on for 3 more seconds. It starts on
+// shot 32's last frame and keeps rising away from the endless, glowing staircase.
+const S32 = ACT5.find((x) => x.n === 32)!;
+const S32_T = S32.end - S32.start;
+export const INSERT_WIDE: Shot = {
+  ...S32,
+  n: 32.5,
+  start: S32.end,
+  end: S32.end + 3,
+  topGlow: (t) => S32.topGlow!(t + S32_T, S32_T),
+  cam: move([
+    {pos: [120, yOf(S) + 75, HZ + 105], target: [0, yOf(S + 110), zOf(S + 110)], fov: 46},
+    {pos: [185, yOf(S) + 118, HZ + 160], target: [0, yOf(S + 150), zOf(S + 150)], fov: 47},
+  ]),
+  focus: (t, T) => lerp3([0, yOf(S + 110), zOf(S + 110)], [0, yOf(S + 150), zOf(S + 150)], easeInOut(t / T)),
+  actors: (t) => S32.actors!(t + S32_T, S32_T),
+};
+
 export const _keep = {gapsFor, crawlDistance, Cam: null as unknown as Cam, rngLike};

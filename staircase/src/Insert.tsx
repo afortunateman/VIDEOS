@@ -4,9 +4,10 @@ import {Shot} from './engine/director';
 import {Scene} from './Film';
 import {INSERT_DETERMINED} from './shots/act2';
 import {INSERT_TOP} from './shots/act3';
+import {INSERT_WIDE} from './shots/act5';
 
 // Stand-alone insert shots, rendered on their own (the film's timeline is unchanged).
-export const INSERTS: Record<string, Shot> = {determined: INSERT_DETERMINED, top: INSERT_TOP};
+export const INSERTS: Record<string, Shot> = {determined: INSERT_DETERMINED, top: INSERT_TOP, wide: INSERT_WIDE};
 
 export const Insert: React.FC<{which: string}> = ({which}) => {
   const frame = useCurrentFrame();
