@@ -223,3 +223,22 @@ export const ACT1: Shot[] = [
 ];
 
 export {flatChain, gapsFor, radiiFor, still};
+
+// Insert (not in the film's timeline): shot 5 carried on for 3 more seconds. The elder holds his pose,
+// the butterfly shadow stays on the wall in the firelight, and the slow push-in continues.
+const S5 = ACT1.find((x) => x.n === 5)!;
+const S5_T = S5.end - S5.start + (S5.hold ?? 0);
+export const INSERT_ELDER: Shot = {
+  ...S5,
+  n: 5.5,
+  start: S5.start + S5_T,
+  end: S5.start + S5_T + 3,
+  hold: undefined,
+  holdCut: undefined,
+  cam: move([
+    {pos: [3.15, 1.42, 2.55], target: [-0.6, 1.85, 0.25], fov: 42},
+    {pos: [2.95, 1.47, 2.32], target: [-0.6, 1.92, 0.18], fov: 42},
+  ]),
+  actors: (t) => S5.actors!(t + S5_T, S5_T),
+  extras: (t) => S5.extras!(t + S5_T, S5_T),
+};
