@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import {SHOTS} from '../src/shots';
 import {ActorSpec, carryPose, gapsFor, layBody, radiiFor} from '../src/engine/Actor';
-import {ballY, DEPTH, groundY, RISE, solveChain, WALL_X, WIDTH, V3} from '../src/engine/stairs';
+import {ballYRigid, DEPTH, partY, groundY, RISE, solveChain, WALL_X, WIDTH, V3} from '../src/engine/stairs';
 import {CROWD_FAR, CROWD_WIDE} from '../src/shots/act5';
 
 const only = process.argv[2] ? Number(process.argv[2]) : null;
@@ -43,9 +43,10 @@ for (const s of SHOTS) {
       // Contact with the steps (skip lifted front when rearing, and the crawl hump).
       pts.forEach((p, i) => {
         const r = radii[i] * (1 + (a.breathe ?? 0) * 0.06);
-        const rest = a.body.mode === 'flat' ? (plaza ? groundY(p[2], true) + r : r) : ballY(p[2], radii[i], plaza);
+        const rest = a.body.mode === 'flat' ? (plaza ? groundY(p[2], true) + r : r) : partY(i, p[2], radii[i], plaza);
+        const solid = a.body.mode === 'flat' ? rest : ballYRigid(p[2], radii[i], plaza);
         const gap = p[1] - rest;
-        if (gap < -0.04) flag({shot: s.n, t, kind: 'body sinks into steps', who: `${a.id}#${i}`, amt: -gap});
+        if (p[1] - solid < -0.04) flag({shot: s.n, t, kind: 'body sinks into steps', who: `${a.id}#${i}`, amt: solid - p[1]});
         if (a.body.mode === 'flat' && plaza && groundY(p[2], true) > 0.01) flag({shot: s.n, t, kind: 'flat body runs onto stairs', who: `${a.id}#${i}`, amt: groundY(p[2], true)});
         if (gap > 0.1 && i > rearing && a.cycles === undefined) flag({shot: s.n, t, kind: 'body floats', who: `${a.id}#${i}`, amt: gap});
         const onPlaza = plaza && p[2] > -0.31;

@@ -6,6 +6,23 @@ import {Look} from './look';
 import {Carving} from './World';
 import {easeInOut, lerp, noise1, V3} from './stairs';
 
+// Smoother sun shadows. three.js filters each shadow lookup with 5 taps; with the low sun that
+// leaves saw-tooth edges on the steps and across faces. Use 16 taps over a wider disc instead.
+{
+  const chunk = THREE.ShaderChunk.shadowmap_pars_fragment;
+  const five = /shadow = \(\s*texture\( shadowMap, vec3\( shadowCoord\.xy \+ vogelDiskSample\( 0, 5, phi \)[\s\S]*?\) \* 0\.2;/;
+  if (!five.test(chunk)) throw new Error('shadow filter patch: three.js shader changed');
+  THREE.ShaderChunk.shadowmap_pars_fragment = chunk.replace(
+    five,
+    `shadow = 0.0;
+				for ( int i = 0; i < 16; i ++ ) {
+					shadow += texture( shadowMap, vec3( shadowCoord.xy + vogelDiskSample( i, 16, phi ) * radius, shadowCoord.z ) );
+				}
+				shadow /= 16.0;`,
+  );
+}
+const SHADOW_MAP = 4096;
+
 export type Cam = {pos: V3; target: V3; fov: number; up?: V3};
 
 export type Shot = {
@@ -91,7 +108,20 @@ export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number}
   const keyDir = sun.clone();
   keyDir.y = Math.max(keyDir.y, 0.28);
   keyDir.normalize();
-  const kp = new THREE.Vector3(...center).add(keyDir.multiplyScalar(40));
+  // Snap the shadow camera to whole shadow-map texels across the light's view, so shadow edges
+  // stay put as the camera's centre follows the action instead of crawling from frame to frame.
+  const texel = (2 * size) / SHADOW_MAP;
+  const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), keyDir).normalize();
+  const upL = new THREE.Vector3().crossVectors(keyDir, right).normalize();
+  const c = new THREE.Vector3(...center);
+  const snap = (axis: THREE.Vector3) => {
+    const d = c.dot(axis);
+    c.add(axis.clone().multiplyScalar(Math.round(d / texel) * texel - d));
+  };
+  snap(right);
+  snap(upL);
+  const snapped: V3 = [c.x, c.y, c.z];
+  const kp = c.clone().add(keyDir.multiplyScalar(40));
   return (
     <>
       <hemisphereLight args={[look.hemiSky, look.hemiGround, look.hemiIntensity]} />
@@ -101,7 +131,8 @@ export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number}
         intensity={look.keyIntensity}
         position={kp}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[SHADOW_MAP, SHADOW_MAP]}
+        shadow-radius={2.5}
         shadow-camera-left={-size}
         shadow-camera-right={size}
         shadow-camera-top={size}
@@ -112,7 +143,7 @@ export const Rig: React.FC<{look: Look; center: V3; size: number; voice: number}
         shadow-normalBias={0.02}
         ref={(l: THREE.DirectionalLight | null) => {
           if (l) {
-            l.target.position.set(...center);
+            l.target.position.set(...snapped);
             l.target.updateMatrixWorld();
           }
         }}

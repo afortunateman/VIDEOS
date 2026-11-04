@@ -2,7 +2,7 @@
 import {Cam, move, Shot} from '../engine/director';
 import {blendLooks, LOOKS} from '../engine/look';
 import {crawlDistance, easeInOut, lerp, lerp3, range, smooth, V3} from '../engine/stairs';
-import {add, crawlZ, headOf, hero, HX, HeroOpts, look, lookKeys, yOf, zOf} from './common';
+import {add, crawlZ, easeStart, headOf, hero, HX, HeroOpts, look, lookKeys, yOf, zOf} from './common';
 
 const AGE = 0.6;
 const old = (o: HeroOpts) => hero({age: AGE, droop: 0.65, ...o});
@@ -99,9 +99,9 @@ export const ACT3: Shot[] = [
       {pos: [HX + 0.55, yOf(43) + 1.95, zOf(43) - 1.7], target: [HX, yOf(43) + 0.5, zOf(43) + 0.1], fov: 34},
       {pos: [HX + 0.55, yOf(43) + 2.0, zOf(43) - 1.95], target: [HX, yOf(43) + 0.6, zOf(43) - 0.2], fov: 34},
     ]),
-    focus: (t) => headOf(old({t, headZ: zOf(43) - crawlDistance(Math.max(0, t - 0.85) * 1.0, 0.36)})),
+    focus: (t) => headOf(old({t, headZ: zOf(43) - crawlDistance(easeStart(t - 0.85) * 1.0, 0.36)})),
     actors: (t) => {
-      const go = Math.max(0, t - 0.85);
+      const go = easeStart(t - 0.85);
       const breathe = t < 0.25 ? smooth(range(t, 0, 0.25)) * 0.7 : 0.7 - smooth(range(t, 0.25, 0.85)) * 1.5 + smooth(range(t, 0.85, 1.2)) * 0.8;
       const droopHead = smooth(range(t, 0.25, 0.7)) * (1 - smooth(range(t, 0.85, 1.2)));
       const spec = old({
@@ -158,13 +158,13 @@ export const ACT3: Shot[] = [
     cloudSeaY: yOf(47) - 14,
     worldT: (t) => 54 + t * 3,
     cam: (t) => {
-      const h = headOf(old({t, headZ: zOf(47) - crawlDistance(Math.max(0, t - 0.7) * 1.1, 0.4)}));
+      const h = headOf(old({t, headZ: zOf(47) - crawlDistance(easeStart(t - 0.7) * 1.1, 0.4)}));
       return {pos: add(h, [0.62, 0.6, -1.6]), target: add(h, [0, 0.08, 0]), fov: 32};
     },
     handheld: 0.012,
-    focus: (t) => headOf(old({t, headZ: zOf(47) - crawlDistance(Math.max(0, t - 0.7) * 1.1, 0.4)})),
+    focus: (t) => headOf(old({t, headZ: zOf(47) - crawlDistance(easeStart(t - 0.7) * 1.1, 0.4)})),
     actors: (t) => {
-      const go = Math.max(0, t - 0.7);
+      const go = easeStart(t - 0.7);
       const turn = smooth(range(t, 0.05, 0.6));
       const s = old({
         t,

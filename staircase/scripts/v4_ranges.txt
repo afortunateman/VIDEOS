@@ -1,0 +1,9 @@
+# v4: full re-render (smooth climbing contact, smoother shadows)
+0 461 v4_f1
+462 1130 v4_f2
+1131 1679 v4_f3
+1680 2162 v4_f4
+2163 2753 v4_f5
+2754 3311 v4_f6
+3312 3854 v4_f7
+3855 4439 v4_f8

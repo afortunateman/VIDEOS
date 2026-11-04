@@ -26,6 +26,8 @@ An animated short (1920x1080, 30 fps, 2:28) made with Remotion + Three.js for th
 ```bash
 npm run studio                                   # preview in Remotion Studio
 npx tsx scripts/checkcams.tsx                    # flag cameras inside geometry / blocked views
+npx tsx scripts/checkphysics.tsx                 # flag bodies/cases sinking into steps, walls, posts
+npx tsx scripts/checkjitter.tsx                  # flag one-frame pops in body segments, suitcase, head turns
 node scripts/stills.mjs out/review 0.5 12.5 40   # review stills at given seconds
 scripts/render_chunk.sh 0 1309 a                 # render a video-only chunk (a: 0-1309, b: 1310-2619, c: 2620-3929)
 scripts/assemble.sh                              # (original 131 s cut) stitch chunks + scream patch, normalise and mux the voice-over
@@ -33,6 +35,8 @@ npx tsx scripts/timeline.tsx                     # film frames of every shot, ho
 npx tsx scripts/plan.tsx 5,6,25 > out/plan.json  # re-cut plan: re-render these shots, reuse the rest of the base master
 scripts/render_patches.sh scripts/v3_ranges.txt  # render the ranges in a ranges file
 scripts/assemble_plan.sh out/plan.json out/The_Staircase_1080p_v2.mp4 v3_   # splice, rebuild the voice-over, share copy, stem
+scripts/render_patches.sh scripts/v4_ranges.txt  # v4: full re-render in 8 chunks (every frame changed: shadows)
+scripts/assemble_plan.sh out/plan_v4.json out/The_Staircase_1080p_v3.mp4 v4_
 ```
 
 Shots without a hold render exactly as before, only later, so a re-cut re-renders just the changed shots.

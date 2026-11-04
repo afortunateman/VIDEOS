@@ -4,7 +4,7 @@ import {Cam, move, Shot} from '../engine/director';
 import {LOOKS} from '../engine/look';
 import {Dust, Skeleton} from '../engine/Props';
 import {crawlDistance, easeInOut, lerp, lerp3, range, smooth, V3, WALL_X} from '../engine/stairs';
-import {add, crawlZ, headOf, hero, HeroOpts, look, talk, withLook, yOf, zOf} from './common';
+import {add, crawlZ, easeStart, headOf, hero, HeroOpts, look, softStop, talk, withLook, yOf, zOf} from './common';
 
 const descender = (o: HeroOpts): ActorSpec =>
   hero({
@@ -36,12 +36,12 @@ const DH = headOf(descMeet(0));
 // Approach: both crawl and stop at the same moment.
 const ARRIVE = 2.7;
 const heroApproachZ = (t: number) => {
-  const c = Math.min(t, ARRIVE) * 1.1;
+  const c = softStop(t, ARRIVE) * 1.1;
   const total = crawlDistance(ARRIVE * 1.1, 1);
   return H_STOP + (crawlDistance(ARRIVE * 1.1, 0.4) - crawlDistance(c, 0.4)) * (1 / Math.max(total, 1e-6)) * total;
 };
 const descApproachZ = (t: number) => {
-  const c = Math.min(t, ARRIVE) * 1.1;
+  const c = softStop(t, ARRIVE) * 1.1;
   return D_STOP - (crawlDistance(ARRIVE * 1.1, 0.5) - crawlDistance(c, 0.5));
 };
 
@@ -162,13 +162,13 @@ export const ACT2: Shot[] = [
     ]),
     focus: () => [WALL_X + 0.3, yOf(102) + 1.0, zOf(102)],
     actors: (t) => {
-      const hz = crawlZ(zOf(100.4), Math.min(t, 1.1), 1.1, 0.42);
+      const hz = crawlZ(zOf(100.4), softStop(t, 1.1), 1.1, 0.42);
       return [
         hero({
           t,
           headZ: hz,
           x: 0.25,
-          cycles: Math.min(t, 1.1) * 1.1,
+          cycles: softStop(t, 1.1) * 1.1,
           look: [WALL_X, yOf(102) + 1.0 + 0.2 * Math.sin(t), zOf(101.5) - smooth(range(t, 0.8, 3)) * 1.4],
           face: {look: [-0.4, -0.3], lid: 0.05, brow: -0.2},
         }),
@@ -227,8 +227,8 @@ export const ACT2: Shot[] = [
     focus: () => lerp3(HH, DH, 0.5),
     actors: (t) => {
       const meet = smooth(range(t, ARRIVE - 0.4, ARRIVE + 0.3));
-      const h = heroMeet(t, {headZ: heroApproachZ(t), cycles: Math.min(t, ARRIVE) * 1.1});
-      const d = descMeet(t, {headZ: descApproachZ(t), cycles: Math.min(t, ARRIVE) * 1.1});
+      const h = heroMeet(t, {headZ: heroApproachZ(t), cycles: softStop(t, ARRIVE) * 1.1});
+      const d = descMeet(t, {headZ: descApproachZ(t), cycles: softStop(t, ARRIVE) * 1.1});
       const hp = headOf(h);
       const dp = headOf(d);
       h.lookAt = lerp3([hp[0] + 0.2, hp[1] + 0.9, hp[2] - 2.5], dp, meet);
@@ -342,7 +342,7 @@ export const ACT2: Shot[] = [
     ]),
     focus: () => HH,
     actors: (t) => {
-      const go = Math.max(0, t - 0.7);
+      const go = easeStart(t - 0.7);
       const dz = D_STOP + crawlDistance(go * 1.1, 0.5);
       const d = descMeet(t, {
         headZ: dz,
@@ -351,7 +351,7 @@ export const ACT2: Shot[] = [
         face: {look: [0, 0.3], lid: 0.45, brow: 0.2, mouth: talk(t, [[0.16, 0.8]], 'flat')},
       });
       const dp = headOf(d);
-      d.lookAt = go > 0 ? [dp[0], dp[1] - 0.5, dp[2] + 2.5] : HH;
+      d.lookAt = lerp3(HH, [dp[0], dp[1] - 0.5, dp[2] + 2.5], smooth(range(t, 0.6, 1.05)));
       return [heroMeet(t, {look: dp, face: {look: [-0.2, 0.1], lid: 0.1, brow: 0.3}}), d];
     },
     shadowCenter: () => lerp3(HH, DH, 0.5),

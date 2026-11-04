@@ -17,9 +17,35 @@ export const stepIndexAt = (z: number, plaza: boolean) => {
 
 export const groundY = (z: number, plaza = false) => stepIndexAt(z, plaza) * RISE;
 
-// Height of the centre of a ball of radius r resting on the stair profile at z.
-// It touches either a tread or a step's front edge, whichever holds it highest.
+// Height of the centre of a body segment of radius r resting on the stairs at z.
+// A rigid ball would touch a tread or a step's front edge, but a ball smaller than a riser can't
+// roll over the edge: it would snap up onto the next step in a single frame. So on the lower side
+// of every edge the segment is lifted along a smooth ease instead: level with the next step right at
+// the edge, settling back onto its own tread over `reach` behind it. That lets the body flow over
+// each step. It may press slightly (≤ 3 cm) into the corner, which reads as a soft body squashing.
 export const ballY = (z: number, r: number, plaza = false) => {
+  let best = groundY(z, plaza) + r;
+  const reach = Math.min(r + 0.25, DEPTH - 0.02);
+  const i0 = Math.floor((-z - reach) / DEPTH - 0.5);
+  const i1 = Math.ceil(-z / DEPTH + 0.5);
+  for (let i = i0; i <= i1; i++) {
+    const ez = -(i + 0.5) * DEPTH;
+    const u = z - ez; // distance behind (downhill of) the edge
+    if (u <= 0 || u >= reach) continue;
+    const top = stepIndexAt(ez - 1e-4, plaza) * RISE;
+    const low = stepIndexAt(ez + 1e-4, plaza) * RISE;
+    if (top <= low) continue;
+    const k = u / reach;
+    const ease = k * k * (3 - 2 * k);
+    best = Math.max(best, top + r - (top - low) * ease);
+    if (u < r) best = Math.max(best, top + Math.sqrt(r * r - u * u) - 0.03);
+  }
+  return best;
+};
+
+// Rigid contact: the lowest a ball of radius r can sit without cutting into the stairs.
+// It touches either a tread or a step's front edge, whichever holds it highest.
+export const ballYRigid = (z: number, r: number, plaza = false) => {
   let best = groundY(z, plaza) + r;
   // Check the nearest step edges (front corners) inside the footprint.
   const i0 = Math.floor((-z - r) / DEPTH - 0.5);
@@ -36,6 +62,10 @@ export const ballY = (z: number, r: number, plaza = false) => {
   return best;
 };
 
+// Contact for body part `i` of a chain: the head (big enough to roll over an edge, and framed by the
+// cameras) keeps rigid contact; the smaller body segments use the soft lift.
+export const partY = (i: number, z: number, r: number, plaza = false) => (i === 0 ? ballYRigid(z, r, plaza) : ballY(z, r, plaza));
+
 // Lay a body on the stairs. Head at headZ; each segment is placed `gap` behind the previous one
 // (3D distance), resting on the steps. dir = +1 when the body trails toward +z (climbing up),
 // -1 when it trails toward -z (crawling down).
@@ -47,12 +77,12 @@ export const solveChain = (
   dir: 1 | -1,
   plaza = false,
 ): V3[] => {
-  const pts: V3[] = [[x, ballY(headZ, radii[0], plaza), headZ]];
+  const pts: V3[] = [[x, partY(0, headZ, radii[0], plaza), headZ]];
   for (let i = 1; i < radii.length; i++) {
     const [, py, pz] = pts[i - 1];
     const g = gaps[i - 1];
     const f = (z: number) => {
-      const y = ballY(z, radii[i], plaza);
+      const y = partY(i, z, radii[i], plaza);
       return Math.hypot(y - py, z - pz) - g;
     };
     let lo = pz;
@@ -65,7 +95,7 @@ export const solveChain = (
       else hi = mid;
     }
     const z = (lo + hi) / 2;
-    pts.push([x, ballY(z, radii[i], plaza), z]);
+    pts.push([x, partY(i, z, radii[i], plaza), z]);
   }
   return pts;
 };

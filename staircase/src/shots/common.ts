@@ -51,6 +51,13 @@ export const talk = (t: number, ranges: [number, number][], rest: Face['mouth'] 
   return rest;
 };
 
+// Crawl clocks that start and stop gently, so the body never jerks into or out of motion.
+// easeStart: 0 before x = 0, then accelerates over w to full speed (x - w/2 after).
+export const easeStart = (x: number, w = 0.35) => (x <= 0 ? 0 : x < w ? (x * x) / (2 * w) : x - w / 2);
+// softStop: follows t, then decelerates over [stop - w, stop + w] to rest exactly at `stop`.
+export const softStop = (t: number, stop: number, w = 0.3) =>
+  t <= stop - w ? t : t >= stop + w ? stop : stop - ((stop + w - t) * (stop + w - t)) / (4 * w);
+
 export const crawlZ = (z0: number, t: number, rate = RATE, stride = STRIDE) => z0 - crawlDistance(t * rate, stride);
 
 export type HeroOpts = {

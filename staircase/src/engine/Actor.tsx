@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import {butterflyTagTexture, Face, faceTexture, leatherTexture, mix, skinTexture, toTexture} from '../scene/paint';
 import {toon} from '../scene/toon';
-import {ballY, DEPTH, flatChain, groundY, noise1, RISE, solveChain, V3, waveLift} from './stairs';
+import {DEPTH, flatChain, groundY, noise1, partY, RISE, solveChain, V3, waveLift} from './stairs';
 
 export type Palette = {base: string; light: string; dark: string; spot: string; feet: string};
 
@@ -22,7 +22,7 @@ export const PALETTES: Record<string, Palette> = {
 };
 
 const blendPalette = (a: Palette, b: Palette, t: number): Palette => {
-  const q = Math.round(t * 4) / 4; // quantised so textures cache well
+  const q = Math.round(t * 32) / 32; // quantised finely: textures still cache, colour changes without visible steps
   if (q <= 0) return a;
   if (q >= 1) return b;
   const k = Object.keys(a) as (keyof Palette)[];
@@ -54,7 +54,7 @@ const lru = <T,>(limit: number, dispose: (v: T) => void) => {
     return v;
   };
 };
-const faceCache = lru<THREE.Texture>(28, (t) => t.dispose());
+const faceCache = lru<THREE.Texture>(64, (t) => t.dispose());
 const skinCache = lru<THREE.MeshToonMaterial>(24, (m) => {
   m.map?.dispose();
   m.dispose();
@@ -70,17 +70,21 @@ const flat = (color: string) => {
 };
 
 const qz = (v: number, step = 0.1) => Math.round(v / step) * step;
+// Face texture steps: fine enough that eye, lid and brow moves glide instead of jumping.
+const LOOK_Q = 0.02;
+const LID_Q = 0.04;
+const BROW_Q = 0.04;
 const faceKey = (p: Palette, f: Face) =>
-  [p.base, qz(f.look[0]), qz(f.look[1]), qz(f.lid), qz(f.brow, 0.2), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0, qz(f.lidTilt ?? 99), qz(f.blush ?? 9), qz(f.smile ?? 1)].join('|');
+  [p.base, qz(f.look[0], LOOK_Q), qz(f.look[1], LOOK_Q), qz(f.lid, LID_Q), qz(f.brow, BROW_Q), f.mouth, f.sweat ? 1 : 0, f.squeeze ? 1 : 0, f.catchColor ?? '', f.elder ? 1 : 0, qz(f.lidTilt ?? 99), qz(f.blush ?? 9), qz(f.smile ?? 1)].join('|');
 
 const getFace = (p: Palette, f: Face) =>
   faceCache(faceKey(p, f), () =>
     toTexture(
       faceTexture(p.base, p.light, p.dark, {
         ...f,
-        look: [qz(f.look[0]), qz(f.look[1])],
-        lid: qz(f.lid),
-        brow: qz(f.brow, 0.2),
+        look: [qz(f.look[0], LOOK_Q), qz(f.look[1], LOOK_Q)],
+        lid: qz(f.lid, LID_Q),
+        brow: qz(f.brow, BROW_Q),
       }),
     ),
   );
@@ -203,7 +207,7 @@ export const layBody = (spec: ActorSpec): V3[] => {
     pts = out.map((v) => [v.x, v.y, v.z] as V3);
   }
   // Contact: nothing may sit lower than resting on the steps.
-  if (b.mode === 'stairs') pts = pts.map((q, i) => [q[0], Math.max(q[1], ballY(q[2], radii[i], b.plaza)), q[2]] as V3);
+  if (b.mode === 'stairs') pts = pts.map((q, i) => [q[0], Math.max(q[1], partY(i, q[2], radii[i], b.plaza)), q[2]] as V3);
   return pts;
 };
 
@@ -225,11 +229,15 @@ const softGround = (z: number, plaza?: boolean) => {
     const ze = -(k + 0.5) * DEPTH; // edge up to step k+1
     if (z >= ze && z < ze + W) {
       const top = groundY(ze - 1e-4, plaza);
-      g = Math.max(g, top - RISE * ((z - ze) / W));
+      const k = (z - ze) / W;
+      g = Math.max(g, top - RISE * k * k * (3 - 2 * k));
     }
   }
   return g;
 };
+
+// max(x, 0) with the corner rounded off, so a lift eases in instead of starting with a jerk.
+const softPos = (x: number, k = 0.03) => (x <= -k ? 0 : x >= k ? x : ((x + k) * (x + k)) / (4 * k));
 
 // Pose of a carried suitcase: hangs from the hand, lifted just enough to clear the steps.
 export const carryPose = (spec: ActorSpec, pts: V3[], radii: number[], swing: number) => {
@@ -243,7 +251,7 @@ export const carryPose = (spec: ActorSpec, pts: V3[], radii: number[], swing: nu
     for (const sx of [-1, 1])
       for (let sz = -1; sz <= 1; sz += 0.25) {
         const v = new THREE.Vector3(sx * 0.1, -0.27 - 0.18, sz * 0.25).applyQuaternion(q).add(hp.hand);
-        lift = Math.max(lift, softGround(v.z, plaza) + 0.015 - v.y);
+        lift = Math.max(lift, softPos(softGround(v.z, plaza) + 0.015 - v.y));
       }
   }
   const hand = hp.hand.clone().add(new THREE.Vector3(0, lift, 0));

@@ -237,16 +237,18 @@ export const ACT5: Shot[] = [
         lerp(hand[2], pivotDown[2], easeInOut(range(lower, 0, 0.45))),
       ];
       const placed = t > 0.15;
+      // Eyes and head come up off the case gradually once it is down.
+      const lookUp = smooth(range(t, 0.75, 1.3));
       const s = old({
         t,
         rear: SIT * sit,
         breathe: -0.5 * smooth(range(t, 1.5, 2.1)),
         suitcase: placed ? {mode: 'placed', pos: [handNow[0], handNow[1] - 0.45, handNow[2]], yaw: 0, tag: true} : undefined,
-        face: {look: [0.2, lower < 1 ? 0.5 : -0.1], lid: 0.4 + 0.25 * smooth(range(t, 1.5, 2.1)), lidTilt: 0.7, brow: -0.5, mouth: t > 1.4 && t < 2.0 ? 'tired' : 'frown'},
+        face: {look: [0.2, lerp(0.5, -0.1, lookUp)], lid: 0.4 + 0.25 * smooth(range(t, 1.5, 2.1)), lidTilt: 0.7, brow: -0.5, mouth: t > 1.4 && t < 2.0 ? 'tired' : 'frown'},
       });
       if (placed && lower < 0.98) s.armTo = [handNow[0], handNow[1] - 0.02, handNow[2]];
       const h = headOf(s);
-      s.lookAt = lower < 1 ? [handNow[0], handNow[1] - 0.3, handNow[2]] : [h[0] + 0.3, h[1] + 0.2, h[2] - 2];
+      s.lookAt = lerp3([handNow[0], handNow[1] - 0.3, handNow[2]], [h[0] + 0.3, h[1] + 0.2, h[2] - 2], lookUp);
       return [s];
     },
     shadowCenter: () => [HX, yOf(S), HZ],
