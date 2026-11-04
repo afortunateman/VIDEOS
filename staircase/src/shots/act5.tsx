@@ -610,4 +610,17 @@ export const INSERT_WIDE: Shot = {
   actors: (t) => S32.actors!(t + S32_T, S32_T),
 };
 
+// Insert (not in the film's timeline): shot 39 carried on for 2 more seconds. Same locked-off camera,
+// light and shadow setup, so the shadows on the steps stay exactly as they are; clouds and climbers carry on.
+const S39 = ACT5.find((x) => x.n === 39)!;
+const S39_T = S39.end - S39.start;
+export const INSERT_STAIRS: Shot = {
+  ...S39,
+  n: 39.5,
+  start: S39.end,
+  end: S39.end + 2,
+  worldT: (t) => S39.worldT!(t + S39_T, S39_T),
+  actors: (t) => S39.actors!(t + S39_T, S39_T),
+};
+
 export const _keep = {gapsFor, crawlDistance, Cam: null as unknown as Cam, rngLike};
