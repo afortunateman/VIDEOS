@@ -318,3 +318,31 @@ export const ACT3: Shot[] = [
     post: () => ({focusRange: 0.4}),
   },
 ];
+
+// Insert (not in the film's timeline): "...but he kept climbing", seen from straight above. Same overcast
+// light and the same tired, older body as shots 22-24; he hauls himself up the steps, slow and steady.
+const TOP_Z0 = zOf(43);
+const topHeadZ = (t: number) => TOP_Z0 - crawlDistance(t * 0.8, 0.36);
+export const INSERT_TOP: Shot = {
+  n: 24.5,
+  start: 51.7,
+  end: 53.7,
+  look: look('overcast'),
+  cloudSeaY: yOf(43) - 12,
+  cam: (t) => {
+    // Glides up the stair slope a little slower than he climbs, so he moves up through the frame.
+    const z = lerp(TOP_Z0 + 0.95, TOP_Z0 + 0.65, t / 2);
+    const y = (-z / 0.62) * 0.34;
+    return {pos: [HX + 0.15, y + 5.2, z], target: [HX, y, z - 0.05], fov: 38, up: [0, 0, -1]};
+  },
+  focus: (t) => headOf(old({t, headZ: topHeadZ(t)})),
+  actors: (t) => [
+    old({
+      t,
+      headZ: topHeadZ(t),
+      cycles: t * 0.8,
+      face: {look: [0, -0.2], lid: 0.45, brow: 0.7, mouth: 'grit', sweat: true},
+    }),
+  ],
+  shadowCenter: () => [HX, yOf(43), TOP_Z0 - 0.3],
+};

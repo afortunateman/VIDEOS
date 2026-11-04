@@ -1,13 +1,17 @@
 import {ThreeCanvas} from '@remotion/three';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Shot} from './engine/director';
 import {Scene} from './Film';
 import {INSERT_DETERMINED} from './shots/act2';
+import {INSERT_TOP} from './shots/act3';
 
-// A stand-alone 3 s insert shot, rendered on its own (the film's timeline is unchanged).
-export const Insert: React.FC = () => {
+// Stand-alone insert shots, rendered on their own (the film's timeline is unchanged).
+export const INSERTS: Record<string, Shot> = {determined: INSERT_DETERMINED, top: INSERT_TOP};
+
+export const Insert: React.FC<{which: string}> = ({which}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
-  const shot = INSERT_DETERMINED;
+  const shot = INSERTS[which];
   const t = frame / fps;
   return (
     <AbsoluteFill style={{backgroundColor: '#000'}}>
