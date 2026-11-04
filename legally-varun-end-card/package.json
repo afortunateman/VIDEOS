@@ -1,0 +1,16 @@
+{
+  "name": "legally-varun-end-card",
+  "version": "1.0.0",
+  "description": "Legally Varun 3s cartoon 3D end card (Three.js)",
+  "main": "render.js",
+  "scripts": {
+    "render": "node render.js build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "polygon-clipping": "^0.15.7",
+    "three": "^0.170.0"
+  }
+}

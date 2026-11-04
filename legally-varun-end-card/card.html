@@ -1,0 +1,351 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script src="node_modules/polygon-clipping/dist/polygon-clipping.umd.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "./node_modules/three/build/three.module.js",
+  "three/addons/": "./node_modules/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="out" width="1080" height="1920"></canvas>
+<script type="module">
+// Legally Varun — 3s cartoon end card (Three.js). Deterministic: renderFrame(f).
+import * as THREE from 'three';
+import { TTFLoader } from 'three/addons/loaders/TTFLoader.js';
+import { Font } from 'three/addons/loaders/FontLoader.js';
+
+const W = 1080, H = 1920, FPS = 60, DUR = 3.0, SUB = 4, SHUTTER = 0.5, SS = 1.5;
+const COL = {
+  bgDark: 0xd9480f, bg: 0xff6a13, ray: 0xff8a2b, halo: 0xffa142,
+  yellow: 0xffd23f, amber: 0xf59e0b, white: 0xffffff, cream: 0xfff6e8,
+  burnt: 0xc2410c, ink: 0x2a1205
+};
+
+// ---------- math helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOutCubic = t => 1 - Math.pow(1 - t, 3);
+const eOutQuint = t => 1 - Math.pow(1 - t, 5);
+const eOutBack = (t, s = 1.9) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
+const eInQuad = t => t * t;
+const spring = (t, k = 7, w = 16) => t <= 0 ? 0 : 1 - Math.exp(-k * t) * Math.cos(w * t);
+const wobble = (t, k = 6, w = 20) => t <= 0 ? 0 : Math.exp(-k * t) * Math.sin(w * t);
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ---------- renderer ----------
+const glCanvas = document.createElement('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(SS);
+renderer.setSize(W, H, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const out = document.getElementById('out').getContext('2d');
+out.imageSmoothingQuality = 'high';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(COL.bgDark);
+// 1 world unit = 100px on the z=0 plane
+const FOV = 30, CAM_Z = 9.6 / Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+const camera = new THREE.PerspectiveCamera(FOV, W / H, 1, 200);
+camera.position.set(0, 0, CAM_Z);
+
+scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 2.4);
+sun.position.set(-4, 7, 10); scene.add(sun);
+
+// 3-band toon ramp
+const ramp = new THREE.DataTexture(new Uint8Array([120, 120, 120, 255, 200, 200, 200, 255, 255, 255, 255, 255]), 3, 1);
+ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+const toon = c => new THREE.MeshToonMaterial({ color: c, gradientMap: ramp });
+const flat = (c, extra = {}) => new THREE.MeshBasicMaterial({ color: c, ...extra });
+const inkHull = flat(COL.ink, { side: THREE.BackSide });
+const INK = flat(COL.ink);
+
+// ---------- background: iris + sunburst + halo ----------
+const bgGroup = new THREE.Group(); bgGroup.position.z = -14; scene.add(bgGroup);
+const iris = new THREE.Mesh(new THREE.CircleGeometry(1, 96), flat(COL.bg)); bgGroup.add(iris);
+const rays = (() => {
+  const g = new THREE.Group(), N = 22, R = 40;
+  for (let i = 0; i < N; i++) {
+    const a0 = (i / N) * Math.PI * 2, a1 = a0 + Math.PI / N;
+    const s = new THREE.Shape();
+    s.moveTo(0, 0); s.lineTo(Math.cos(a0) * R, Math.sin(a0) * R); s.lineTo(Math.cos(a1) * R, Math.sin(a1) * R); s.closePath();
+    g.add(new THREE.Mesh(new THREE.ShapeGeometry(s), flat(COL.ray)));
+  }
+  g.position.z = 0.01; return g;
+})();
+bgGroup.add(rays);
+const halo = new THREE.Mesh(new THREE.CircleGeometry(1, 96), flat(COL.halo)); halo.position.z = 0.02; bgGroup.add(halo);
+
+// ---------- content root ----------
+const root = new THREE.Group(); scene.add(root);
+const BADGE_Y = 2.6, BS = 0.86;   // badge centre + overall badge scale
+
+// photo badge (a chunky coin)
+const badgeAnchor = new THREE.Group(); root.add(badgeAnchor);   // position / squash
+const badge = new THREE.Group(); badgeAnchor.add(badge);         // spin
+const cyl = (r, h, m) => { const g = new THREE.CylinderGeometry(r, r, h, 128); g.rotateX(Math.PI / 2); return new THREE.Mesh(g, m); };
+badge.add(cyl(3.86, 0.62, toon(COL.yellow)));
+badge.add(cyl(3.42, 0.82, toon(COL.white)));
+badge.add(cyl(4.0, 0.96, inkHull));                                 // outline (inverted hull)
+const ringAt = (r0, r1, z, m) => { const g = new THREE.Mesh(new THREE.RingGeometry(r0, r1, 128), m); g.position.z = z; return g; };
+badge.add(ringAt(3.42, 3.53, 0.312, INK)); badge.add(ringAt(3.42, 3.53, -0.312, INK).rotateY(Math.PI));
+badge.add(ringAt(2.98, 3.1, 0.412, INK)); badge.add(ringAt(2.98, 3.1, -0.412, INK).rotateY(Math.PI));
+const photoMat = new THREE.MeshBasicMaterial({ toneMapped: false });
+const photoFront = new THREE.Mesh(new THREE.CircleGeometry(3.0, 128), photoMat); photoFront.position.z = 0.413; badge.add(photoFront);
+const photoBack = new THREE.Mesh(new THREE.CircleGeometry(3.0, 128), photoMat); photoBack.position.z = -0.413; photoBack.rotation.y = Math.PI; badge.add(photoBack);
+
+// solid line rings around the badge (don't spin with the coin)
+const ringsGroup = new THREE.Group(); root.add(ringsGroup);
+const whiteRing = new THREE.Mesh(new THREE.BufferGeometry(), flat(COL.white)); ringsGroup.add(whiteRing);
+const dashGroup = new THREE.Group(); ringsGroup.add(dashGroup);
+for (let i = 0; i < 4; i++) {
+  const m = new THREE.Mesh(new THREE.RingGeometry(5.0, 5.28, 64, 1, (i / 4) * Math.PI * 2, Math.PI * 0.32), flat(COL.yellow));
+  dashGroup.add(m);
+}
+const dotGroup = new THREE.Group(); ringsGroup.add(dotGroup);
+for (let i = 0; i < 4; i++) {
+  const d = new THREE.Mesh(new THREE.CircleGeometry(0.17, 32), flat(COL.white));
+  const a = (i / 4) * Math.PI * 2 + Math.PI * 0.41;
+  d.position.set(Math.cos(a) * 5.14, Math.sin(a) * 5.14, 0); dotGroup.add(d);
+}
+
+// cartoon impact lines when the coin lands
+const impact = [];
+for (let i = 0; i < 14; i++) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), flat(i % 2 ? COL.yellow : COL.white));
+  m.userData.a = (i / 14) * Math.PI * 2 + 0.11; m.userData.w = i % 2 ? 0.2 : 0.28;
+  root.add(m); impact.push(m);
+}
+
+// confetti burst (3D tumbling)
+const rnd = rng(11);
+const confetti = [];
+for (let i = 0; i < 46; i++) {
+  const sq = rnd() < 0.35;
+  const geo = sq ? new THREE.CircleGeometry(0.13, 16) : new THREE.PlaneGeometry(0.16, 0.42);
+  const m = new THREE.Mesh(geo, flat([COL.yellow, COL.white, COL.yellow, COL.burnt][i % 4], { side: THREE.DoubleSide }));
+  const a = rnd() * Math.PI * 2, sp = 7 + rnd() * 11;
+  m.userData = { vx: Math.cos(a) * sp, vy: Math.sin(a) * sp + 5, vz: (rnd() - 0.5) * 6, d: rnd() * 0.06,
+    ax: new THREE.Vector3(rnd() - .5, rnd() - .5, rnd() - .5).normalize(), spin: 8 + rnd() * 14 };
+  m.visible = false; root.add(m); confetti.push(m);
+}
+
+// 3D stars + sparkles
+function starShape(points, rO, rI) {
+  const s = new THREE.Shape();
+  for (let i = 0; i < points * 2; i++) {
+    const r = i % 2 ? rI : rO, a = Math.PI / 2 + (i / (points * 2)) * Math.PI * 2;
+    i ? s.lineTo(Math.cos(a) * r, Math.sin(a) * r) : s.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+  }
+  return s;
+}
+const stars = [
+  { p: [-3.75, 6.25], s: 0.85, c: COL.yellow, t: 1.15 },
+  { p: [3.85, 6.05], s: 0.55, c: COL.white, t: 1.25 },
+  { p: [4.05, -1.0], s: 0.7, c: COL.yellow, t: 1.35 },
+].map(o => {
+  const shape = starShape(5, 1, 0.5);
+  const face = new THREE.ExtrudeGeometry(shape, { depth: 0.35, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.08, bevelSegments: 2 });
+  face.translate(0, 0, -0.175);
+  const back = new THREE.ExtrudeGeometry(shape, { depth: 0.35, bevelEnabled: true, bevelThickness: 0.2, bevelSize: 0.2, bevelSegments: 2 });
+  back.translate(0, 0, -0.175);
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(face, toon(o.c))); g.add(new THREE.Mesh(back, inkHull));
+  g.position.set(o.p[0], o.p[1], 0.5); root.add(g); return { g, ...o };
+});
+const sparkles = [[-3.7, -0.7, 0.5, 1.4], [2.9, 7.3, 0.4, 1.55], [-4.6, 2.7, 0.36, 1.65], [4.6, 2.3, 0.32, 1.5]].map(([x, y, s, t]) => {
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(starShape(4, 1, 0.22)), flat(COL.white));
+  m.position.set(x, y, 0.3); root.add(m); return { m, s, t };
+});
+
+// ---------- text ----------
+const textGroup = new THREE.Group(); root.add(textGroup);
+// Glyphs in this font are built from overlapping pieces; union them into one clean outline
+// so extrusion doesn't leave seams inside the letters.
+function glyphShapes(font, ch, size) {
+  const ring = pts => { const r = pts.map(p => [p.x, p.y]); r.push(r[0]); return r; };
+  const polys = font.generateShapes(ch, size).map(sh => [ring(sh.getPoints(12)), ...sh.holes.map(h => ring(h.getPoints(12)))]);
+  const merged = polys.length > 1 ? polygonClipping.union(...polys.map(p => [p])) : [polys[0]];
+  return merged.map(([outer, ...holes]) => {
+    const s = new THREE.Shape(outer.slice(0, -1).map(([x, y]) => new THREE.Vector2(x, y)));
+    holes.forEach(h => s.holes.push(new THREE.Path(h.slice(0, -1).map(([x, y]) => new THREE.Vector2(x, y)))));
+    return s;
+  });
+}
+function buildWord(font, str, { size, depth, faceCol, sideCol, y, track, stroke, tilt }) {
+  const res = font.data.resolution, letters = [];
+  let pen = 0;
+  for (const ch of str) {
+    const shapes = glyphShapes(font, ch, size);
+    const face = new THREE.ExtrudeGeometry(shapes, { depth, bevelEnabled: false });
+    face.computeBoundingBox();
+    const bb = face.boundingBox, cx = (bb.min.x + bb.max.x) / 2;
+    face.translate(-cx, 0, -depth / 2);
+    const back = new THREE.ExtrudeGeometry(shapes, { depth, bevelEnabled: true, bevelThickness: stroke, bevelSize: stroke, bevelSegments: 3 });
+    back.translate(-cx, 0, -depth / 2);
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(face, [toon(faceCol), toon(sideCol)]));
+    g.add(new THREE.Mesh(back, inkHull));
+    const pivot = new THREE.Group(); pivot.add(g);
+    letters.push({ pivot, g, x: pen + cx });
+    pen += font.data.glyphs[ch].ha * size / res + track;
+  }
+  const width = pen - track;
+  letters.forEach((l, i) => {
+    l.baseX = l.x - width / 2; l.pivot.position.set(l.baseX, y, 0);
+    l.rz = (i % 2 ? -1 : 1) * tilt;                      // playful alternating tilt
+    textGroup.add(l.pivot);
+  });
+  return letters;
+}
+
+// ---------- animation ----------
+const tmpV = new THREE.Vector3();
+function whiteRingGeo(p) {
+  whiteRing.geometry.dispose();
+  whiteRing.geometry = new THREE.RingGeometry(4.36, 4.62, 128, 1, Math.PI / 2, Math.max(0.0001, p * Math.PI * 2));
+}
+
+let LEGALLY = [], VARUN = [];
+function update(t) {
+  // background iris + rays + halo
+  iris.scale.setScalar(lerp(0.01, 40, eOutCubic(prog(t, 0.0, 0.42))));
+  const rp = eOutBack(prog(t, 0.12, 0.7), 1.2);
+  rays.scale.setScalar(Math.max(0.001, rp)); rays.rotation.z = t * 0.22;
+  const hp = spring(t - 0.3, 7, 13);
+  bgGroup.position.y = BADGE_Y * 1.39;  // keep halo centred behind badge (parallax-corrected)
+  halo.scale.setScalar(Math.max(0.001, 7.8 * hp));
+  rays.position.y = 0;
+
+  // root: gentle 3D sway so depth reads
+  root.rotation.y = 0.11 * Math.sin(t * 1.9 + 0.4) * eOutCubic(prog(t, 0.6, 1.6));
+  root.rotation.x = 0.04 * Math.sin(t * 1.3);
+
+  // coin: flies up spinning, lands with squash & stretch
+  const tl = 0.5;                                   // landing time
+  const fp = prog(t, 0.0, tl);
+  const yFly = lerp(-12, BADGE_Y, eOutCubic(fp));
+  const bob = 0.08 * Math.sin((t - tl) * 4.0) * prog(t, tl + 0.3, tl + 0.8);
+  badgeAnchor.position.set(0, (t < tl ? yFly : BADGE_Y) + bob, 0.2);
+  badge.rotation.y = -Math.PI * 4 * (1 - eOutCubic(fp)) + 0.12 * wobble(t - tl, 4, 9);
+  badge.rotation.z = -0.5 * (1 - eOutCubic(fp)) + 0.05 * wobble(t - tl, 5, 11);
+  let sx = 1, sy = 1;
+  if (t < tl) { const s = lerp(0.2, 1, eOutCubic(fp)); sx = s * 0.9; sy = s * 1.12; }
+  else { const w = wobble(t - tl, 7, 19); sx = 1 + 0.16 * w; sy = 1 - 0.16 * w; }
+  badgeAnchor.scale.set(sx * BS, sy * BS, BS);
+
+  // line rings
+  ringsGroup.position.set(0, BADGE_Y + bob, 0); ringsGroup.scale.setScalar(BS);
+  const wp = eOutQuint(prog(t, 0.42, 1.05));
+  whiteRing.visible = wp > 0; if (wp > 0) whiteRingGeo(wp);
+  whiteRing.rotation.z = -t * 0.5;
+  const dp = spring(t - 0.62, 7, 15);
+  dashGroup.scale.setScalar(Math.max(0.001, dp)); dashGroup.rotation.z = t * 0.9;
+  dotGroup.scale.copy(dashGroup.scale); dotGroup.rotation.z = t * 0.9;
+
+  // impact lines: travel outward and vanish
+  for (const m of impact) {
+    const p = prog(t, tl, tl + 0.42);
+    m.visible = p > 0 && p < 1;
+    if (!m.visible) continue;
+    const r1 = BS * lerp(4.2, 6.6, eOutCubic(p)), r0 = BS * lerp(4.2, 6.6, eOutCubic(clamp(p * 1.6 - 0.35)));
+    const a = m.userData.a, len = Math.max(0.01, r1 - r0), rm = (r0 + r1) / 2;
+    m.position.set(Math.cos(a) * rm, BADGE_Y + Math.sin(a) * rm, 0.6);
+    m.rotation.z = a; m.scale.set(len, m.userData.w, 1);
+  }
+
+  // confetti
+  for (const c of confetti) {
+    const u = c.userData, tau = t - tl + 0.04 - u.d;
+    c.visible = tau > 0; if (!c.visible) continue;
+    const k = 1.6, f = (1 - Math.exp(-k * tau)) / k;
+    c.position.set(u.vx * f, BADGE_Y + u.vy * f - 7 * tau * tau, -1.2 + u.vz * f * 0.3);  // bursts out from behind the coin
+    c.setRotationFromAxisAngle(u.ax, u.spin * tau);
+    const s = clamp(1.4 - tau * 0.45); c.scale.setScalar(Math.max(0.001, s));
+  }
+
+  // stars pop + spin, then idle
+  for (const s of stars) {
+    const sp = spring(t - s.t, 7, 15);
+    s.g.scale.setScalar(Math.max(0.001, s.s * sp));
+    s.g.rotation.y = (1 - eOutCubic(prog(t, s.t, s.t + 0.7))) * Math.PI * 2 + 0.35 * Math.sin(t * 2.2 + s.p[0]);
+    s.g.rotation.z = 0.15 * Math.sin(t * 1.7 + s.p[1]);
+    s.g.position.y = s.p[1] + 0.1 * Math.sin(t * 3 + s.p[0]);
+  }
+  for (const s of sparkles) {
+    const a = spring(t - s.t, 8, 18), tw = 0.75 + 0.25 * Math.sin(t * 9 + s.m.position.x);
+    s.m.scale.setScalar(Math.max(0.001, s.s * a * tw)); s.m.rotation.z = t * 1.5;
+  }
+
+  // "LEGALLY": letters flip in one after another
+  LEGALLY.forEach((l, i) => {
+    const st = 0.62 + i * 0.05, s = spring(t - st, 7, 16);
+    l.pivot.scale.setScalar(Math.max(0.001, s));
+    l.g.rotation.y = (1 - eOutCubic(prog(t, st, st + 0.5))) * -Math.PI * 1.0;
+    l.pivot.rotation.z = l.rz;
+    l.pivot.position.y = l.y0 + 0.07 * Math.sin(t * 5 - i * 0.7) * prog(t, 1.6, 2.0);
+  });
+
+  // "VARUN": letters drop from the sky, squash on landing, bounce
+  VARUN.forEach((l, i) => {
+    const st = 0.95 + i * 0.075, fall = 0.26;
+    const p = prog(t, st, st + fall);
+    let y = l.y0, sx = 1, sy = 1;
+    if (t < st) { l.pivot.visible = false; return; }
+    l.pivot.visible = true;
+    if (p < 1) { y = lerp(l.y0 + 9, l.y0, eInQuad(p)); sx = 0.82; sy = 1.25; }
+    else {
+      const w = wobble(t - st - fall, 6.5, 21);
+      sx = 1 + 0.3 * w; sy = 1 - 0.3 * w;
+      y = l.y0 + Math.max(0, 0.55 * Math.sin((t - st - fall) * 11)) * Math.exp(-(t - st - fall) * 9);
+      y += 0.07 * Math.sin(t * 5 - i * 0.7 + 2) * prog(t, 1.9, 2.3);
+    }
+    l.pivot.position.y = y; l.pivot.scale.set(sx, sy, 1);
+    l.pivot.rotation.z = l.rz * clamp((t - st) * 3);
+  });
+
+  // tiny camera kick when the coin lands
+  const kick = wobble(t - tl, 9, 30) * 0.12;
+  camera.position.set(0, kick, CAM_Z);
+  camera.lookAt(0, kick * 0.5, 0);
+}
+
+window.renderFrame = function (f) {
+  for (let k = 0; k < SUB; k++) {
+    const t = Math.max(0, (f + (k / SUB - 0.5) * SHUTTER) / FPS);
+    update(t);
+    renderer.render(scene, camera);
+    out.globalAlpha = 1 / (k + 1);
+    out.drawImage(glCanvas, 0, 0, W, H);
+  }
+  out.globalAlpha = 1;
+  return document.getElementById('out').toDataURL('image/png');
+};
+
+window.ready = (async () => {
+  const img = new Image(); img.src = 'photo.jpg'; await img.decode();
+  // crop a square around the face, punch up colour a touch for the cartoon look
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  const cx = c.getContext('2d'); cx.filter = 'saturate(1.18) contrast(1.06) brightness(1.03)';
+  cx.drawImage(img, 512 - 430, 600 - 430, 860, 860, 0, 0, 1024, 1024);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  photoMat.map = tex; photoMat.needsUpdate = true;
+
+  const json = await new Promise((res, rej) => new TTFLoader().load('fonts/LuckiestGuy.ttf', res, undefined, rej));
+  const font = new Font(json);
+  LEGALLY = buildWord(font, 'LEGALLY', { size: 1.05, depth: 0.45, faceCol: COL.yellow, sideCol: COL.burnt, y: -3.35, track: 0.03, stroke: 0.1, tilt: 0.04 });
+  VARUN = buildWord(font, 'VARUN', { size: 1.72, depth: 0.65, faceCol: COL.white, sideCol: COL.amber, y: -5.75, track: 0.04, stroke: 0.13, tilt: 0.05 });
+  [...LEGALLY, ...VARUN].forEach(l => l.y0 = l.pivot.position.y);
+  textGroup.rotation.z = 0.035;
+  return true;
+})();
+window.TOTAL = Math.round(FPS * DUR);
+</script>
+</body>
+</html>
