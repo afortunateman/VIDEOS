@@ -15,7 +15,7 @@ An original score (161.5 s) for the film, timed to the narrator's actual phrasin
 **The Climb motif:** four rising steps, A–D–E–F. Its shape follows the story:
 
 - **A–D–E… (stops):** a question. It plays at "what was at the top", "What's at the top?", "There were no wings", and the last notes of the film.
-- **A–D–E–F♯ (major):** the promise, glimpsed only in the wonder and at the sun.
+- **A–D–E–F♯ (major):** the full theme, heard only at the sun.
 - **F–E–D–A (falling):** the scream.
 - **Summit:** the melody climbs to F♯6 and lands exactly on "And that was enough."
 
