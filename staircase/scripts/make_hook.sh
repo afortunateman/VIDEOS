@@ -17,10 +17,13 @@ REV=5.3667   # title reveal (TitleCard HIT = 1.6 s in)
 TOT=11.9667  # 113 + 246 frames
 A0=115.143   # score time whose 1:57.3 hit lands on the cut to the staircase (2.167 s)
 B0=$(awk "BEGIN{print 128.43-$REV}")  # score time whose 2:08.4 downbeat lands on the title reveal
-XF=2.95      # crossfade into the build. Both sides sit on D/A there (2:00 tail -> 2:06 build), so it flows on
+# The build's piano enters at 2:05.71, which lands 2.65 s in. Bring the build in just before that note so the
+# piano starts whole, and let the hit's tail ring on under it and dissolve (both sit on D, so they blend).
+XF=2.50      # build fades in (0.12 s), just before the piano's first note
+AOUT=2.65    # the hit's tail starts dissolving as the piano enters (1.4 s)
 # a steady crescendo under the spiral: from the symbol's start up to the reveal (+5 dB), easing back after the hit
 CA=$(awk "BEGIN{print $TS-$XF}"); CB=$(awk "BEGIN{print $REV-$XF}")
-CRESC="if(lt(t,$CA),0.8,if(lt(t,$CB),0.8+0.55*(t-$CA)/($CB-$CA),1.35-0.35*min(1,(t-$CB)/0.6)))"
+CRESC="if(lt(t,$CA),1.0,if(lt(t,$CB),1.0+0.35*(t-$CA)/($CB-$CA),1.35-0.35*min(1,(t-$CB)/0.6)))"
 ms(){ awk "BEGIN{printf \"%d\", ($1)*1000+0.5}"; }
 
 # ---- sound effects ----
@@ -38,9 +41,9 @@ ffmpeg -v error -y -f lavfi -i "anoisesrc=d=0.62:c=pink:a=0.8:r=$SR" -af "bandpa
 # ---- mix: score swell + hit, its climax under the title, effects ----
 ffmpeg -v error -y -ss $A0 -t 7 -i "$SCORE" -ss $B0 -t $TOT -i "$SCORE" -i $T/boom.wav -i $T/riser.wav -i $T/whoosh.wav -i $T/impact.wav -i $T/shimmer.wav \
   -i $T/flutter.wav -i $T/flutter.wav -i $T/flutter.wav -i $T/flutter.wav -filter_complex "\
-[0]aresample=$SR,afade=t=in:st=0:d=0.12,afade=t=out:st=$XF:d=0.9:curve=qsin[a];\
+[0]aresample=$SR,afade=t=in:st=0:d=0.12,afade=t=out:st=$AOUT:d=1.4:curve=qsin[a];\
 [1]aresample=$SR,volume=0,atrim=0:$XF,asetpts=PTS-STARTPTS[bpre];\
-[1]aresample=$SR,atrim=$XF,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.9:curve=qsin,volume='$CRESC':eval=frame,afade=t=out:st=$(awk "BEGIN{print 10.0-$XF}"):d=$(awk "BEGIN{print $TOT-10.0}"):curve=qsin[bpost];\
+[1]aresample=$SR,atrim=$XF,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.12,volume='$CRESC':eval=frame,afade=t=out:st=$(awk "BEGIN{print 10.0-$XF}"):d=$(awk "BEGIN{print $TOT-10.0}"):curve=qsin[bpost];\
 [bpre][bpost]concat=n=2:v=0:a=1[b];\
 [2]adelay=$(ms 2.167)|$(ms 2.167),volume=0.9[s1];\
 [3]adelay=$(ms 3.3)|$(ms 3.3),volume=0.8[s2];\
