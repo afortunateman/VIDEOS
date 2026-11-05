@@ -139,7 +139,7 @@ export const TitleCard: React.FC = () => {
   return (
     <AbsoluteFill style={{backgroundColor: '#000'}}>
       <AbsoluteFill style={{opacity: fadeOut}}>
-        <AbsoluteFill style={{transform: `scale(${1.02 + 0.03 * blurIn})`}}>
+        <AbsoluteFill style={{transform: `scale(${1 + 0.05 * blurIn})`}}>
           <OffthreadVideo src={staticFile('title/bg.mp4')} muted style={{width: 1920, height: 1080, filter: `blur(${bgBlur}px) brightness(${bgBright}) saturate(${1 + 0.15 * blurIn})`}} />
         </AbsoluteFill>
         {/* Warm light behind the title, and soft rays. */}
@@ -228,7 +228,7 @@ export const TitleCard: React.FC = () => {
           }}
         />
         {/* Vignette. */}
-        <AbsoluteFill style={{background: 'radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)'}} />
+        <AbsoluteFill style={{opacity: blurIn, background: 'radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)'}} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
