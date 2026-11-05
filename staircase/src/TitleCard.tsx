@@ -6,9 +6,9 @@ import layout from '../public/title/layout.json';
 // 0.15-1.5 s the spiral (the wall carving, drawn in the title's style) draws itself, turning slowly
 // 1.25-1.6 s it spins up and dives into the butterfly's place
 // 1.6 s      the hit: a flare, and the title blooms in from blur, word by word; the lines draw outward
-// 1.6-5.2 s  hold: slow push-in, a light sweep, drifting motes, the butterfly flaps
-// 5.2-5.87 s fade out
-export const TITLE_FRAMES = 176;
+// 1.6-7.0 s  hold: slow push-in, a light sweep, drifting motes, the butterfly flaps
+// 7.0-8.2 s  slow fade out as the music tapers off
+export const TITLE_FRAMES = 246;
 export const HIT = 1.6; // seconds into the card: the score's 2:11.4 downbeat lands here
 
 const FILL = '#f6a25a';
@@ -48,6 +48,7 @@ const flap = (t: number) => {
     [HIT + 0.1, 3], // [start, wingbeats]
     [HIT + 1.6, 3],
     [HIT + 3.0, 2],
+    [HIT + 4.5, 3],
   ];
   const BEAT = 0.2; // seconds per wingbeat
   let deg = 8 + 5 * Math.sin(t * 2.2); // at rest: nearly open, breathing
@@ -100,7 +101,7 @@ export const TitleCard: React.FC = () => {
   const blurIn = ease(t, 0, 1.2);
   const bgBlur = 16 * blurIn + 6 * ease(t, HIT, HIT + 0.6);
   const bgBright = 1 - 0.45 * blurIn - 0.1 * ease(t, HIT, HIT + 0.8);
-  const fadeOut = 1 - ease(t, 5.2, 5.87, Easing.in(Easing.quad));
+  const fadeOut = 1 - ease(t, 7.0, 8.2, Easing.inOut(Easing.quad));
 
   // Spiral.
   const draw = ease(t, 0.15, 1.45, Easing.inOut(Easing.quad));
@@ -125,7 +126,7 @@ export const TitleCard: React.FC = () => {
     return {opacity: Math.min(1, u * 3), clipPath: side === 'L' ? `inset(0 0 0 ${(1 - u) * 100}%)` : `inset(0 ${(1 - u) * 100}% 0 0)`} as React.CSSProperties;
   };
   const titleOn = t >= HIT;
-  const push = 1 + 0.035 * ease(t, HIT, 5.87, Easing.out(Easing.quad));
+  const push = 1 + 0.045 * ease(t, HIT, 8.2, Easing.out(Easing.quad));
   const glow = 0.18 + 0.82 * Math.exp(-Math.max(0, t - HIT) * 1.8);
 
   // Butterfly pops in where the spiral lands, then flaps.
