@@ -623,4 +623,12 @@ export const INSERT_STAIRS: Shot = {
   actors: (t) => S39.actors!(t + S39_T, S39_T),
 };
 
+// Backdrop for the title card: shot 32's last framing held still (no further pull-back) while time runs on.
+export const INSERT_HOLD: Shot = {
+  ...INSERT_WIDE,
+  n: 32.6,
+  cam: still({pos: [120, yOf(S) + 75, HZ + 105], target: [0, yOf(S + 110), zOf(S + 110)], fov: 46}),
+  focus: () => [0, yOf(S + 110), zOf(S + 110)],
+};
+
 export const _keep = {gapsFor, crawlDistance, Cam: null as unknown as Cam, rngLike};
