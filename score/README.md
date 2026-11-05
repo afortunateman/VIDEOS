@@ -1,51 +1,74 @@
-# The Climb — original score
+# The Climb: original score (v2, ethereal)
 
-An original orchestral score (161.5 s) written to the picture and the existing voiceover.
-It plays as one continuous track in a single key, built from a single theme.
+An original score (161.5 s) for the film, timed to the narrator's actual phrasing. It has no drums, pulses or hits. It's built from slow strings, voices, celesta, harp, piano, glassy shimmer and a large, soft hall reverb. One theme runs through the whole piece.
 
 | File | What it is |
 |---|---|
-| `the_climb_scored.mp4` | The video with the score mixed under the original voiceover |
-| `the_climb_score.flac` | Music only, full level (the "soundtrack" version) |
-| `the_climb_score_film_stem.m4a` | Music only, exactly as mixed (ducked under the VO) — drop it in your editor |
-| `midi/*.mid` | One MIDI file per instrument, in seconds-accurate sync with the picture |
-| `compose.py` | The score itself; re-renders everything |
+| `the_climb_scored.mp4` | The video with the score under the original voiceover |
+| `the_climb_score.flac` | Music only, full level |
+| `the_climb_score_film_stem.m4a` | Music only, exactly as mixed (ducked under the VO), ready for an editor |
+| `midi/*.mid` | One MIDI file per instrument, timed in absolute seconds to the picture |
+| `compose.py` | The score; re-renders everything |
 
-## The signature
+## The theme
 
-- **The Climb motif:** four rising steps, scale degrees 5‑1‑2‑3 (A–D–E–F in D minor). Every section is built from it.
-- **Home key:** D minor, using the loop Dm–Bb–F–C.
-- **The lift:** Bb → C → D major, held back until the sun.
+**The Climb motif:** four rising steps, A–D–E–F. Its shape follows the story:
 
-## Cue sheet
+- **A–D–E… (stops):** a question. It plays at "what was at the top", "What's at the top?", "There were no wings", and the last notes of the film.
+- **A–D–E–F♯ (major):** the promise. It first completes when the voice from above calls, then echoes from every caterpillar at once.
+- **F–E–D–A (falling):** the scream.
+- **Summit:** the melody climbs to F♯6 and lands exactly on "And that was enough."
 
-| Time | Picture | Music |
+The home key is D. The film ends on an open Dsus2 chord: the question isn't answered.
+
+## Voiceover timing → music
+
+| Time (s) | Line | Music |
 |---|---|---|
-| 0:00 | Stairway into the sky | Low strings, D drone. The motif's first breath on piano |
-| 0:08 | Elders tell the story by the fire | Harp rocks under the story, and the motif repeats in F. Celesta sparkles as the glyph glows |
-| 0:15 | **Wonder:** his fascinated face (no VO) | Bbmaj7♯11, the "wonder chord". The motif in celesta and flute, rising and blooming |
-| 0:22 | **The climb begins** | Driving 16th-note string ostinato with 3+3+2 accents and a hybrid pulse. Horns state the motif, then sequence it up through Gm and A |
-| 0:32 | "Keep going / The top is worth it" | Full crescendo on the dominant (A). The music believes the wall |
-| 0:38.85 | Pan toward "You're almost there"… | A breath of silence |
-| 0:39 | **The skeleton** | Horror hit: tremolo clusters, low piano slam, trombones, a dissonant braam and a string screech |
-| 0:41 | Another climber passes | Uneasy D pedal pulse and Phrygian Eb shadows |
-| 0:52 | Determined face (VO gap) | Horns throw out the motif at forte. The ostinato then runs out of steam |
-| 0:55 | **Tired**, grey, sweating | Ostinato gone, slow heartbeat. Solo cello tries the motif and can't reach the top note |
-| 1:09 | **Crying** (red) | String lament: the motif **inverted** (F–E–D–A), peaking on the cry |
-| 1:15 | Night, the moon | An open fifth, neither major nor minor |
-| 1:18 | **The voice from above** | Choir and organ: Bb → F → G → **D major**. The motif completes in major on celesta (A–D–E–**F♯**) for the first time |
-| 1:24 | Others climbing together | Pizzicato and harp restart the pulse, now in D major |
-| 1:41 | The final ascent | Back to minor, then layers pile on every bar: taiko, choir, brass, a rising Shepard tone. The motif climbs the same staircase sequence as at 0:30 |
-| 1:57 | Chalk wings on the wall | A celesta glint of the motif |
-| 2:00.6 | **Hush:** close-up | A deceptive cadence (A → Bb). The motif rises through Bb, F, Gm and A on piano, under organ and choir |
-| 2:05.8 | **THE SUN** | Full tutti in D major. The main theme climbs in thirds: D6 over Bb, E6 over C, then **F♯6 over D**, the summit. Peaks in the 2:08–2:14 VO gap |
-| 2:16 | Sunset, night again | Strings and choir settle through Bm and G |
-| 2:27 | Everyone climbing toward the light | The wonder chord returns. Piano plays A–D–E… and finally **F♯** on D major, then a last high A as it fades to black |
+| 0.1 | "There was once a caterpillar who was climbing a staircase." | Strings fade in. The motif on piano |
+| 4.2 / 6.4 | "Nobody knew who had built it. / …what was at the top." | Bbmaj7, then celesta asks A–D–E… |
+| 8.7 | "But the older caterpillars told stories." | Warm F chord, harp |
+| 11.4 | "Climb high enough," they said, | Harp rises |
+| 14.1 | "and you'll become a butterfly." | The wonder chord (Bbmaj7♯11), glass bells, voices |
+| 15.9–22.4 | *(no VO: his fascinated face)* | Celesta and flute sing the theme; strings bloom |
+| 22.4 | "So he climbed." | The motif on piano; harp starts moving |
+| 23.8–31.4 | "…thousands of steps. Past caterpillars who had given up. Past the skeletons…" | Bb, then Gm, with a cold tremolo shiver at the skeletons |
+| 32.0 | "Some had left messages carved into the walls." | Ebmaj7, ghostly voices rising |
+| 35.1 / 36.3 / 37.8 | "Keep going. / The top is worth it. / You're almost there." | A glass bell on each message |
+| 39.0 | *(skeleton)* | Cold, slowly beating cluster; no resolution |
+| 40.8 | "One day, he came across a caterpillar descending the staircase." | Harp descends |
+| 44.7 | "What's at the top?" he asked. | Celesta: A–D–E… |
+| 46.8 | "Glory," the caterpillar replied. | A golden D major chord, bells and voices, which fades |
+| 49.3 / 50.5 / 51.4 | "Have you seen it?" / "No." / "But I've heard." | The glow drains to a bare fifth |
+| 52.6–55 | *(VO gap: his face)* | Soft horn: the motif |
+| 55.0–62.3 | "Years passed. His body grew tired. His legs weakened." | Slow descent through Dm, C and Bb; falling piano notes |
+| 62.3–64.4 | *(sigh)* | Solo cello tries the motif and can't reach the top |
+| 64.4 | "But he kept climbing because the thought… terrified him more than the staircase." | Gm, then a tense A7♭9 tremolo |
+| 69.2 / 71.5 | "One day, he couldn't take it anymore. He stopped climbing and screamed…" | Violin lament (the motif falling), swelling to the scream |
+| 75.1 | "Then, from somewhere above, a voice called out." | Hush; glass bells from above |
+| 78.2–82.2 | "You're almost there. Don't give up now. You've come so far!" | Choir and organ: Bb, F, G, D. The motif completes in major |
+| 82.7 | "But something was different this time." | Same chord with no third: uncertain |
+| 85.1 | "…every caterpillar was hearing the same voice." | The motif echoes from seven instruments at once |
+| 89.9 | "And every single one of them was almost there." | The echo turns minor (F♮) |
+| 94.0 | "He looked up at the endless staircase." | A faint, endlessly rising tone |
+| 96.6 / 99.0 | "Then he looked at his little suitcase. And finally, he sat down." | Tender piano, then a harp chord as he sits |
+| 101.2–107 | "For a while, he waited… But nothing did." | Near stillness: drone, shimmer, a few piano drops |
+| 107.3 | "The staircase carried on as it always had…" | A distant harp, still moving |
+| 114.8 | "There was no revelation or enlightenment." | Ebmaj7, halo pad |
+| 117.4 | "There were no wings." | Celesta: A–D–E… never finishes (chalk wings on screen) |
+| 119.4 | "And certainly, there was no glory." | Open fifth |
+| 120.9 | "But for the first time in his life, he wasn't miserable." | First real warmth: G(add9), then A |
+| 126.0 | "For the first time, he was just there." | **The sun:** D major; the theme begins |
+| 128.4–134.7 | *(VO gap: the sun)* | Strings, choir, horn, flute, harp. The melody climbs A5, B5, D6, E6 |
+| 134.7 | "And that was enough." | Lands on D major with the summit note F♯6 |
+| 136.1 / 138.5 | "He looked up at the staircase once more. And for the first time, he wondered…" | Bm7, single celesta note |
+| 140.9–147.6 | "What if the top was invented by caterpillars who couldn't bear the thought that climbing was all there was?" | Gmaj9, Em9, then the wonder chord returns |
+| 147.6–161.5 | *(end)* | Piano: A–D–E… and stops. Cadd9, then Dsus2, fading out unresolved |
 
-## Mix notes
+## Mix
 
-- **Voice detection:** the speech in the original track is found automatically. While someone speaks, the music is held about 14 dB under the voice, with a 2.5 dB mid-range dip (250 Hz–4 kHz). In the gaps it goes back to full level, with a 120 ms look-ahead so words are never covered.
-- **Fader rides** lift the wordless moments: wonder, tears, the voice from above and the finale.
-- **Sound:** rendered with the FluidR3 General MIDI soundfont plus synthesized layers (taiko, braams, risers, Shepard tone, sub, heartbeat) through one shared synthetic concert-hall reverb. For release quality, load `midi/` into a DAW with orchestral libraries (Spitfire, CSS, Berlin, etc.). Timings are absolute seconds, so it stays in sync at any tempo setting.
+- While the narrator speaks, the music stays about 13 dB under the voice, with a small dip in the speech frequencies. In the pauses it rises back to full level, with a 120 ms look-ahead.
+- Fader rides lift the wordless moments: the wonder, the horn, the sun and the ending.
+- The instruments are the FluidR3 General MIDI soundfont plus synthesized pads, shimmer and bells. For release quality, load `midi/` into a DAW with orchestral libraries.
 
 Re-render: `python3 score/compose.py path/to/video.mp4`. This needs `fluidsynth`, `fluid-soundfont-gm`, `ffmpeg`, and the Python packages `numpy scipy soundfile pretty_midi`.
