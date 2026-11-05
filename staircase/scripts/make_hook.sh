@@ -38,23 +38,29 @@ ffmpeg -v error -y -f lavfi -i "anoisesrc=d=0.45:c=pink:a=0.8:r=$SR" -af "bandpa
 ffmpeg -v error -y -f lavfi -i "anoisesrc=d=3.2:c=white:a=0.5:r=$SR" -af "highpass=f=6000,volume='exp(-1.3*t)':eval=frame,apulsator=hz=11:amount=0.6,aecho=0.7:0.6:120|190:0.35|0.25" -ac 2 $T/shimmer.wav
 ffmpeg -v error -y -f lavfi -i "anoisesrc=d=0.62:c=pink:a=0.8:r=$SR" -af "bandpass=f=1800:w=2200,volume='pow(max(0,sin(2*PI*5*t)),3)':eval=frame,afade=t=out:st=0.45:d=0.17" -ac 2 $T/flutter.wav
 
-# ---- mix: score swell + hit, its climax under the title, effects ----
-ffmpeg -v error -y -ss $A0 -t 7 -i "$SCORE" -ss $B0 -t $TOT -i "$SCORE" -i $T/boom.wav -i $T/riser.wav -i $T/whoosh.wav -i $T/impact.wav -i $T/shimmer.wav \
+# ---- mix: the hit, then the build's piano running into the title, resolving onto the score's final chord ----
+# the piano phrase runs up to the title reveal, just before the climax's downbeat (2:08.43), and fades under the final chord
+FIN=157.55                               # the score's final chord (A), the end of the piece's cadence
+FAT=$(awk "BEGIN{print $REV-0.10}")      # it blooms in on the title reveal
+ffmpeg -v error -y -ss $A0 -t 7 -i "$SCORE" -ss $B0 -t $(awk "BEGIN{print $FAT+0.8}") -i "$SCORE" -ss $(awk "BEGIN{print $FIN-0.10}") -t 4.05 -i "$SCORE" \
+  -i $T/boom.wav -i $T/riser.wav -i $T/whoosh.wav -i $T/impact.wav -i $T/shimmer.wav \
   -i $T/flutter.wav -i $T/flutter.wav -i $T/flutter.wav -i $T/flutter.wav -filter_complex "\
 [0]aresample=$SR,afade=t=in:st=0:d=0.12,afade=t=out:st=$AOUT:d=1.4:curve=qsin[a];\
 [1]aresample=$SR,volume=0,atrim=0:$XF,asetpts=PTS-STARTPTS[bpre];\
-[1]aresample=$SR,atrim=$XF,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.12,volume='$CRESC':eval=frame,afade=t=out:st=$(awk "BEGIN{print 10.0-$XF}"):d=$(awk "BEGIN{print $TOT-10.0}"):curve=qsin[bpost];\
+[1]aresample=$SR,atrim=$XF,asetpts=PTS-STARTPTS,afade=t=in:st=0:d=0.12,volume='$CRESC':eval=frame,afade=t=out:st=$(awk "BEGIN{print $FAT-$XF}"):d=0.7:curve=qsin[bpost];\
 [bpre][bpost]concat=n=2:v=0:a=1[b];\
-[2]adelay=$(ms 2.167)|$(ms 2.167),volume=0.9[s1];\
-[3]adelay=$(ms 3.3)|$(ms 3.3),volume=0.8[s2];\
-[4]adelay=$(ms $REV-0.443)|$(ms $REV-0.443),volume=0.6,apulsator=hz=1.2:amount=0.5[s3];\
-[5]adelay=$(ms $REV)|$(ms $REV),volume=1.15[s4];\
-[6]adelay=$(ms $REV)|$(ms $REV),volume=0.35[s5];\
-[7]adelay=$(ms $REV+0.1)|$(ms $REV+0.1),volume=0.22[f1];\
-[8]adelay=$(ms $REV+1.6)|$(ms $REV+1.6),volume=0.18[f2];\
-[9]adelay=$(ms $REV+3.0)|$(ms $REV+3.0),volume=0.15[f3];\
-[10]adelay=$(ms $REV+4.5)|$(ms $REV+4.5),volume=0.12[f4];\
-[a][b][s1][s2][s3][s4][s5][f1][f2][f3][f4]amix=inputs=11:normalize=0:duration=longest,atrim=0:$TOT,alimiter=limit=0.89:level=false,afade=t=out:st=$(awk "BEGIN{print $TOT-0.3}"):d=0.3[o]" \
+[2]aresample=$SR,afade=t=in:st=0:d=0.12,apad=pad_dur=2.5,aecho=0.85:0.9:700|1300:0.32|0.2,afade=t=out:st=3.2:d=3.3:curve=exp,adelay=$(ms $FAT)|$(ms $FAT)[fin];\
+[a][b][fin]amix=inputs=3:normalize=0:duration=longest[music];\
+[3]adelay=$(ms 2.167)|$(ms 2.167),volume=0.9[s1];\
+[4]adelay=$(ms 3.3)|$(ms 3.3),volume=0.45[s2];\
+[5]adelay=$(ms $REV-0.443)|$(ms $REV-0.443),volume=0.45,apulsator=hz=1.2:amount=0.5[s3];\
+[6]adelay=$(ms $REV)|$(ms $REV),volume=0.55[s4];\
+[7]adelay=$(ms $REV)|$(ms $REV),volume=0.3[s5];\
+[8]adelay=$(ms $REV+0.1)|$(ms $REV+0.1),volume=0.22[f1];\
+[9]adelay=$(ms $REV+1.6)|$(ms $REV+1.6),volume=0.18[f2];\
+[10]adelay=$(ms $REV+3.0)|$(ms $REV+3.0),volume=0.15[f3];\
+[11]adelay=$(ms $REV+4.5)|$(ms $REV+4.5),volume=0.12[f4];\
+[music][s1][s2][s3][s4][s5][f1][f2][f3][f4]amix=inputs=10:normalize=0:duration=longest,apad=whole_dur=$TOT,atrim=0:$TOT,alimiter=limit=0.89:level=false,afade=t=out:st=$(awk "BEGIN{print $TOT-1.2}"):d=1.2[o]" \
   -map "[o]" -c:a pcm_s24le $T/audio.wav
 cp $T/audio.wav out/title/hook_audio.wav
 
