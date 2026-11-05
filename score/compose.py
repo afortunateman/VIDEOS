@@ -196,7 +196,7 @@ def dyn(t): return np.interp(t, dt_, dv_) / 127.0
 motif(piano, ["A4", "D5", "E5", "F5"], [0.6, 1.5, 2.4, 3.3], 7.0, [38, 41, 44, 48])
 motif(cel, ["A5", "D6", "E6"], [6.5, 6.95, 7.4], 9.5, 46)                                     # what was at the top? (unfinished)
 flow(harp, ["F2", "C3", "A3", "G4", "C4", "F3", "A3", "E4"], 8.6, 11.4, 0.42, 44)
-for t, p in [(15.43, "A5"), (15.58, "E6"), (15.72, "D6"), (15.86, "A6")]: BELLS.append((t, p, 0.10))   # starts on the cut to his face
+FACE_BELLS = [(15.43, "A5", 0.10), (15.58, "E6", 0.10), (15.72, "D6", 0.10), (15.86, "A6", 0.10)]   # exported as a separate SFX
 oohs.ch(["D5", "E5", "A5"], 14.1, 16.2, 42); oohs.curve([(14.1, 20), (15.9, 72)])
 SHIMS.append((13.8, 22.6, ["A5", "E6"], 0.5))
 
@@ -259,7 +259,11 @@ SHIMS.append((75.2, 78.3, ["A5"], 0.6))
 organ.ch(["D2", "A2"], 78.05, 82.9, 44)                                                      # felt more than heard
 organ.curve([(78.0, 10), (78.6, 46), (82.2, 46), (83.2, 0)])
 SHIMS.append((77.8, 83.0, ["D6", "A6"], 0.35))
-VOX_FROM_ABOVE = (78.12, 82.3)                                                               # the voice gets its own cathedral
+VOX_FROM_ABOVE = (78.12, 82.3)
+choir.ch(["D5", "A5", "D6"], 78.1, 83.2, 60)                                                 # a distant halo of voices
+choir.curve([(78.0, 0), (78.9, 56), (81.8, 46), (83.2, 0)])
+SUB.append((77.9, 82.9, "D1", 0.06))                                                         # a low bloom, felt not heard
+GODLY = [(77.25, 78.18, 0.035)]                                                              # air drawn in, opening onto the voice                                                               # the voice gets its own cathedral
 
 # --- "every caterpillar was hearing the same voice" — contemplation: low, slow, warm
 motif(cello, ["A3", "D4", "E4", "F4", "E4", "D4"], [85.1, 86.6, 88.0, 89.9, 91.8, 93.0], 94.8, [50, 52, 54, 58, 50, 44])
@@ -379,6 +383,12 @@ for t0, t1, g in AIR:
     for c in range(2): put(fx[:, c], t0, bp(rng.standard_normal(n), 5000, 11000) * g * (0.5 + dyn(t0 + np.arange(n) / SR)))
 
 from scipy.signal import stft, istft
+sfx_zoom = np.zeros((N, 2)); sfx_bells = np.zeros((N, 2))
+for t, p, g in FACE_BELLS:
+    n = int(4.0 * SR); tt = np.arange(n) / SR; f = hz(p)
+    x = np.sin(2 * np.pi * f * tt + 2.2 * np.exp(-tt / 0.5) * np.sin(2 * np.pi * f * 3.5 * tt)) * np.exp(-tt / 1.4) * np.minimum(1, tt / 0.004)
+    pan = rng.uniform(-0.6, 0.6)
+    put(sfx_bells[:, 0], t, x * g * 0.5 * (1 - pan)); put(sfx_bells[:, 1], t, x * g * 0.5 * (1 + pan))
 def shaped_noise(n, fc, bw_oct, amp):
     """noise whose centre frequency fc(t) and level amp(t) move over time (t in s from start)"""
     x = rng.standard_normal(n)
@@ -393,7 +403,7 @@ for t0, t1, g in ZOOM:                           # the zoom: rising air + rising
     amp = lambda t: np.where(t < bld, (np.clip(t, 0, bld) / bld) ** 2.5, np.exp(-(t - bld) / 0.11))
     ft_ = 180 * (5.0 ** np.clip(tt / bld, 0, 1))
     tone = np.sin(2 * np.pi * np.cumsum(ft_) / SR) * amp(tt) * 0.25
-    for c in range(2): put(fx[:, c], t0, (shaped_noise(n, fc, 0.7, amp) + tone) * g)
+    for c in range(2): put(sfx_zoom[:, c], t0, (shaped_noise(n, fc, 0.7, amp) + tone) * g)
 for t0, tpk, t1 in LIGHT:                        # light from above: glassy chord + bright air + sparkle
     n = int((t1 - t0 + 1.0) * SR); tt = np.arange(n) / SR
     a, h = tpk - t0, t1 - t0
@@ -413,6 +423,12 @@ for t, p, g in TING:                             # crystalline ting
     x += 0.35 * np.sin(2 * np.pi * f / 2 * tt) * np.exp(-tt / 1.1)
     x *= np.minimum(1, tt / 0.002) * g
     put(shim[:, 0], t, x); put(shim[:, 1], t, x)
+for t0, tpk, g in GODLY:                         # soft inhale of air that blooms as the voice speaks
+    bld = tpk - t0; n = int((bld + 3.0) * SR)
+    for c in range(2):
+        air = shaped_noise(n, lambda t: 1500 * (5000 / 1500) ** np.clip(t / bld, 0, 1), 0.9,
+                           lambda t: np.where(t < bld, (np.clip(t, 0, bld) / bld) ** 2, np.exp(-(t - bld) / 0.9)))
+        put(fx[:, c], t0, air * g)
 # late bells (added by the light) need rendering too
 for t, p, g in BELLS[-7:]:
     n = int(4.0 * SR); tt = np.arange(n) / SR; f = hz(p)
@@ -450,9 +466,16 @@ mus = hp(dry * 0.8 + wet, 30)
 env = np.sqrt(lp(np.mean(mus ** 2, 1), 2.0, 1).clip(1e-12))           # gentle glue
 thr = 10 ** (-16 / 20); gr = np.where(env > thr, (thr / env) ** (1 - 1 / 1.6), 1.0)
 mus *= gr[:, None]
-mus /= np.abs(mus).max() + 1e-9
+PEAK = np.abs(mus).max() + 1e-9; mus /= PEAK
 mus = np.tanh(mus * 1.05) / np.tanh(1.05) * 0.89
 sf.write(f"{OUT}/score_music_only.wav", mus.astype(np.float32), SR, subtype="PCM_24")
+os.makedirs(f"{HERE}/sfx", exist_ok=True)
+for name, buf, (g, r), t0, dur in [("sfx_elder_scene_bells_start_15.43s", sfx_bells, MIX["syn_shimmer"], 15.43, 5.5),
+                                   ("sfx_zoom_whoosh_start_65.78s_peak_66.50s", sfx_zoom, MIX["syn_fx"], 65.78, 3.5)]:
+    x = buf * 10 ** (g / 20)
+    w_ = np.stack([fftconvolve(x[:, c] * r, ir[:, c])[:N] for c in range(2)], 1)
+    y = hp(x * 0.8 + w_, 30) * gr[:, None] / PEAK * (1.05 / np.tanh(1.05) * 0.89)
+    sf.write(f"{HERE}/sfx/{name}.flac", y[int(t0 * SR):int((t0 + dur) * SR)].astype(np.float32), SR, subtype="PCM_24")
 print("music written")
 
 # ================================================================ VO-AWARE MIX
