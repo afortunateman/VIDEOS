@@ -28,7 +28,7 @@ The home key is D. The film ends on an open Dsus2 chord: the question isn't answ
 | 0.1 | "There was once a caterpillar who was climbing a staircase." | Strings fade in. The motif on piano |
 | 4.2 / 6.4 | "Nobody knew who had built it. / …what was at the top." | Bbmaj7, then celesta asks A–D–E… |
 | 8.7 | "But the older caterpillars told stories." | Warm F chord, harp |
-| 11.4 | "Climb high enough," they said, | Harp rises |
+| 11.4 | "Climb high enough," they said, | Strings and pads only (the plucked notes wait for his face) |
 | 14.1 | "and you'll become a butterfly." | The wonder chord (Bbmaj7♯11), glass bells, voices |
 | 15.9–22.4 | *(no VO: his fascinated face)* | Celesta and flute sing the theme; strings bloom |
 | 22.4 | "So he climbed." | The motif on piano; harp starts moving |
@@ -43,10 +43,10 @@ The home key is D. The film ends on an open Dsus2 chord: the question isn't answ
 | 52.6–55 | *(VO gap: his face)* | Soft horn: the motif |
 | 55.0–62.3 | "Years passed. His body grew tired. His legs weakened." | Slow descent through Dm, C and Bb; falling piano notes |
 | 62.3–64.4 | *(sigh)* | Solo cello tries the motif and can't reach the top |
-| 64.4 | "But he kept climbing because the thought… terrified him more than the staircase." | Gm, then a tense A7♭9 tremolo. **Zoom whoosh** rising into his scared face, landing at 66.87 |
+| 64.4 | "But he kept climbing because the thought… terrified him more than the staircase." | Gm, then a tense A7♭9 tremolo. **Zoom whoosh** rising into the jump-cut to his scared face at 66.50 |
 | 69.2 / 71.5 | "One day, he couldn't take it anymore. He stopped climbing and screamed…" | Violin lament (the motif falling), swelling to the scream |
 | 75.1 | "Then, from somewhere above, a voice called out." | Hush; glass bells from above |
-| 78.2–82.2 | "You're almost there. Don't give up now. You've come so far!" | The orchestra steps back: a high shimmer and a felt-more-than-heard organ pedal. **The voice gets its own space:** a bright cathedral reverb, echoes from above and a faint doubling. All of it is cut away as the narrator returns |
+| 78.2–82.2 | "You're almost there. Don't give up now. You've come so far!" | The orchestra steps back: a high shimmer and a felt-more-than-heard organ pedal. |
 | 82.7 | "But something was different this time." | Open chord with no third: uncertain |
 | 85.1 | "…every caterpillar was hearing the same voice." | Contemplation: Bbmaj9, then Gm9, low hummed voices. A slow solo cello traces the motif |
 | 89.9 | "And every single one of them was almost there." | The cello reaches F♮ (minor) over Dm and sinks back |

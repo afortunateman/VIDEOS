@@ -196,8 +196,7 @@ def dyn(t): return np.interp(t, dt_, dv_) / 127.0
 motif(piano, ["A4", "D5", "E5", "F5"], [0.6, 1.5, 2.4, 3.3], 7.0, [38, 41, 44, 48])
 motif(cel, ["A5", "D6", "E6"], [6.5, 6.95, 7.4], 9.5, 46)                                     # what was at the top? (unfinished)
 flow(harp, ["F2", "C3", "A3", "G4", "C4", "F3", "A3", "E4"], 8.6, 11.4, 0.42, 44)
-flow(harp, ["G2", "D3", "Bb3", "D4", "A4", "D5"], 11.4, 14.1, 0.40, 46, jitter=0.08)          # rising: "climb high enough"
-for t, p in [(14.15, "A5"), (14.6, "E6"), (15.0, "D6"), (15.4, "A6")]: BELLS.append((t, p, 0.10))
+for t, p in [(15.43, "A5"), (15.58, "E6"), (15.72, "D6"), (15.86, "A6")]: BELLS.append((t, p, 0.10))   # starts on the cut to his face
 oohs.ch(["D5", "E5", "A5"], 14.1, 16.2, 42); oohs.curve([(14.1, 20), (15.9, 72)])
 SHIMS.append((13.8, 22.6, ["A5", "E6"], 0.5))
 
@@ -315,7 +314,7 @@ for t, p in [(155.05, "E6"), (157.6, "A6")]: BELLS.append((t, p, 0.06))
 SHIMS.append((146.0, 160.5, ["E5", "A5", "E6"], 0.6))
 SUB.append((154.0, 160.6, "D1", 0.05))
 AIR += [(0, 162, 0.006)]
-ZOOM = [(66.15, 66.87, 0.32)]                    # push-in to his scared face (lands 66.87)
+ZOOM = [(65.78, 66.50, 0.32)]                    # jump-in to his scared face (cut at 66.50)
 LIGHT = [(114.85, 115.4, 116.9)]                 # light pours down on him: start, brightest, gone
 TING = [(117.33, "D7", 0.075)]                    # the chalk wings appear
 oohs.ch(["Bb4", "D5", "G5"], 114.9, 117.0, 40); oohs.curve([(114.85, 10), (115.4, 66), (116.9, 10)])
@@ -494,7 +493,7 @@ if len(sys.argv) > 1:
     g_all = 10 ** (-red / 20); g_mid = 10 ** (-2.5 * np.interp(np.arange(N) / hop, np.arange(len(act)), act) / 20)
     lo_b = lp(mus, 250); hi_b = hp(mus, 4000); mid_b = mus - lo_b - hi_b
     ducked = (lo_b + hi_b + mid_b * g_mid[:, None]) * g_all[:, None]
-    final = vo + fxv + ducked
+    final = vo + ducked
     from scipy.ndimage import maximum_filter1d                         # look-ahead peak limiter
     blk = 44; pk = np.abs(final).max(1); nb = len(pk) // blk + 1
     pkb = maximum_filter1d(np.array([pk[i * blk:(i + 1) * blk].max() if i * blk < len(pk) else 0 for i in range(nb)]), 7)
