@@ -15,7 +15,7 @@ An original score (161.5 s) for the film, timed to the narrator's actual phrasin
 **The Climb motif:** four rising steps, A–D–E–F. Its shape follows the story:
 
 - **A–D–E… (stops):** a question. It plays at "what was at the top", "What's at the top?", "There were no wings", and the last notes of the film.
-- **A–D–E–F♯ (major):** the promise. It first completes when the voice from above calls, then echoes from every caterpillar at once.
+- **A–D–E–F♯ (major):** the promise, glimpsed only in the wonder and at the sun.
 - **F–E–D–A (falling):** the scream.
 - **Summit:** the melody climbs to F♯6 and lands exactly on "And that was enough."
 
@@ -35,7 +35,7 @@ The home key is D. The film ends on an open Dsus2 chord: the question isn't answ
 | 23.8–31.4 | "…thousands of steps. Past caterpillars who had given up. Past the skeletons…" | Bb, then Gm, with a cold tremolo shiver at the skeletons |
 | 32.0 | "Some had left messages carved into the walls." | Ebmaj7, ghostly voices rising |
 | 35.1 / 36.3 / 37.8 | "Keep going. / The top is worth it. / You're almost there." | A glass bell on each message |
-| 39.0 | *(skeleton)* | Cold, slowly beating cluster; no resolution |
+| 38.37–39.27 | *(camera pans to the skeleton)* | Cold, slowly beating cluster and tremolo. They start with the pan and reach full strength as the camera settles |
 | 40.8 | "One day, he came across a caterpillar descending the staircase." | Harp descends |
 | 44.7 | "What's at the top?" he asked. | Celesta: A–D–E… |
 | 46.8 | "Glory," the caterpillar replied. | A golden D major chord, bells and voices, which fades |
@@ -43,19 +43,19 @@ The home key is D. The film ends on an open Dsus2 chord: the question isn't answ
 | 52.6–55 | *(VO gap: his face)* | Soft horn: the motif |
 | 55.0–62.3 | "Years passed. His body grew tired. His legs weakened." | Slow descent through Dm, C and Bb; falling piano notes |
 | 62.3–64.4 | *(sigh)* | Solo cello tries the motif and can't reach the top |
-| 64.4 | "But he kept climbing because the thought… terrified him more than the staircase." | Gm, then a tense A7♭9 tremolo |
+| 64.4 | "But he kept climbing because the thought… terrified him more than the staircase." | Gm, then a tense A7♭9 tremolo. **Zoom whoosh** rising into his scared face, landing at 66.87 |
 | 69.2 / 71.5 | "One day, he couldn't take it anymore. He stopped climbing and screamed…" | Violin lament (the motif falling), swelling to the scream |
 | 75.1 | "Then, from somewhere above, a voice called out." | Hush; glass bells from above |
-| 78.2–82.2 | "You're almost there. Don't give up now. You've come so far!" | Choir and organ: Bb, F, G, D. The motif completes in major |
-| 82.7 | "But something was different this time." | Same chord with no third: uncertain |
-| 85.1 | "…every caterpillar was hearing the same voice." | The motif echoes from seven instruments at once |
-| 89.9 | "And every single one of them was almost there." | The echo turns minor (F♮) |
+| 78.2–82.2 | "You're almost there. Don't give up now. You've come so far!" | The orchestra steps back: a high shimmer and a felt-more-than-heard organ pedal. **The voice gets its own space:** a bright cathedral reverb, echoes from above and a faint doubling. All of it is cut away as the narrator returns |
+| 82.7 | "But something was different this time." | Open chord with no third: uncertain |
+| 85.1 | "…every caterpillar was hearing the same voice." | Contemplation: Bbmaj9, then Gm9, low hummed voices. A slow solo cello traces the motif |
+| 89.9 | "And every single one of them was almost there." | The cello reaches F♮ (minor) over Dm and sinks back |
 | 94.0 | "He looked up at the endless staircase." | A faint, endlessly rising tone |
 | 96.6 / 99.0 | "Then he looked at his little suitcase. And finally, he sat down." | Tender piano, then a harp chord as he sits |
 | 101.2–107 | "For a while, he waited… But nothing did." | Near stillness: drone, shimmer, a few piano drops |
 | 107.3 | "The staircase carried on as it always had…" | A distant harp, still moving |
-| 114.8 | "There was no revelation or enlightenment." | Ebmaj7, halo pad |
-| 117.4 | "There were no wings." | Celesta: A–D–E… never finishes (chalk wings on screen) |
+| 114.8 | "There was no revelation or enlightenment." | Ebmaj7, halo pad. **Light from above** (114.9–116.9): a glassy chord and bright air swell in with the beam, with a scatter of sparkles at its brightest (115.4) |
+| 117.33 | "There were no wings." | A crystalline **ting** as the chalk wings appear, then celesta A–D–E… never finishes |
 | 119.4 | "And certainly, there was no glory." | Open fifth |
 | 120.9 | "But for the first time in his life, he wasn't miserable." | First real warmth: G(add9), then A |
 | 126.0 | "For the first time, he was just there." | **The sun:** D major; the theme begins |

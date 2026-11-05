@@ -122,8 +122,8 @@ CH = [
     (31.6, 35.0, ["Eb2", "Bb2"], ["Eb3", "G3", "Bb3", "D4"]),    # "messages carved into the walls"
     (35.0, 36.3, ["C2", "G2"], ["C3", "G3", "Eb4"]),             # "Keep going."
     (36.3, 37.8, ["Bb1", "F2"], ["D3", "F3", "Bb3"]),            # "The top is worth it."
-    (37.8, 39.0, ["A1", "E2"], ["C#3", "E3", "A3"]),             # "You're almost there."
-    (39.0, 40.8, ["D2"], ["Eb4", "A4"]),                         # …the skeleton (cold, unresolved)
+    (37.8, 38.37, ["A1", "E2"], ["C#3", "E3", "A3"]),             # "You're almost there."
+    (38.37, 40.8, ["D2"], ["Eb4", "A4"]),                         # …the skeleton (cold, unresolved)
     # the one coming down
     (40.8, 44.7, ["D2", "A2"], ["F3", "A3", "D4"]),
     (44.7, 46.8, ["Bb1", "F2"], ["D3", "F3", "A3"]),             # "What's at the top?"
@@ -143,12 +143,10 @@ CH = [
     (73.0, 75.1, ["F1", "D2", "A2"], ["D4", "F4", "A4"]),
     (75.1, 78.1, ["D2"], ["A3"]),                                # "Then, from somewhere above…"
     # the voice
-    (78.1, 79.5, ["Bb1", "F2"], ["D4", "F4", "C5"]),             # "You're almost there."
-    (79.5, 80.8, ["A1", "F2"], ["C4", "F4", "A4"]),              # "Don't give up now."
-    (80.8, 81.6, ["G1", "D2"], ["D4", "G4", "B4"]),              # "You've come so far!"
-    (81.6, 82.7, ["D2", "A2"], ["D4", "F#4", "A4"]),
+    (78.1, 82.7, ["D2", "A2"], ["A4", "D5"]),                    # the voice: open, almost nothing
     (82.7, 85.0, ["D2", "A2"], ["D3", "A3", "E4"]),              # "But something was different…"
-    (85.0, 89.9, ["D2", "A2"], ["D3", "F#3", "A3", "E4"]),       # "…every caterpillar was hearing the same voice"
+    (85.0, 87.5, ["Bb1", "F2"], ["D3", "F3", "A3", "C4"]),       # "…every caterpillar was hearing the same voice"
+    (87.5, 89.9, ["G1", "D2"], ["Bb2", "D3", "F3", "A3"]),
     (89.9, 94.0, ["D2", "A2"], ["D3", "F3", "A3", "E4"]),        # "…every single one of them was almost there"
     (94.0, 96.6, ["Bb1", "F2"], ["D3", "F3", "A3", "C4"]),       # "the endless staircase"
     (96.6, 99.0, ["G1", "D2"], ["Bb2", "D3", "A3"]),             # "his little suitcase"
@@ -184,9 +182,9 @@ for t0, t1, lo, hi in CH:
     PADS.append((t0, t1, lo + hi))
 
 # one dynamic line for the whole film (CC11 for strings, gain for pads)
-DYN = [(0, 25), (3, 62), (14, 72), (16, 88), (20, 98), (22.4, 72), (28.6, 62), (32, 58), (37.8, 76), (39.0, 82),
+DYN = [(0, 25), (3, 62), (14, 72), (16, 88), (20, 98), (22.4, 72), (28.6, 62), (32, 58), (37.8, 76), (38.37, 72), (39.1, 84),
        (40.8, 56), (46.8, 76), (49.2, 56), (52.6, 72), (55.0, 56), (64, 60), (68, 72), (69.1, 74), (73.5, 112),
-       (75.0, 70), (75.4, 46), (78.1, 62), (81.6, 88), (82.7, 64), (89.9, 60), (94, 58), (100.5, 50), (101.2, 44),
+       (75.0, 70), (75.4, 46), (77.9, 40), (78.15, 16), (82.3, 16), (82.8, 52), (85.0, 56), (89.9, 60), (94, 58), (100.5, 50), (101.2, 44),
        (105.6, 32), (107.3, 42), (117, 44), (120.85, 60), (125.8, 96), (128.4, 104), (134.68, 124), (136.6, 96),
        (140.9, 72), (147.6, 68), (150.5, 62), (155, 56), (160.8, 0), (162, 0)]
 strL.curve(DYN); strH.curve(DYN)
@@ -226,12 +224,12 @@ for t0, t1, notes in [(22.4, 26.4, ["D3", "A3", "E4", "F4", "A4", "D5"]), (26.4,
     flow(harp, notes, t0, t1, 0.44, 42)
 trem.ch(["D5", "Eb5"], 28.6, 31.8, 40); trem.curve([(28.6, 10), (30.0, 58), (31.8, 10)])  # the skeletons: a cold shiver
 oohs.ch(["G4", "Bb4", "D5"], 31.8, 35.2, 40); oohs.ch(["G4", "C5", "Eb5"], 35.0, 36.5, 44)
-oohs.ch(["F4", "Bb4", "D5"], 36.3, 38.0, 46); oohs.ch(["E4", "A4", "C#5"], 37.8, 39.1, 50)
-oohs.curve([(31.8, 20), (35.0, 60), (38.9, 82), (39.05, 30)])                                 # voices in the walls
+oohs.ch(["F4", "Bb4", "D5"], 36.3, 38.0, 46); oohs.ch(["E4", "A4", "C#5"], 37.8, 38.6, 50)
+oohs.curve([(31.8, 20), (35.0, 60), (38.2, 76), (38.6, 20)])                                 # voices in the walls
 for t, p in [(35.1, "E6"), (36.35, "G6"), (37.85, "A6")]: BELLS.append((t, p, 0.09))           # the carved messages
-EERIE.append((39.0, 41.6, ["D3", "Eb4", "A4", "D5"], 0.03))                                    # the skeleton
-trem.ch(["Eb5", "A5"], 39.0, 41.8, 40); trem.curve([(39.0, 40), (39.8, 56), (41.8, 0)])
-SUB.append((38.8, 42.0, "D1", 0.08))
+EERIE.append((38.37, 41.8, ["D3", "Eb4", "A4", "D5"], 0.03, 0.65))                                    # the skeleton
+trem.ch(["Eb5", "A5"], 38.37, 41.8, 40); trem.curve([(38.37, 12), (39.1, 58), (41.8, 0)])
+SUB.append((38.3, 42.0, "D1", 0.08))
 
 # --- the one coming down
 flow(harp, ["D5", "A4", "F4", "D4", "A3", "F3", "D3"], 40.85, 44.6, 0.52, 42, jitter=0.05)  # descending
@@ -259,21 +257,16 @@ for t, p in [(70.0, "F6"), (71.9, "E6"), (73.5, "D6")]: piano.n(p, t, t + 2.0, 3
 # --- the voice from above
 for t, p in [(75.6, "A5"), (76.5, "D6"), (77.3, "A6")]: BELLS.append((t, p, 0.07))
 SHIMS.append((75.2, 78.3, ["A5"], 0.6))
-for t0, t1, top in [(78.1, 79.5, ["D5", "F5", "C6"]), (79.5, 80.8, ["C5", "F5", "A5"]),
-                    (80.8, 81.6, ["D5", "G5", "B5"]), (81.6, 82.9, ["D5", "F#5", "A5", "D6"])]:
-    choir.ch(top, t0, t1 + 0.2, 70); organ.ch([P(x) - 24 for x in top], t0, t1 + 0.15, 50)
-choir.curve([(78.1, 30), (81.6, 92), (82.9, 70), (83.6, 20)]); organ.curve([(78.1, 30), (81.6, 70), (83.4, 0)])
-motif(cel, ["A5", "D6", "E6", "F#6"], [81.6, 81.95, 82.3, 82.65], 84.0, [56, 58, 60, 64])     # completes — in major
-SHIMS.append((78.1, 83.5, ["D6", "F#6", "A6"], 0.7))
+organ.ch(["D2", "A2"], 78.05, 82.9, 44)                                                      # felt more than heard
+organ.curve([(78.0, 10), (78.6, 46), (82.2, 46), (83.2, 0)])
+SHIMS.append((77.8, 83.0, ["D6", "A6"], 0.35))
+VOX_FROM_ABOVE = (78.12, 82.3)                                                               # the voice gets its own cathedral
 
-# --- "every caterpillar was hearing the same voice" — the motif echoes from everywhere
-ECHO = [(85.1, cel, 0, 52), (86.0, flute, -12, 50), (86.9, piano, -12, 40), (87.7, cel, 12, 40),
-        (88.4, harp, -12, 44), (89.0, flute, 0, 40), (89.5, piano, 0, 34)]
-for t0, trk, sh, v in ECHO:
-    motif(trk, [P(x) + sh for x in ["A5", "D6", "E6", "F#6"]], [t0, t0 + 0.32, t0 + 0.64, t0 + 0.96], t0 + 2.2, v)
-motif(cel, ["A5", "D6", "E6", "F6"], [89.95, 90.4, 90.85, 91.3], 93.0, 44)                   # …all "almost there": F natural
-oohs.ch(["D5", "A5"], 85.0, 89.95, 36); oohs.ch(["D5", "F5", "A5"], 89.9, 93.8, 40)
-oohs.curve([(85.0, 30), (88.0, 62), (93.8, 20)])
+# --- "every caterpillar was hearing the same voice" — contemplation: low, slow, warm
+motif(cello, ["A3", "D4", "E4", "F4", "E4", "D4"], [85.1, 86.6, 88.0, 89.9, 91.8, 93.0], 94.8, [50, 52, 54, 58, 50, 44])
+cello.curve([(84.9, 70), (89.9, 92), (94.8, 50)])
+oohs.ch(["D4", "A4"], 85.0, 89.95, 34); oohs.ch(["D4", "F4", "A4"], 89.9, 93.8, 36)
+oohs.curve([(85.0, 30), (88.0, 58), (93.8, 20)])
 
 # --- endless staircase / suitcase / he sits
 SHEPARD.append((93.6, 98.0, 0.015))
@@ -284,8 +277,8 @@ harp.ch(["A2", "D3", "E3", "A3", "D4"], 100.3, 103.5, 40, roll=0.14)            
 SHIMS.append((101.2, 105.6, ["E5", "A5"], 0.4))
 for t, p in [(102.3, "E5"), (104.1, "D5"), (108.6, "F5"), (113.0, "D5")]: piano.n(p, t, t + 3.0, 28)
 flow(harp, ["Bb3", "F4", "A4", "D5", "F5", "A4"], 107.3, 111.9, 0.62, 30)                   # the staircase carries on, distantly
-halo.ch(["G3", "Bb3", "D4"], 114.8, 117.6, 46); halo.curve([(114.8, 30), (116.4, 70), (117.6, 20)])
-motif(cel, ["A5", "D6", "E6"], [117.45, 117.9, 118.35], 120.2, 50)                           # "There were no wings." — never finishes
+halo.ch(["G3", "Bb3", "D4"], 114.8, 117.6, 46); halo.curve([(114.8, 30), (115.4, 72), (116.9, 40), (117.6, 20)])
+motif(cel, ["A5", "D6", "E6"], [117.9, 118.3, 118.7], 120.2, 48)                           # "There were no wings." — never finishes
 flute.n("A4", 119.35, 121.0, 34)                                                             # "…no glory."
 
 # --- enough
@@ -322,6 +315,10 @@ for t, p in [(155.05, "E6"), (157.6, "A6")]: BELLS.append((t, p, 0.06))
 SHIMS.append((146.0, 160.5, ["E5", "A5", "E6"], 0.6))
 SUB.append((154.0, 160.6, "D1", 0.05))
 AIR += [(0, 162, 0.006)]
+ZOOM = [(66.15, 66.87, 0.32)]                    # push-in to his scared face (lands 66.87)
+LIGHT = [(114.85, 115.4, 116.9)]                 # light pours down on him: start, brightest, gone
+TING = [(117.33, "D7", 0.075)]                    # the chalk wings appear
+oohs.ch(["Bb4", "D5", "G5"], 114.9, 117.0, 40); oohs.curve([(114.85, 10), (115.4, 66), (116.9, 10)])
 
 # ================================================================ SYNTH LAYERS
 def put(buf, t0, sig):
@@ -362,11 +359,11 @@ for t, p, g in BELLS:                            # FM glass bells
 for t0, t1, g in SWELLS:                         # soft breath swells into a moment
     n = int((t1 - t0) * SR); x = np.arange(n) / n
     for c in range(2): put(fx[:, c], t0, bp(rng.standard_normal(n), 500, 5000) * x ** 3 * g)
-for t0, t1, notes, g in EERIE:                   # slow-beating cluster
+for t0, t1, notes, g, att in EERIE:                   # slow-beating cluster
     n = int((t1 - t0) * SR); tt = np.arange(n) / SR
     for c in range(2):
         x = sum(np.sin(2 * np.pi * hz(p) * (1 + (0.004 if c else -0.004)) * tt) for p in notes)
-        put(fx[:, c], t0, x * env_ar(n, 0.35, 1.6) * g)
+        put(fx[:, c], t0, x * env_ar(n, att, 1.6) * g)
 for t0, t1, g in SHEPARD:                        # the endless staircase
     n = int((t1 - t0) * SR); tt = np.arange(n) / SR; out = np.zeros(n)
     for k in range(7):
@@ -381,6 +378,48 @@ for t0, t1, p, g in SUB:
 for t0, t1, g in AIR:
     n = int((t1 - t0) * SR)
     for c in range(2): put(fx[:, c], t0, bp(rng.standard_normal(n), 5000, 11000) * g * (0.5 + dyn(t0 + np.arange(n) / SR)))
+
+from scipy.signal import stft, istft
+def shaped_noise(n, fc, bw_oct, amp):
+    """noise whose centre frequency fc(t) and level amp(t) move over time (t in s from start)"""
+    x = rng.standard_normal(n)
+    f, tf, Z = stft(x, SR, nperseg=1024)
+    mask = np.exp(-0.5 * (np.log2((f[:, None] + 1) / fc(tf)[None, :]) / bw_oct) ** 2)
+    _, y = istft(Z * mask * amp(tf)[None, :], SR, nperseg=1024)
+    y = np.pad(y, (0, max(0, n - len(y))))[:n]
+    return y / (np.abs(y).max() + 1e-9)
+for t0, t1, g in ZOOM:                           # the zoom: rising air + rising tone, gone as it lands
+    bld = t1 - t0; tail = 0.45; n = int((bld + tail) * SR); tt = np.arange(n) / SR
+    fc = lambda t: np.where(t < bld, 250 * (3600 / 250) ** (np.clip(t, 0, bld) / bld), 3600 * np.exp(-(t - bld) * 1.5))
+    amp = lambda t: np.where(t < bld, (np.clip(t, 0, bld) / bld) ** 2.5, np.exp(-(t - bld) / 0.11))
+    ft_ = 180 * (5.0 ** np.clip(tt / bld, 0, 1))
+    tone = np.sin(2 * np.pi * np.cumsum(ft_) / SR) * amp(tt) * 0.25
+    for c in range(2): put(fx[:, c], t0, (shaped_noise(n, fc, 0.7, amp) + tone) * g)
+for t0, tpk, t1 in LIGHT:                        # light from above: glassy chord + bright air + sparkle
+    n = int((t1 - t0 + 1.0) * SR); tt = np.arange(n) / SR
+    a, h = tpk - t0, t1 - t0
+    ev = np.where(tt < a, (tt / a) ** 1.5, np.where(tt < h - 0.6, 1.0, np.clip((h + 1.0 - tt) / 1.6, 0, 1)))
+    for c in range(2):
+        x = sum(np.sin(2 * np.pi * np.cumsum(hz(p) * (1 + 0.0025 * np.sin(2 * np.pi * (5.1 + c) * tt))) / SR + rng.random() * 6)
+                for p in ["G5", "Bb5", "D6", "G6", "Bb6"])
+        put(shim[:, c], t0, x * ev * 0.010)
+        air = shaped_noise(n, lambda t: 2500 + 4500 * np.clip(t / a, 0, 1), 0.8,
+                           lambda t: np.interp(t, [0, a, h - 0.6, h + 1.0], [0, 1, 1, 0]))
+        put(fx[:, c], t0, air * 0.045)
+    for k, p in enumerate(["G6", "D7", "Bb6", "F7", "Eb7", "G7", "D7"]):
+        BELLS.append((tpk - 0.1 + k * 0.17 + rng.uniform(0, 0.06), p, 0.05))
+for t, p, g in TING:                             # crystalline ting
+    n = int(4.5 * SR); tt = np.arange(n) / SR; f = hz(p)
+    x = np.sin(2 * np.pi * f * tt + 0.7 * np.exp(-tt / 0.06) * np.sin(2 * np.pi * f * 2.76 * tt)) * np.exp(-tt / 1.6)
+    x += 0.35 * np.sin(2 * np.pi * f / 2 * tt) * np.exp(-tt / 1.1)
+    x *= np.minimum(1, tt / 0.002) * g
+    put(shim[:, 0], t, x); put(shim[:, 1], t, x)
+# late bells (added by the light) need rendering too
+for t, p, g in BELLS[-7:]:
+    n = int(4.0 * SR); tt = np.arange(n) / SR; f = hz(p)
+    x = np.sin(2 * np.pi * f * tt + 2.2 * np.exp(-tt / 0.5) * np.sin(2 * np.pi * f * 3.5 * tt)) * np.exp(-tt / 1.4) * np.minimum(1, tt / 0.004)
+    pan = rng.uniform(-0.6, 0.6)
+    put(shim[:, 0], t, x * g * 0.5 * (1 - pan)); put(shim[:, 1], t, x * g * 0.5 * (1 + pan))
 
 # ================================================================ RENDER + MIX
 print("rendering orchestra stems …")
@@ -422,6 +461,18 @@ if len(sys.argv) > 1:
     vid = sys.argv[1]
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", vid, "-vn", "-ac", "2", "-ar", str(SR), f"{OUT}/vo.wav"], check=True)
     vo, _ = sf.read(f"{OUT}/vo.wav"); vo = np.vstack([vo, np.zeros((max(0, N - len(vo)), 2))])[:N]
+    # the voice from above: its own bright cathedral + echoes from on high (cut away as the narrator returns)
+    v0, v1 = VOX_FROM_ABOVE; tt_ = np.arange(N) / SR
+    vseg = vo * np.clip(np.minimum((tt_ - v0) / 0.05, (v1 - tt_) / 0.05), 0, 1)[:, None]
+    L2 = int(3.0 * SR); t2 = np.arange(L2) / SR
+    ir2 = np.stack([lp(rng.standard_normal(L2), 9000) * np.exp(-t2 * 6.9 / 2.4) * np.minimum(1, t2 / 0.03) for _ in range(2)], 1)
+    ir2 /= np.sqrt((ir2 ** 2).sum(0, keepdims=True))
+    fxv = 0.30 * np.stack([fftconvolve(vseg[:, c], ir2[:, c])[:N] for c in range(2)], 1)
+    vh = hp(vseg, 350)
+    for dly, g in [(0.17, 0.30), (0.34, 0.17), (0.51, 0.08)]:
+        d_ = int(dly * SR); fxv[d_:] += vh[:-d_] * g * np.array([1.0, 0.7] if dly == 0.34 else [0.7, 1.0])
+    d_ = int(0.022 * SR); fxv[d_:] += vseg[:-d_] * 0.22
+    fxv *= np.clip((83.3 - tt_) / 0.7, 0, 1)[:, None]
     FADER = [(0, 0), (15.0, 0), (15.8, 3), (22.0, 3), (22.6, 1), (52.4, 1), (52.7, 4), (54.9, 4), (55.2, 0),
              (128.3, 0), (128.6, 3), (134.5, 3), (135.0, 0), (147.4, 0), (148.4, 4), (162, 4)]
     ft, fv = zip(*FADER)
@@ -443,7 +494,7 @@ if len(sys.argv) > 1:
     g_all = 10 ** (-red / 20); g_mid = 10 ** (-2.5 * np.interp(np.arange(N) / hop, np.arange(len(act)), act) / 20)
     lo_b = lp(mus, 250); hi_b = hp(mus, 4000); mid_b = mus - lo_b - hi_b
     ducked = (lo_b + hi_b + mid_b * g_mid[:, None]) * g_all[:, None]
-    final = vo + ducked
+    final = vo + fxv + ducked
     from scipy.ndimage import maximum_filter1d                         # look-ahead peak limiter
     blk = 44; pk = np.abs(final).max(1); nb = len(pk) // blk + 1
     pkb = maximum_filter1d(np.array([pk[i * blk:(i + 1) * blk].max() if i * blk < len(pk) else 0 for i in range(nb)]), 7)
