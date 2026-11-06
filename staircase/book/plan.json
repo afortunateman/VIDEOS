@@ -1,0 +1,236 @@
+[
+ {
+  "id": "s01",
+  "n": 1,
+  "t": 3.5,
+  "wide": 0.6,
+  "text": "There was once a caterpillar who was climbing a staircase."
+ },
+ {
+  "id": "s02",
+  "n": 2,
+  "t": 1.5,
+  "wide": 0.8,
+  "text": "Nobody knew who had built it."
+ },
+ {
+  "id": "s03",
+  "n": 3,
+  "t": 1.9,
+  "wide": 0.8,
+  "text": "Nobody knew what was at the top."
+ },
+ {
+  "id": "s04",
+  "n": 4,
+  "t": 2.4,
+  "wide": 0.8,
+  "text": "But the older caterpillars told stories.",
+  "move": [
+   0,
+   0.9,
+   0
+  ],
+  "aim": [
+   0,
+   0.3,
+   0
+  ]
+ },
+ {
+  "id": "s05",
+  "n": 5,
+  "t": 3.5,
+  "wide": 0.8,
+  "move": [
+   0,
+   0.45,
+   0
+  ],
+  "text": "“Climb high enough,” they said, “and you’ll become a butterfly.”"
+ },
+ {
+  "id": "s06",
+  "n": 7,
+  "t": 1.0,
+  "wide": 0.8,
+  "text": "So he climbed."
+ },
+ {
+  "id": "s07",
+  "n": 8,
+  "t": 1.5,
+  "wide": 0.8,
+  "text": "He climbed past thousands of steps."
+ },
+ {
+  "id": "s08",
+  "n": 9,
+  "t": 1.2,
+  "wide": 0.8,
+  "text": "Past caterpillars who had given up."
+ },
+ {
+  "id": "s09",
+  "n": 10,
+  "t": 0.6,
+  "wide": 1.0,
+  "text": "Past the skeletons of those who had died trying.",
+  "aim": [
+   0,
+   0.3,
+   0
+  ],
+  "pos": "top"
+ },
+ {
+  "id": "s10",
+  "n": 11,
+  "t": 2.0,
+  "wide": 0.8,
+  "text": "Some had left messages carved into the walls. Keep going. The top is worth it. You’re almost there."
+ },
+ {
+  "id": "s11",
+  "n": 15,
+  "t": 3.6,
+  "wide": 0.8,
+  "text": "One day, he came across a caterpillar coming down the staircase."
+ },
+ {
+  "id": "s12",
+  "n": 17,
+  "t": 1.0,
+  "wide": 0.8,
+  "text": "“What’s at the top?” he asked. “Glory,” the caterpillar replied."
+ },
+ {
+  "id": "s13",
+  "n": 20,
+  "t": 0.9,
+  "wide": 0.8,
+  "text": "“Have you seen it?” “No. But I’ve heard.”"
+ },
+ {
+  "id": "s14",
+  "n": 21,
+  "t": 1.2,
+  "wide": 0.8,
+  "text": "Years passed."
+ },
+ {
+  "id": "s15",
+  "n": 22,
+  "t": 0.8,
+  "wide": 0.8,
+  "text": "His body grew tired. His legs grew weak.",
+  "pos": "top-right"
+ },
+ {
+  "id": "s16",
+  "n": 24.5,
+  "t": 1.0,
+  "wide": 0.6,
+  "text": "But he kept climbing, because the thought of staying a caterpillar scared him more than the staircase."
+ },
+ {
+  "id": "s17",
+  "n": 27,
+  "t": 0.8,
+  "wide": 0.8,
+  "text": "One day, he couldn’t take it anymore. He stopped climbing and screamed at the top of his lungs."
+ },
+ {
+  "id": "s18",
+  "n": 29,
+  "t": 1.5,
+  "wide": 1.0,
+  "text": "Then, from somewhere above, a voice called out: “You’re almost there! Don’t give up now! You’ve come so far!”",
+  "aim": [
+   0,
+   0.35,
+   0
+  ]
+ },
+ {
+  "id": "s19",
+  "n": 31,
+  "t": 2.5,
+  "wide": 0.8,
+  "text": "But this time, he noticed that every caterpillar was hearing the same voice."
+ },
+ {
+  "id": "s20",
+  "n": 32,
+  "t": 2.9,
+  "wide": 0.8,
+  "text": "And every single one of them was almost there."
+ },
+ {
+  "id": "s21",
+  "n": 33,
+  "t": 1.3,
+  "wide": 0.8,
+  "text": "He looked up at the endless staircase. Then he looked at his little suitcase."
+ },
+ {
+  "id": "s22",
+  "n": 35,
+  "t": 2.0,
+  "wide": 0.8,
+  "text": "And finally, he sat down."
+ },
+ {
+  "id": "s23",
+  "n": 36,
+  "t": 1.5,
+  "wide": 0.8,
+  "text": "For a while, he waited. But nothing happened."
+ },
+ {
+  "id": "s24",
+  "n": 39,
+  "t": 2.0,
+  "wide": 0.8,
+  "text": "The staircase carried on as it always had. And he was still just a caterpillar."
+ },
+ {
+  "id": "s25",
+  "n": 43,
+  "t": 1.4,
+  "wide": 1.0,
+  "text": "There were no wings. And there was no glory.",
+  "move": [
+   0.4,
+   0.25,
+   -0.4
+  ],
+  "pos": "top"
+ },
+ {
+  "id": "s26",
+  "n": 45,
+  "t": 4.5,
+  "wide": 1.0,
+  "text": "But for the first time in his life, he wasn’t miserable.",
+  "move": [
+   0.3,
+   0.4,
+   -0.7
+  ]
+ },
+ {
+  "id": "s27",
+  "n": 47,
+  "t": 0.7,
+  "wide": 0.8,
+  "text": "For the first time, he was just there. And that was enough."
+ },
+ {
+  "id": "s28",
+  "n": 50,
+  "t": 9.0,
+  "wide": 0.8,
+  "text": "He looked up at the staircase once more, and wondered… What if the top was invented by caterpillars who couldn’t bear the thought that climbing was all there was?"
+ }
+]

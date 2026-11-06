@@ -8,9 +8,11 @@ import {INSERTS} from './Insert';
 // One frame of a shot, rendered square at print resolution for the picture book.
 // `wide` keeps the film's horizontal view in the square frame (1 = same width as the 16:9 shot; the extra height
 // shows more sky and ground, which leaves room for text).
-export type BookStillProps = {n: number; t: number; wide?: number};
+// `move` / `aim` nudge the camera position / target (world units) for a better book framing, e.g. lifting the
+// camera so a foreground flame no longer covers a face.
+export type BookStillProps = {n: number; t: number; wide?: number; move?: [number, number, number]; aim?: [number, number, number]};
 
-export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1}) => {
+export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1, move = [0, 0, 0], aim = [0, 0, 0]}) => {
   const {width, height} = useVideoConfig();
   const base = SHOTS.find((s) => s.n === n) ?? Object.values(INSERTS).find((s) => s.n === n)!;
   const k = 1 + (16 / 9 - 1) * wide; // tan(vfov/2) scale that keeps the horizontal view at aspect 1
@@ -18,7 +20,9 @@ export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1}) => {
     ...base,
     cam: (tt, T) => {
       const c = base.cam(tt, T);
-      return {...c, fov: (2 * Math.atan(Math.tan(((c.fov / 2) * Math.PI) / 180) * k) * 180) / Math.PI};
+      const pos: [number, number, number] = [c.pos[0] + move[0], c.pos[1] + move[1], c.pos[2] + move[2]];
+      const target: [number, number, number] = [c.target[0] + aim[0], c.target[1] + aim[1], c.target[2] + aim[2]];
+      return {...c, pos, target, fov: (2 * Math.atan(Math.tan(((c.fov / 2) * Math.PI) / 180) * k) * 180) / Math.PI};
     },
   };
   const T = base.end - base.start + (base.hold ?? 0);
