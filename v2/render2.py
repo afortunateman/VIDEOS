@@ -2,7 +2,9 @@
 # usage: python3 render2.py out.mp4 [t0 t1]     (video only; audio muxed in build2.sh)
 import sys, json, math, glob, subprocess, cv2, numpy as np
 
-W, H, FPS = 1080, 1920, 30
+import os
+VERT = os.environ.get('FORMAT') == '9x16'
+W, H, FPS = (1080, 1920, 30) if VERT else (1920, 1080, 30)
 T = json.load(open('sent_timing.json'))
 FILES = sorted(glob.glob('pics/*.png'))       # index = contact-sheet number
 # sub-panels of the two collage images: (pic, x0, y0, x1, y1) normalized
@@ -145,6 +147,7 @@ def ease(x): x = min(max(x, 0), 1); return x * x * (3 - 2 * x)
 
 def frame(k, t):
     s, e, (p, cx, cy, z, mv) = shots[k]
+    if not VERT: z = 1.15 if z <= 1.0 else min(1.15 + (z - 1) * 2.0, 2.1)   # wider frame -> push in more for detail shots
     img = source(p); h, w = img.shape[:2]
     u = (t - s) / max(e - s, 1e-3); ue = 0.35 * u + 0.65 * ease(u)
     zz = z; dx = dy = 0.0
@@ -158,8 +161,8 @@ def frame(k, t):
     if mv == 'R': dx = -pr + 2 * pr * ue
     if mv == 'U': dy = 0.06 - 0.12 * ue
     if mv == 'D': dy = -0.06 + 0.12 * ue
-    ch = min(h / zz, w * 16 / 9)                                   # crop height in source px
-    cw = ch * 9 / 16
+    ch = min(h / zz, w * H / W)                                    # crop height in source px
+    cw = ch * W / H
     px = min(max((cx + dx) * w, cw / 2), w - cw / 2); py = min(max((cy + dy) * h, ch / 2), h - ch / 2)
     amp = 7 if mv == 'shake' else 1.5                              # handheld feel (output px)
     jx = amp * (math.sin(t * 7.3 + k) + 0.5 * math.sin(t * 13.1 + 2 * k))
