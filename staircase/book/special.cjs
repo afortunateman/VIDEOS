@@ -34,7 +34,7 @@ const pages = {
   // page 2 (left page): copyright
   p02_copyright: head(W, H) + `<div style="position:absolute;inset:0;background:${CREAM}"></div>
    <div class="ink" style="position:absolute;left:300px;right:330px;bottom:420px;font-weight:600;font-size:46px;line-height:1.55">
-   The Caterpillar and the Infinity Staircase<br>Created by Varun Kamalahasan<br><br>
+   The Caterpillar and the Infinity Staircase<br>Created by Varun Kamalahasan<br>
    Copyright © 2026 Varun Kamalahasan. All rights reserved.<br>
    No part of this book may be reproduced in any form without written permission from the author, except for brief quotations in reviews.<br><br>
    First edition, 2026</div></body></html>`,
@@ -57,12 +57,9 @@ const BLURB = [
 ];
 // back cover: the barcode KDP adds sits bottom-right (about 2 x 1.2 in), so the text stays clear of it
 const cover = head(CW, CH) + `
- <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s20.png) center/cover"></div>
- <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:linear-gradient(to bottom,rgba(20,8,30,.62),rgba(20,8,30,.42) 55%,rgba(20,8,30,.25))"></div>
- <div class="t" style="position:absolute;left:${37.5 + 190}px;width:${half - 37.5 - 380}px;top:250px;font-weight:600;font-size:66px;line-height:1.38;text-align:left;-webkit-text-stroke:8px rgba(25,10,30,.85)">
- ${BLURB.map((b) => `<p style="margin:0 0 56px">${b}</p>`).join('')}</div>
+ <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_night.png) center/cover"></div>
  <div style="position:absolute;left:${half}px;top:0;width:${sp}px;height:${CH}px;background:#1d1433"></div>
- <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_night.png) center/cover"></div>
+ <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_front.png) center/cover"></div>
  <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH * 0.5}px;background:linear-gradient(to bottom,rgba(10,6,30,.55),rgba(10,6,30,0))"></div>
  <img src="file://${logo}" style="position:absolute;left:${half + sp + 190}px;width:${half - 190 - 37.5 - 190}px;top:190px;filter:drop-shadow(0 14px 34px rgba(20,4,10,.65))">
  <div class="t" style="position:absolute;left:${half + sp + 150}px;width:${half - 300 - 37.5}px;top:${190 + (half - 417.5) * 667 / 2000 + 40}px;font-weight:600;font-size:92px">Varun Kamalahasan</div></body></html>`;
