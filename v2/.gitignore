@@ -1,0 +1,6 @@
+pics/
+*.log
+p?.mp4
+video.mp4
+mix.wav
+__pycache__/
