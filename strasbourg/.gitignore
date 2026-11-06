@@ -1,0 +1,6 @@
+clean/
+*.log
+part*.mp4
+video.mp4
+parts.txt
+__pycache__/
