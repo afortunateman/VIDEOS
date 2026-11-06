@@ -4,6 +4,7 @@ import {Insert} from './Insert';
 import {TITLE_FRAMES, TitleCard} from './TitleCard';
 import {Monologue, MonologueProps} from './Monologue';
 import {CREDITS_FRAMES, Credits} from './Credits';
+import {BookStill, BookStillProps} from './BookStill';
 import {FILM_FRAMES} from './timeline';
 
 export const Root: React.FC = () => (
@@ -23,6 +24,7 @@ export const Root: React.FC = () => (
       height={1080}
       durationInFrames={1500}
     />
+    <Composition id="BookStill" component={BookStill} defaultProps={{n: 1, t: 2, wide: 1} as BookStillProps} durationInFrames={1} fps={30} width={2625} height={2625} />
     <Composition id="Credits" component={Credits} durationInFrames={CREDITS_FRAMES} fps={30} width={1920} height={1080} />
     <Composition id="TitleCard" component={TitleCard} durationInFrames={TITLE_FRAMES} fps={30} width={1920} height={1080} />
     {/* The same shot held on after the camera settles: the backdrop for the title card. */}
