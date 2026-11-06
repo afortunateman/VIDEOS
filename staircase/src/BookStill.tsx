@@ -1,6 +1,7 @@
 import {ThreeCanvas} from '@remotion/three';
 import {AbsoluteFill, useVideoConfig} from 'remotion';
 import {Shot} from './engine/director';
+import {LOOKS} from './engine/look';
 import {Scene} from './Film';
 import {SHOTS} from './shots';
 import {INSERTS} from './Insert';
@@ -11,16 +12,18 @@ import {STAIR_STYLE} from './engine/World';
 // shows more sky and ground, which leaves room for text).
 // `move` / `aim` nudge the camera position / target (world units) for a better book framing, e.g. lifting the
 // camera so a foreground flame no longer covers a face.
-export type BookStillProps = {n: number; t: number; wide?: number; move?: [number, number, number]; aim?: [number, number, number]; shade?: number};
+export type BookStillProps = {n: number; t: number; wide?: number; move?: [number, number, number]; aim?: [number, number, number]; shade?: number; look?: string; lookTweak?: Record<string, unknown>};
+// `look` swaps the scene's lighting/sky for a named look (e.g. 'night'), for the cover.
 // `shade` scales the sun's shadow strength (1 = as in the film), to keep hard shadows off a face.
 
-export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1, move = [0, 0, 0], aim = [0, 0, 0], shade = 1}) => {
+export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1, move = [0, 0, 0], aim = [0, 0, 0], shade = 1, look, lookTweak}) => {
   const {width, height} = useVideoConfig();
   STAIR_STYLE.solid = true; // book pictures use the solid, flush stair blocks
   const base = SHOTS.find((s) => s.n === n) ?? Object.values(INSERTS).find((s) => s.n === n)!;
   const k = 1 + (16 / 9 - 1) * wide; // tan(vfov/2) scale that keeps the horizontal view at aspect 1
   const shot: Shot = {
     ...base,
+    ...(look ? {look: () => ({...LOOKS[look], ...(lookTweak ?? {})})} : {}),
     sunShadow: (tt, T) => (base.sunShadow?.(tt, T) ?? 1) * shade,
     cam: (tt, T) => {
       const c = base.cam(tt, T);

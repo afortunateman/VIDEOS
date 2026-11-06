@@ -27,8 +27,8 @@ const butterfly = (w) => `<div style="position:relative;width:${w}px;height:${w 
 const CREAM = '#fbf3e6';
 const pages = {
   // page 1 (right page): title over the dawn staircase, softly blurred
-  p01_title: head(W, H) + `<div style="position:absolute;inset:-40px;background:url(file://${stills}/s01.png) center/cover;filter:blur(18px) brightness(.92)"></div>
-   <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(255,240,220,.25),rgba(40,10,40,.25))"></div>
+  p01_title: head(W, H) + `<div style="position:absolute;inset:-40px;background:url(file://${stills}/cover_night.png) center/cover;filter:blur(18px) brightness(1.05)"></div>
+   <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(120,140,255,.18),rgba(10,10,40,.3))"></div>
    <img src="file://${logo}" style="position:absolute;left:${180 + 60}px;width:${W - 180 - 60 - 112 - 37.5 - 60}px;top:820px;filter:drop-shadow(0 12px 30px rgba(40,8,6,.5))">
    <div class="t" style="position:absolute;left:180px;right:150px;bottom:360px;font-weight:600;font-size:96px">Varun Kamalahasan</div></body></html>`,
   // page 2 (left page): copyright
@@ -43,9 +43,10 @@ const pages = {
    <div style="position:absolute;left:200px;right:150px;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:70px">
    ${spiral(340)}<div class="ink" style="font-weight:600;font-size:120px;line-height:1.3">For Mom, Dad<br>and Tofu</div></div></body></html>`,
   // page 32 (left page): the end
-  p_end: head(W, H) + `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#2d3a8c 0%,#141a45 60%,#090c24 100%)"></div>
-   <div style="position:absolute;left:150px;right:220px;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:80px">
-   ${butterfly(520)}<div class="t" style="font-weight:700;font-size:200px;color:#f6a25a;-webkit-text-stroke:22px #4a0c0a">THE END</div></div></body></html>`,
+  // last page (left page): cream like the dedication, the title's butterfly above THE END in maroon
+  p_end: head(W, H) + `<div style="position:absolute;inset:0;background:${CREAM}"></div>
+   <div style="position:absolute;left:150px;right:220px;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:70px">
+   ${butterfly(420)}<div class="ink" style="font-weight:600;font-size:150px;letter-spacing:6px">THE END</div></div></body></html>`,
 };
 // cover: bleed + back + spine + front + bleed, 300 DPI
 const PAGES = +(process.env.PAGES || 42), SPINE = PAGES * 0.002347, CW = Math.round((0.125 + 8.5 + SPINE + 8.5 + 0.125) * 300), CH = 2625;
@@ -56,12 +57,12 @@ const BLURB = [
 ];
 // back cover: the barcode KDP adds sits bottom-right (about 2 x 1.2 in), so the text stays clear of it
 const cover = head(CW, CH) + `
- <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s27.png) center/cover"></div>
+ <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s20.png) center/cover"></div>
  <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:linear-gradient(to bottom,rgba(20,8,30,.62),rgba(20,8,30,.42) 55%,rgba(20,8,30,.25))"></div>
  <div class="t" style="position:absolute;left:${37.5 + 190}px;width:${half - 37.5 - 380}px;top:250px;font-weight:600;font-size:66px;line-height:1.38;text-align:left;-webkit-text-stroke:8px rgba(25,10,30,.85)">
  ${BLURB.map((b) => `<p style="margin:0 0 56px">${b}</p>`).join('')}</div>
  <div style="position:absolute;left:${half}px;top:0;width:${sp}px;height:${CH}px;background:#1d1433"></div>
- <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_front.png) center/cover"></div>
+ <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_night.png) center/cover"></div>
  <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH * 0.5}px;background:linear-gradient(to bottom,rgba(10,6,30,.55),rgba(10,6,30,0))"></div>
  <img src="file://${logo}" style="position:absolute;left:${half + sp + 190}px;width:${half - 190 - 37.5 - 190}px;top:190px;filter:drop-shadow(0 14px 34px rgba(20,4,10,.65))">
  <div class="t" style="position:absolute;left:${half + sp + 150}px;width:${half - 300 - 37.5}px;top:${190 + (half - 417.5) * 667 / 2000 + 40}px;font-weight:600;font-size:92px">Varun Kamalahasan</div></body></html>`;

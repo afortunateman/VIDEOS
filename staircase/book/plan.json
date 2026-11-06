@@ -46,12 +46,12 @@
   "text": "“Climb high enough,” they said,<br>“and you’ll become a butterfly.”"
  },
  {
-  "id": "s06",
-  "n": 7,
-  "t": 1.0,
-  "wide": 0.8,
   "size": 190,
-  "text": "So he climbed."
+  "text": "So he climbed.",
+  "id": "c06",
+  "n": 17.5,
+  "t": 2.6,
+  "wide": 0.8
  },
  {
   "id": "s07",
@@ -127,11 +127,11 @@
   ]
  },
  {
-  "id": "s11",
-  "n": 15,
-  "t": 3.6,
-  "wide": 0.8,
-  "text": "One day, he came across a caterpillar coming down the staircase."
+  "text": "One day, he came across a caterpillar coming down the staircase.",
+  "id": "c12",
+  "n": 16,
+  "t": 1.0,
+  "wide": 0.9
  },
  {
   "id": "s12",
@@ -162,32 +162,32 @@
   ]
  },
  {
-  "id": "s13",
-  "n": 20,
-  "t": 0.9,
-  "wide": 0.8,
   "blocks": [
    {
     "text": "“Have you seen it?”",
     "box": [
-     0.06,
+     0.58,
      0.05,
-     0.5,
-     0.26
+     0.94,
+     0.3
     ],
     "size": 128
    },
    {
     "text": "“No. But I’ve heard.”",
     "box": [
-     0.5,
-     0.04,
-     0.94,
-     0.2
+     0.08,
+     0.8,
+     0.92,
+     0.95
     ],
     "size": 128
    }
-  ]
+  ],
+  "id": "c13",
+  "n": 18,
+  "t": 0.6,
+  "wide": 0.9
  },
  {
   "id": "s14",
@@ -289,12 +289,17 @@
   "text": "Then he looked at his little suitcase."
  },
  {
-  "id": "s22",
+  "size": 190,
+  "text": "And finally, he sat down.",
+  "id": "c22",
   "n": 35,
   "t": 2.0,
-  "wide": 0.8,
-  "size": 190,
-  "text": "And finally, he sat down."
+  "wide": 0.9,
+  "move": [
+   -1.5,
+   0.7,
+   -2.2
+  ]
  },
  {
   "id": "s23",
@@ -304,17 +309,17 @@
   "text": "For a while, he waited."
  },
  {
-  "id": "k38s",
-  "n": 38,
-  "t": 0.8,
-  "wide": 1.0,
-  "shade": 0.3,
   "text": "But nothing happened.",
+  "id": "c38a",
+  "n": 38,
+  "t": 0.15,
+  "wide": 1.0,
   "move": [
    0.38,
    0.31,
    -0.77
-  ]
+  ],
+  "shade": 0.3
  },
  {
   "id": "s24",
@@ -373,12 +378,13 @@
   "pos": "top-right"
  },
  {
-  "id": "s27",
-  "n": 47,
-  "t": 0.7,
-  "wide": 0.8,
   "size": 190,
-  "text": "And that was enough."
+  "text": "And that was enough.",
+  "id": "c39",
+  "n": 45,
+  "t": 4.5,
+  "wide": 0.8,
+  "pos": "top"
  },
  {
   "id": "k49",
