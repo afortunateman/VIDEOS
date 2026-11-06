@@ -10,9 +10,12 @@ C = {
     'top': (0.07, 0.06, 0.93, 0.32), 'bottom': (0.07, 0.68, 0.93, 0.94),
     'top-left': (0.07, 0.06, 0.52, 0.40), 'top-right': (0.48, 0.06, 0.93, 0.40),
     'bottom-left': (0.07, 0.60, 0.52, 0.94), 'bottom-right': (0.48, 0.60, 0.93, 0.94),
+    'mid-left': (0.05, 0.30, 0.45, 0.58), 'mid-right': (0.55, 0.30, 0.95, 0.58),   # pinned only
 }
 out = {}
 for p in plan:
+    if 'blocks' in p:
+        out[p['id']] = {'pos': 'blocks'}; continue
     im = Image.open(f"{stills}/{p['id']}.png").convert('RGB').resize((256, 256))
     g = im.convert('L')
     edges = np.asarray(g.filter(ImageFilter.FIND_EDGES).filter(ImageFilter.GaussianBlur(3)), float) / 255
@@ -22,6 +25,7 @@ for p in plan:
     long_text = len(p['text']) > 70
     scores = {}
     for k, (x0, y0, x1, y1) in C.items():
+        if k.startswith('mid'): continue
         sl = (slice(int(y0 * 256), int(y1 * 256)), slice(int(x0 * 256), int(x1 * 256)))
         busy = edges[sl].mean() * 4 + edges[sl].std() * 2      # detail: characters, carvings, steps
         bright = max(0, lum[sl].mean() - 0.55) * 1.5           # white text needs a darker ground

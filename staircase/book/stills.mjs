@@ -10,7 +10,7 @@ const exe = '/opt/pw-browsers/chromium-1243/chrome-linux64/chrome';
 const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
 const browser = await openBrowser('chrome', {browserExecutable: exe, chromiumOptions: {gl: 'swangle'}});
 for (const p of plan) {
-  const inputProps = {n: p.n, t: p.t, wide: p.wide ?? 0.8, move: p.move, aim: p.aim};
+  const inputProps = {n: p.n, t: p.t, wide: p.wide ?? 0.8, move: p.move, aim: p.aim, shade: p.shade};
   const composition = await selectComposition({serveUrl, id: 'BookStill', inputProps, puppeteerInstance: browser, chromiumOptions: {gl: 'swangle'}});
   for (let k = 0; k < 2; k++) {
     try {

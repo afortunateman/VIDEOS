@@ -18,7 +18,7 @@ html,body{margin:0;width:${w}px;height:${h}px;overflow:hidden}
 const spiral = (size) => {
   const pts = []; for (let i = 0; i <= 200; i++) { const th = (i / 200) * 2.6 * 2 * Math.PI, r = 4 + 9.2 * th; pts.push(`${(r * Math.cos(th)).toFixed(1)},${(r * Math.sin(th)).toFixed(1)}`); }
   const d = 'M' + pts.join(' L');
-  return `<svg width="${size}" height="${size}" viewBox="-85 -85 170 170"><path d="${d}" fill="none" stroke="#4a0c0a" stroke-width="14" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#f6a25a" stroke-width="7.5" stroke-linecap="round"/></svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="-165 -165 330 330"><path d="${d}" fill="none" stroke="#4a0c0a" stroke-width="24" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#f6a25a" stroke-width="13" stroke-linecap="round"/></svg>`;
 };
 // the title artwork's butterfly, cut from the logo (both wings)
 const butterfly = (w) => `<div style="position:relative;width:${w}px;height:${w * 0.82}px;margin:0 auto;overflow:hidden">
@@ -37,18 +37,18 @@ const pages = {
    The Caterpillar and the Infinity Staircase<br>Created by Varun Kamalahasan<br><br>
    Copyright © 2026 Varun Kamalahasan. All rights reserved.<br>
    No part of this book may be reproduced in any form without written permission from the author, except for brief quotations in reviews.<br><br>
-   Pictures rendered from the animated short film of the same name.<br>First edition, 2026</div></body></html>`,
+   First edition, 2026</div></body></html>`,
   // page 3 (right page): dedication
   p03_dedication: head(W, H) + `<div style="position:absolute;inset:0;background:${CREAM}"></div>
    <div style="position:absolute;left:200px;right:150px;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:70px">
-   ${spiral(260)}<div class="ink" style="font-weight:600;font-size:120px;line-height:1.3">For Mom<br>and Tofu</div></div></body></html>`,
+   ${spiral(340)}<div class="ink" style="font-weight:600;font-size:120px;line-height:1.3">For Mom, Dad<br>and Tofu</div></div></body></html>`,
   // page 32 (left page): the end
-  p32_end: head(W, H) + `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#2d3a8c 0%,#141a45 60%,#090c24 100%)"></div>
+  p_end: head(W, H) + `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#2d3a8c 0%,#141a45 60%,#090c24 100%)"></div>
    <div style="position:absolute;left:150px;right:220px;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:80px">
    ${butterfly(520)}<div class="t" style="font-weight:700;font-size:200px;color:#f6a25a;-webkit-text-stroke:22px #4a0c0a">THE END</div></div></body></html>`,
 };
 // cover: bleed + back + spine + front + bleed, 300 DPI
-const SPINE = 32 * 0.002347, CW = Math.round((0.125 + 8.5 + SPINE + 8.5 + 0.125) * 300), CH = 2625;
+const PAGES = +(process.env.PAGES || 42), SPINE = PAGES * 0.002347, CW = Math.round((0.125 + 8.5 + SPINE + 8.5 + 0.125) * 300), CH = 2625;
 const half = (0.125 + 8.5) * 300, sp = SPINE * 300;
 const cover = head(CW, CH) + `
  <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s27.png) center/cover"></div>

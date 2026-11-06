@@ -25,7 +25,6 @@
   "n": 4,
   "t": 2.4,
   "wide": 0.8,
-  "text": "But the older caterpillars told stories.",
   "move": [
    0,
    0.9,
@@ -35,25 +34,23 @@
    0,
    0.3,
    0
-  ]
+  ],
+  "text": "But the older caterpillars told stories."
  },
  {
-  "id": "s05",
-  "n": 5,
-  "t": 3.5,
+  "id": "h06",
+  "n": 6,
+  "t": 4.6,
   "wide": 0.8,
-  "move": [
-   0,
-   0.45,
-   0
-  ],
-  "text": "“Climb high enough,” they said, “and you’ll become a butterfly.”"
+  "pos": "top",
+  "text": "“Climb high enough,” they said,<br>“and you’ll become a butterfly.”"
  },
  {
   "id": "s06",
   "n": 7,
   "t": 1.0,
   "wide": 0.8,
+  "size": 190,
   "text": "So he climbed."
  },
  {
@@ -64,10 +61,11 @@
   "text": "He climbed past thousands of steps."
  },
  {
-  "id": "s08",
+  "id": "q09s",
   "n": 9,
-  "t": 1.2,
+  "t": 1.9,
   "wide": 0.8,
+  "shade": 0.35,
   "text": "Past caterpillars who had given up."
  },
  {
@@ -75,20 +73,58 @@
   "n": 10,
   "t": 0.6,
   "wide": 1.0,
-  "text": "Past the skeletons of those who had died trying.",
   "aim": [
    0,
    0.3,
    0
   ],
-  "pos": "top"
+  "pos": "top",
+  "text": "Past the skeletons of those who had died trying."
  },
  {
   "id": "s10",
   "n": 11,
   "t": 2.0,
   "wide": 0.8,
-  "text": "Some had left messages carved into the walls. Keep going. The top is worth it. You’re almost there."
+  "text": "Some had left messages carved into the walls."
+ },
+ {
+  "id": "w11",
+  "n": 11,
+  "t": 0.4,
+  "wide": 0.8,
+  "blocks": [
+   {
+    "text": "“Keep going.”",
+    "box": [
+     0.06,
+     0.05,
+     0.5,
+     0.17
+    ],
+    "size": 118
+   },
+   {
+    "text": "“The top is worth it.”",
+    "box": [
+     0.46,
+     0.11,
+     0.94,
+     0.25
+    ],
+    "size": 118
+   },
+   {
+    "text": "“You’re almost there.”",
+    "box": [
+     0.03,
+     0.4,
+     0.36,
+     0.6
+    ],
+    "size": 118
+   }
+  ]
  },
  {
   "id": "s11",
@@ -102,20 +138,63 @@
   "n": 17,
   "t": 1.0,
   "wide": 0.8,
-  "text": "“What’s at the top?” he asked. “Glory,” the caterpillar replied."
+  "blocks": [
+   {
+    "text": "“What’s at the top?” he asked.",
+    "box": [
+     0.06,
+     0.05,
+     0.5,
+     0.28
+    ],
+    "size": 128
+   },
+   {
+    "text": "“Glory,” the caterpillar replied.",
+    "box": [
+     0.5,
+     0.13,
+     0.94,
+     0.33
+    ],
+    "size": 128
+   }
+  ]
  },
  {
   "id": "s13",
   "n": 20,
   "t": 0.9,
   "wide": 0.8,
-  "text": "“Have you seen it?” “No. But I’ve heard.”"
+  "blocks": [
+   {
+    "text": "“Have you seen it?”",
+    "box": [
+     0.06,
+     0.05,
+     0.5,
+     0.26
+    ],
+    "size": 128
+   },
+   {
+    "text": "“No. But I’ve heard.”",
+    "box": [
+     0.5,
+     0.04,
+     0.94,
+     0.2
+    ],
+    "size": 128
+   }
+  ]
  },
  {
   "id": "s14",
   "n": 21,
   "t": 1.2,
   "wide": 0.8,
+  "size": 190,
   "text": "Years passed."
  },
  {
@@ -123,34 +202,58 @@
   "n": 22,
   "t": 0.8,
   "wide": 0.8,
-  "text": "His body grew tired. His legs grew weak.",
-  "pos": "top-right"
+  "pos": "top-right",
+  "text": "His body grew tired.<br>His legs grew weak."
  },
  {
   "id": "s16",
   "n": 24.5,
   "t": 1.0,
   "wide": 0.6,
-  "text": "But he kept climbing, because the thought of staying a caterpillar scared him more than the staircase."
+  "text": "But he kept climbing,"
+ },
+ {
+  "id": "k25",
+  "n": 25,
+  "t": 1.8,
+  "wide": 0.8,
+  "text": "because the thought of staying a caterpillar scared him more than the staircase."
+ },
+ {
+  "id": "k26",
+  "n": 26,
+  "t": 1.6,
+  "wide": 0.8,
+  "text": "One day, he couldn’t take it anymore."
  },
  {
   "id": "s17",
   "n": 27,
   "t": 0.8,
   "wide": 0.8,
-  "text": "One day, he couldn’t take it anymore. He stopped climbing and screamed at the top of his lungs."
+  "text": "He stopped climbing and screamed at the top of his lungs.",
+  "pos": "top"
+ },
+ {
+  "id": "k28",
+  "n": 28,
+  "t": 2.8,
+  "wide": 0.8,
+  "text": "Then, from somewhere above, a voice called out:"
  },
  {
   "id": "s18",
   "n": 29,
   "t": 1.5,
   "wide": 1.0,
-  "text": "Then, from somewhere above, a voice called out: “You’re almost there! Don’t give up now! You’ve come so far!”",
   "aim": [
    0,
    0.35,
    0
-  ]
+  ],
+  "pos": "top",
+  "size": 128,
+  "text": "“You’re almost there! Don’t give up now! You’ve come so far!”"
  },
  {
   "id": "s19",
@@ -171,13 +274,26 @@
   "n": 33,
   "t": 1.3,
   "wide": 0.8,
-  "text": "He looked up at the endless staircase. Then he looked at his little suitcase."
+  "text": "He looked up at the endless staircase."
+ },
+ {
+  "id": "k34b",
+  "n": 34,
+  "t": 1.2,
+  "wide": 1.0,
+  "move": [
+   0.6,
+   0.35,
+   -0.5
+  ],
+  "text": "Then he looked at his little suitcase."
  },
  {
   "id": "s22",
   "n": 35,
   "t": 2.0,
   "wide": 0.8,
+  "size": 190,
   "text": "And finally, he sat down."
  },
  {
@@ -185,52 +301,102 @@
   "n": 36,
   "t": 1.5,
   "wide": 0.8,
-  "text": "For a while, he waited. But nothing happened."
+  "text": "For a while, he waited."
+ },
+ {
+  "id": "k38s",
+  "n": 38,
+  "t": 0.8,
+  "wide": 1.0,
+  "shade": 0.3,
+  "text": "But nothing happened.",
+  "move": [
+   0.38,
+   0.31,
+   -0.77
+  ]
  },
  {
   "id": "s24",
   "n": 39,
   "t": 2.0,
   "wide": 0.8,
-  "text": "The staircase carried on as it always had. And he was still just a caterpillar."
+  "text": "The staircase carried on as it always had."
+ },
+ {
+  "id": "k41s",
+  "n": 41,
+  "t": 2.0,
+  "wide": 0.8,
+  "shade": 0.3,
+  "text": "And he was still just a caterpillar.",
+  "pos": "mid-left"
  },
  {
   "id": "s25",
   "n": 43,
   "t": 1.4,
   "wide": 1.0,
-  "text": "There were no wings. And there was no glory.",
   "move": [
    0.4,
    0.25,
    -0.4
   ],
-  "pos": "top"
+  "pos": "top",
+  "text": "There were no wings."
+ },
+ {
+  "id": "k44",
+  "n": 44,
+  "t": 1.5,
+  "wide": 0.8,
+  "text": "And there was no glory."
  },
  {
   "id": "s26",
   "n": 45,
   "t": 4.5,
   "wide": 1.0,
-  "text": "But for the first time in his life, he wasn’t miserable.",
   "move": [
    0.3,
    0.4,
    -0.7
-  ]
+  ],
+  "text": "But for the first time in his life, he wasn’t miserable."
+ },
+ {
+  "id": "k46",
+  "n": 46,
+  "t": 3.0,
+  "wide": 0.8,
+  "text": "For the first time, he was just there.",
+  "pos": "top-right"
  },
  {
   "id": "s27",
   "n": 47,
   "t": 0.7,
   "wide": 0.8,
-  "text": "For the first time, he was just there. And that was enough."
+  "size": 190,
+  "text": "And that was enough."
+ },
+ {
+  "id": "k49",
+  "n": 49,
+  "t": 1.6,
+  "wide": 1.0,
+  "text": "He looked up at the staircase once more, and wondered…",
+  "move": [
+   0.34,
+   0.46,
+   -0.7
+  ]
  },
  {
   "id": "s28",
   "n": 50,
   "t": 9.0,
   "wide": 0.8,
-  "text": "He looked up at the staircase once more, and wondered… What if the top was invented by caterpillars who couldn’t bear the thought that climbing was all there was?"
+  "text": "What if the top was invented by caterpillars who couldn’t bear the thought that climbing was all there was?"
  }
 ]
