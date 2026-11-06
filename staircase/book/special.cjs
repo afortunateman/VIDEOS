@@ -57,7 +57,10 @@ const BLURB = [
 ];
 // back cover: the barcode KDP adds sits bottom-right (about 2 x 1.2 in), so the text stays clear of it
 const cover = head(CW, CH) + `
- <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_night.png) center/cover"></div>
+ <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_back.png) center/cover"></div>
+ <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH * 0.55}px;background:linear-gradient(to bottom,rgba(8,8,32,.62),rgba(8,8,32,.38) 65%,rgba(8,8,32,0))"></div>
+ <div class="t" id="blurb" style="position:absolute;left:${37.5 + 190}px;width:${half - 37.5 - 380}px;top:230px;font-weight:600;font-size:62px;line-height:1.38;text-align:left;-webkit-text-stroke:8px rgba(25,10,30,.85)">
+ ${BLURB.map((b) => `<p style="margin:0 0 48px">${b}</p>`).join('')}</div>
  <div style="position:absolute;left:${half}px;top:0;width:${sp}px;height:${CH}px;background:#1d1433"></div>
  <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_front.png) center/cover"></div>
  <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH * 0.5}px;background:linear-gradient(to bottom,rgba(10,6,30,.55),rgba(10,6,30,0))"></div>
