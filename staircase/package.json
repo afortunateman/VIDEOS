@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fontsource/fredoka": "^5.2.5",
     "@react-three/fiber": "^9.8.2",
     "@remotion/cli": "^4.0.540",
     "@remotion/three": "^4.0.540",
