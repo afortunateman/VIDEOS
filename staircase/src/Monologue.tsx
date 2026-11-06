@@ -97,15 +97,15 @@ const SpiralTimer: React.FC<{p: number; t: number; size: number; appear: number}
   );
 };
 
-// "T-53 ... T-1" to the movie, next to the spiral. Each new number pops in slightly.
+// "MOVIE STARTS IN T-50 ... T-0", next to the spiral: a fixed 50-second countdown. Each new number pops in slightly.
 const Countdown: React.FC<{t: number; T: number; u: number; appear: number}> = ({t, T, u, appear}) => {
   const left = Math.max(0, T - t);
-  const n = Math.max(1, Math.ceil(left));
+  const n = Math.ceil(left);
   const since = n - left; // 0 right as the number changes .. 1 just before the next
   const pop = 1 + 0.12 * Math.exp(-since * 9);
   return (
     <div style={{opacity: appear, textAlign: 'right', marginRight: 4 * u}}>
-      <div style={{...lettering(22 * u, 600), letterSpacing: 3 * u, filter: 'drop-shadow(0 2px 4px rgba(40,8,6,0.6))', WebkitTextStroke: `${4 * u}px ${INK}`}}>to the movie</div>
+      <div style={{...lettering(22 * u, 600), letterSpacing: 3 * u, filter: 'drop-shadow(0 2px 4px rgba(40,8,6,0.6))', WebkitTextStroke: `${4 * u}px ${INK}`}}>movie starts in</div>
       <div style={{...lettering(64 * u), transform: `scale(${pop})`, transformOrigin: '100% 50%', fontVariantNumeric: 'tabular-nums', lineHeight: 1}}>T–{n}</div>
     </div>
   );
@@ -143,8 +143,10 @@ export const Monologue: React.FC<MonologueProps> = ({src, quoteIn, quoteOut}) =>
   ) : null;
 
   // Spiral timer: appears just after the start, fills over the whole video.
-  const appear = ease(t, 0.3, 1.0) * (1 - ease(t, T - 0.4, T));
-  const p = Math.min(1, Math.max(0, t / T));
+  // The countdown runs a fixed 50 seconds (the spiral fills with it), then both fade away.
+  const COUNT = 50;
+  const appear = ease(t, 0.3, 1.0) * (1 - ease(t, COUNT + 0.6, COUNT + 1.4));
+  const p = Math.min(1, Math.max(0, t / COUNT));
   const size = (portrait ? 110 : 120) * u;
 
   return (
@@ -154,7 +156,7 @@ export const Monologue: React.FC<MonologueProps> = ({src, quoteIn, quoteOut}) =>
       <AbsoluteFill style={{opacity: 0.55 * wash, background: 'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(255,190,120,0.35) 0%, rgba(0,0,0,0) 70%)', mixBlendMode: 'screen'}} />
       {quoteLayer}
       <div style={{position: 'absolute', right: (portrait ? 40 : 56) * u, top: portrait ? 120 * u : undefined, bottom: portrait ? undefined : 56 * u, display: 'flex', alignItems: 'center', gap: 34 * u}}>
-        <Countdown t={t} T={T} u={u} appear={appear} />
+        <Countdown t={t} T={COUNT} u={u} appear={appear} />
         <SpiralTimer p={p} t={t} size={size} appear={appear} />
       </div>
     </AbsoluteFill>
