@@ -64,34 +64,49 @@ const type = (size: number, weight = 700): React.CSSProperties => ({
   textShadow: `0 0 ${size * 0.35}px rgba(255,255,255,0.18)`,
 });
 
+// Two cards over one continuous pattern: "Created by / Varun Kamalahasan", then "Special thanks / Mom / Tofu".
+// Each fades in slowly at the centre, holds, and fades out.
+const CARD1: [number, number] = [0.4, 4.8]; // in .. out (seconds)
+const CARD2: [number, number] = [5.2, 9.6];
+
 export const Credits: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
   const t = frame / fps;
   const T = durationInFrames / fps;
-  const fadeOut = 1 - ease(t, T - 1.4, T - 0.2, Easing.in(Easing.quad));
+  const patternFade = ease(t, 0, 1.6) * (1 - ease(t, T - 1.0, T - 0.1, Easing.in(Easing.quad)));
 
-  const bloom = (at: number): React.CSSProperties => {
-    const u = ease(t, at, at + 0.8, Easing.out(Easing.exp));
-    return {opacity: u, filter: `blur(${(1 - u) * 16}px)`, transform: `translateY(${(1 - u) * 14}px) scale(${1.08 - 0.08 * u})`};
+  // a soft fade with a whisper of blur; `at` = when this line starts to appear, [, out] = when the card leaves
+  const fade = (at: number, out: number): React.CSSProperties => {
+    const u = ease(t, at, at + 1.3, Easing.inOut(Easing.sin)) * (1 - ease(t, out - 0.8, out, Easing.inOut(Easing.sin)));
+    return {opacity: u, filter: `blur(${(1 - u) * 6}px)`};
   };
+  const card = (span: [number, number], children: React.ReactNode) =>
+    t >= span[0] - 0.05 && t <= span[1] + 0.05 ? (
+      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
+        <div style={{transform: `scale(${1 + 0.025 * ease(t, span[0], span[1])})`}}>{children}</div>
+      </AbsoluteFill>
+    ) : null;
 
   return (
     <AbsoluteFill style={{backgroundColor: '#000'}}>
-      <AbsoluteFill style={{opacity: fadeOut}}>
-        <Pattern t={t} opacity={ease(t, 0, 1.6)} />
-        <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-          <div style={{transform: `scale(${1 + 0.02 * ease(t, 0, T)})`}}>
-            <div style={{...type(34, 600), letterSpacing: 8, opacity: 0.75, ...bloom(0.5)}}>Created by</div>
-            <div style={{...type(92), marginTop: 10, ...bloom(0.8)}}>Varun Kamalahasan</div>
-            <div style={{width: 120, height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.5)', margin: '56px auto 52px', ...bloom(1.5)}} />
-            <div style={{...type(34, 600), letterSpacing: 8, opacity: 0.75, ...bloom(1.9)}}>Special thanks</div>
-            <div style={{...type(64), marginTop: 14, ...bloom(2.2)}}>Mom</div>
-            <div style={{...type(64), marginTop: 4, ...bloom(2.5)}}>Tofu</div>
-          </div>
-        </AbsoluteFill>
-        <AbsoluteFill style={{background: 'radial-gradient(ellipse 80% 75% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%)'}} />
-      </AbsoluteFill>
+      <Pattern t={t} opacity={patternFade} />
+      {card(
+        CARD1,
+        <>
+          <div style={{...type(34, 600), letterSpacing: 8, opacity: 0.75, ...fade(CARD1[0], CARD1[1])}}>Created by</div>
+          <div style={{...type(100), marginTop: 12, ...fade(CARD1[0] + 0.45, CARD1[1])}}>Varun Kamalahasan</div>
+        </>,
+      )}
+      {card(
+        CARD2,
+        <>
+          <div style={{...type(34, 600), letterSpacing: 8, opacity: 0.75, ...fade(CARD2[0], CARD2[1])}}>Special thanks</div>
+          <div style={{...type(72), marginTop: 16, ...fade(CARD2[0] + 0.45, CARD2[1])}}>Mom</div>
+          <div style={{...type(72), marginTop: 4, ...fade(CARD2[0] + 0.8, CARD2[1])}}>Tofu</div>
+        </>,
+      )}
+      <AbsoluteFill style={{background: 'radial-gradient(ellipse 80% 75% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%)'}} />
     </AbsoluteFill>
   );
 };
