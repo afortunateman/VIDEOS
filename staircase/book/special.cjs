@@ -50,16 +50,21 @@ const pages = {
 // cover: bleed + back + spine + front + bleed, 300 DPI
 const PAGES = +(process.env.PAGES || 42), SPINE = PAGES * 0.002347, CW = Math.round((0.125 + 8.5 + SPINE + 8.5 + 0.125) * 300), CH = 2625;
 const half = (0.125 + 8.5) * 300, sp = SPINE * 300;
+const BLURB = [
+  'There was once a little caterpillar climbing an endless staircase. He dreamed of reaching the top and becoming a butterfly. But would he ever get there? Would he finally become a butterfly? Or would he discover that there was more to life than reaching the top?',
+  'A whimsical and beautifully illustrated tale that brings together imagination, wonder, and a gentle reflection on life. Through a charming little adventure, <i>The Caterpillar and the Infinity Staircase</i> invites children to explore big questions with curious minds, while offering grown-ups a gentle reminder to slow down, embrace the journey, and find joy in simply being alive.',
+];
+// back cover: the barcode KDP adds sits bottom-right (about 2 x 1.2 in), so the text stays clear of it
 const cover = head(CW, CH) + `
  <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s27.png) center/cover"></div>
- <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:linear-gradient(to bottom,rgba(20,8,30,.55),rgba(20,8,30,.15) 60%,rgba(20,8,30,.35))"></div>
- <div class="t" style="position:absolute;left:${37.5 + 190}px;width:${half - 37.5 - 380}px;top:300px;font-weight:600;font-size:84px;line-height:1.3;text-wrap:balance">
- A little caterpillar climbs a staircase with no end, because everyone says that if he climbs high enough, he will become a butterfly.<br><br>
- Years pass. The steps never stop.<br><br>Then, one day, he sits down.</div>
- <div style="position:absolute;left:${half}px;top:0;width:${sp}px;height:${CH}px;background:#2b1630"></div>
- <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/s01.png) center/cover"></div>
- <img src="file://${logo}" style="position:absolute;left:${half + sp + 190}px;width:${half - 190 - 37.5 - 190}px;top:240px;filter:drop-shadow(0 14px 34px rgba(40,8,6,.55))">
- <div class="t" style="position:absolute;left:${half + sp + 150}px;width:${half - 300 - 37.5}px;bottom:260px;font-weight:600;font-size:104px">Varun Kamalahasan</div></body></html>`;
+ <div style="position:absolute;left:0;top:0;width:${half}px;height:${CH}px;background:linear-gradient(to bottom,rgba(20,8,30,.62),rgba(20,8,30,.42) 55%,rgba(20,8,30,.25))"></div>
+ <div class="t" style="position:absolute;left:${37.5 + 190}px;width:${half - 37.5 - 380}px;top:250px;font-weight:600;font-size:66px;line-height:1.38;text-align:left;-webkit-text-stroke:8px rgba(25,10,30,.85)">
+ ${BLURB.map((b) => `<p style="margin:0 0 56px">${b}</p>`).join('')}</div>
+ <div style="position:absolute;left:${half}px;top:0;width:${sp}px;height:${CH}px;background:#1d1433"></div>
+ <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH}px;background:url(file://${stills}/cover_front.png) center/cover"></div>
+ <div style="position:absolute;left:${half + sp}px;top:0;width:${half}px;height:${CH * 0.5}px;background:linear-gradient(to bottom,rgba(10,6,30,.55),rgba(10,6,30,0))"></div>
+ <img src="file://${logo}" style="position:absolute;left:${half + sp + 190}px;width:${half - 190 - 37.5 - 190}px;top:190px;filter:drop-shadow(0 14px 34px rgba(20,4,10,.65))">
+ <div class="t" style="position:absolute;left:${half + sp + 150}px;width:${half - 300 - 37.5}px;top:${190 + (half - 417.5) * 667 / 2000 + 40}px;font-weight:600;font-size:92px">Varun Kamalahasan</div></body></html>`;
 (async () => {
   const b = await chromium.launch();
   for (const [name, html] of [...Object.entries(pages), ['cover', cover]]) {

@@ -344,6 +344,23 @@ const cloudField = (seed: number) => {
 };
 const CLOUDS = cloudField(5);
 
+// Stair style for the picture book's stills (set by BookStill only; the film keeps the original look).
+// solid: each step is a deep stone block whose sides are flush with its neighbours, and there is no separate
+// sloped body under the stairs, so the side of the staircase reads as stacked masonry with nothing sticking out.
+export const STAIR_STYLE = {solid: false};
+const SOLID_DEPTH = 2.4; // block height (the original step blocks are 0.6)
+
+// A step block of height h whose side faces tile the stone texture instead of stretching it.
+const deepStepGeometry = (h: number) => {
+  const g = new THREE.BoxGeometry(WIDTH, h, DEPTH + 0.01);
+  const uv = g.attributes.uv as THREE.BufferAttribute;
+  const k = h / 0.6;
+  // BoxGeometry faces, 4 vertices each: +x, -x, +y, -y, +z, -z. Scale v on the four side faces.
+  for (const face of [0, 1, 4, 5]) for (let v = face * 4; v < face * 4 + 4; v++) uv.setY(v, uv.getY(v) * k);
+  uv.needsUpdate = true;
+  return g;
+};
+
 // ---------------- plaza & meadow ----------------
 // A rounded bush: a cluster of cel-shaded puffs.
 const Bush: React.FC<{pos: [number, number, number]; s: number; dark?: boolean; seed: number}> = ({pos, s, dark, seed}) => {
@@ -423,7 +440,7 @@ export const World: React.FC<{
 
   const geo = useMemo(
     () => ({
-      step: new THREE.BoxGeometry(WIDTH, 0.6, DEPTH + 0.01),
+      step: STAIR_STYLE.solid ? deepStepGeometry(SOLID_DEPTH) : new THREE.BoxGeometry(WIDTH, 0.6, DEPTH + 0.01),
       wall: new THREE.BoxGeometry(0.5, 1, DEPTH * 5 + 0.02),
       postShaft: new THREE.BoxGeometry(0.22, 0.64, 0.22),
       postBall: new THREE.BoxGeometry(0.3, 0.08, 0.3),
@@ -440,7 +457,7 @@ export const World: React.FC<{
     const balls: THREE.Matrix4[] = [];
     for (let i = iMin; i <= iMax; i++) {
       const [y, z] = stepTop(i);
-      const m = M(0, y - 0.3, z);
+      const m = M(0, y - (STAIR_STYLE.solid ? SOLID_DEPTH / 2 : 0.3), z);
       if (i <= mossTo) moss.push(m);
       else {
         steps.push(m);
@@ -500,9 +517,11 @@ export const World: React.FC<{
           </mesh>
         );
       })}
-      <mesh position={[0, cy, cz]} rotation={[angle, 0, 0]} material={a.under} receiveShadow>
-        <boxGeometry args={[WIDTH - 0.1, 3.6, len]} />
-      </mesh>
+      {STAIR_STYLE.solid ? null : (
+        <mesh position={[0, cy, cz]} rotation={[angle, 0, 0]} material={a.under} receiveShadow>
+          <boxGeometry args={[WIDTH - 0.1, 3.6, len]} />
+        </mesh>
+      )}
       {plaza ? <Plaza /> : null}
       {CLOUDS.sea.map((c, i) => (
         <Card

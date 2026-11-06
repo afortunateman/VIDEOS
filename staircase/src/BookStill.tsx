@@ -4,6 +4,7 @@ import {Shot} from './engine/director';
 import {Scene} from './Film';
 import {SHOTS} from './shots';
 import {INSERTS} from './Insert';
+import {STAIR_STYLE} from './engine/World';
 
 // One frame of a shot, rendered square at print resolution for the picture book.
 // `wide` keeps the film's horizontal view in the square frame (1 = same width as the 16:9 shot; the extra height
@@ -15,6 +16,7 @@ export type BookStillProps = {n: number; t: number; wide?: number; move?: [numbe
 
 export const BookStill: React.FC<BookStillProps> = ({n, t, wide = 1, move = [0, 0, 0], aim = [0, 0, 0], shade = 1}) => {
   const {width, height} = useVideoConfig();
+  STAIR_STYLE.solid = true; // book pictures use the solid, flush stair blocks
   const base = SHOTS.find((s) => s.n === n) ?? Object.values(INSERTS).find((s) => s.n === n)!;
   const k = 1 + (16 / 9 - 1) * wide; // tan(vfov/2) scale that keeps the horizontal view at aspect 1
   const shot: Shot = {
