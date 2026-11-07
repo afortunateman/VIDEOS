@@ -79,8 +79,7 @@ def cursor_pos(t):
     if t < 2.5: return lerp(start, p1, (t - 1.6) / 0.9)
     if t < 3.2: return p1
     if t < 3.8: return lerp(p1, p2, (t - 3.2) / 0.6)
-    if t < 4.6: return p2
-    if t < 5.4: return lerp(p2, end, (t - 4.6) / 0.8)
+    if t < 5.0: return p2                                             # stays on the bell while it rings
     return None
 
 # ---- frame loop ---------------------------------------------------------
@@ -126,7 +125,8 @@ for n in range(int(DUR * FPS)):
     if p:
         csc = 1.0
         for tc in (T_CLICK1, T_CLICK2): csc -= 0.18 * math.exp(-((t - tc) / 0.06) ** 2)
-        fade = min(1, (t - 1.6) / 0.25, max(0, (5.4 - t) / 0.4))
+        fade = min(1, (t - 1.6) / 0.25, max(0, (5.0 - t) / 0.4))     # fades out in place
+        csc *= 1 - 0.15 * (1 - fade) * (t > 4.6)
         paste(fr, *cur, p[0] - 6, p[1] - 6, scale=csc, pivot=(6, 6), alpha=fade)
     enc.stdin.write((np.clip(fr, 0, 1) * 255).astype(np.uint8).tobytes())
 enc.stdin.close(); enc.wait()
