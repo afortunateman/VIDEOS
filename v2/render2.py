@@ -15,19 +15,19 @@ SUB = {'12a': (12, 0, 0, .5, .5), '12b': (12, .5, 0, 1, .5), '12c': (12, 0, .5, 
 SHOTS = [
  [(5, .56, .42, 1.0, 'punch')],                                   # 0  1518.
  [(5, .35, .55, 1.0, 'R')],                                       # 1  Strasbourg, between Germany & France
- [(21, .18, .5, 1.15, 'in'), (21, .5, .55, 1.0, 'punch')],         # 2  Frau Troffea walks out / dances
+ [(21, .45, .4, 1.0, 'in'), (21, .55, .42, 1.0, 'punch')],         # 2  Frau Troffea walks out / dances
  [(18, .2, .4, 1.1, 'L')],                                        # 3  nobody took it seriously
  [(18, .33, .35, 1.3, 'in')],                                     # 4  strange behaviour
  [(18, .85, .5, 1.1, 'in')],                                      # 5  maybe mentally unwell
- [(18, .55, .5, 1.4, 'in')],                                      # 6  but soon it became clear
- [(21, .62, .6, 1.25, 'shake')],                                  # 7  she would not stop
- [('12a', .5, .5, 1.0, 'R'), ('12b', .5, .5, 1.0, 'in')],          # 8  morning -> evening
- [('12c', .45, .5, 1.0, 'in')],                                   # 9  into the night
+ [(18, .55, .4, 1.4, 'in')],                                      # 6  but soon it became clear
+ [(21, .62, .42, 1.25, 'shake')],                                  # 7  she would not stop
+ [('12a', .5, .3, 1.0, 'R'), ('12b', .5, .3, 1.0, 'in')],          # 8  morning -> evening
+ [('12c', .45, .3, 1.0, 'in')],                                   # 9  into the night
  [(21, .85, .3, 1.0, 'out')],                                     # 10 next morning, same
  [(10, .68, .72, 1.45, 'in')],                                    # 11 legs began to hurt
- [(4, .5, .3, 1.5, 'in')],                                        # 12 body exhausted
+ [(4, .58, .32, 1.4, 'in')],                                        # 12 body exhausted
  [('12d', .3, .55, 1.2, 'punch')],                                   # 13 collapsed
- [(1, .74, .58, 1.3, 'in')],                                      # 14 rested, danced again (her alone)
+ [(1, .74, .52, 1.3, 'in')],                                      # 14 rested, danced again (her alone)
  [(5, .7, .4, 1.2, 'in'), (0, .45, .45, 1.0, 'shake')],           # 15 days passed / others began dancing too
  [('13a', .3, .55, 1.0, 'R')],                                # 16 first two
  [('13b', .25, .55, 1.0, 'R')],                                # 17 then ten
