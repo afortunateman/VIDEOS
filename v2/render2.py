@@ -20,15 +20,15 @@ SHOTS = [
  [(18, .33, .35, 1.3, 'in')],                                     # 4  strange behaviour
  [(18, .85, .5, 1.1, 'in')],                                      # 5  maybe mentally unwell
  [(18, .55, .5, 1.4, 'in')],                                      # 6  but soon it became clear
- [(6, .5, .5, 1.0, 'shake')],                                     # 7  she would not stop
+ [(21, .62, .6, 1.25, 'shake')],                                  # 7  she would not stop
  [('12a', .5, .5, 1.0, 'R'), ('12b', .5, .5, 1.0, 'in')],          # 8  morning -> evening
  [('12c', .45, .5, 1.0, 'in')],                                   # 9  into the night
  [(21, .85, .3, 1.0, 'out')],                                     # 10 next morning, same
- [(10, .55, .72, 1.35, 'in')],                                    # 11 legs began to hurt
- [(4, .5, .45, 1.1, 'in')],                                       # 12 body exhausted
- [('12d', .5, .5, 1.0, 'punch')],                                 # 13 collapsed
- [(17, .5, .45, 1.0, 'punch')],                                   # 14 rested, danced again
- [(17, .85, .4, 1.15, 'in'), (0, .45, .45, 1.0, 'shake')],         # 15 others began dancing too
+ [(10, .68, .72, 1.45, 'in')],                                    # 11 legs began to hurt
+ [(4, .5, .3, 1.5, 'in')],                                        # 12 body exhausted
+ [(4, .45, .55, 1.3, 'punch')],                                   # 13 collapsed
+ [(1, .72, .66, 1.5, 'in')],                                      # 14 rested, danced again (her alone)
+ [(5, .7, .4, 1.2, 'in'), (0, .45, .45, 1.0, 'shake')],           # 15 days passed / others began dancing too
  [('13a', .3, .55, 1.0, 'R')],                                # 16 first two
  [('13b', .25, .55, 1.0, 'R')],                                # 17 then ten
  [('13c', .3, .5, 1.0, 'R')],                                     # 18 the number kept growing
