@@ -26,8 +26,8 @@ SHOTS = [
  [(21, .85, .3, 1.0, 'out')],                                     # 10 next morning, same
  [(10, .68, .72, 1.45, 'in')],                                    # 11 legs began to hurt
  [(4, .5, .3, 1.5, 'in')],                                        # 12 body exhausted
- [(4, .45, .55, 1.3, 'punch')],                                   # 13 collapsed
- [(1, .72, .66, 1.5, 'in')],                                      # 14 rested, danced again (her alone)
+ [(4, .42, .45, 1.15, 'punch')],                                   # 13 collapsed
+ [(1, .72, .62, 1.4, 'in')],                                      # 14 rested, danced again (her alone)
  [(5, .7, .4, 1.2, 'in'), (0, .45, .45, 1.0, 'shake')],           # 15 days passed / others began dancing too
  [('13a', .3, .55, 1.0, 'R')],                                # 16 first two
  [('13b', .25, .55, 1.0, 'R')],                                # 17 then ten

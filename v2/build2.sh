@@ -16,7 +16,7 @@ printf "file intro_v.mp4\nfile video.mp4\n" > parts.txt
 ffmpeg -v error -y -f concat -safe 0 -i parts.txt -c copy video_i.mp4
 ffmpeg -v error -y -i video_i.mp4 -i intro.wav -i mix.wav -filter_complex \
   "[1:a]aformat=sample_rates=44100:channel_layouts=stereo[a0];[2:a]aformat=sample_rates=44100:channel_layouts=stereo[a1];[a0][a1]concat=n=2:v=0:a=1[a]" \
-  -map 0:v -map "[a]" -c:v libx264 -preset slow -crf 23 -maxrate 2300k -bufsize 4600k \
+  -map 0:v -map "[a]" -c:v libx264 -preset slow -crf 23 -maxrate 2150k -bufsize 4300k \
   -pix_fmt yuv420p -c:a aac -b:a 160k -shortest -movflags +faststart strasbourg_1518_16x9.mp4
 rm -f p?.mp4 parts.txt video.mp4 video_i.mp4 intro_v.mp4 intro.wav
 ls -la strasbourg_1518_16x9.mp4; echo BUILD_DONE
