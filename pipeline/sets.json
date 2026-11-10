@@ -1,0 +1,67 @@
+{
+  "_doc": "Z is up, metres. Characters stand near the origin; cameras usually sit at -Y looking toward +Y. pos is the centre of the shape. scale is the full size: cube [x,y,z], sphere [x,y,z] diameters, cylinder/cone [diameter_x, diameter_y, height]. rot is degrees. outline adds the dark cartoon edge. emit makes it glow (unlit). repeat copies the shape: count [nx,ny,nz], step [dx,dy,dz].",
+
+  "room": {
+    "sky": "#ffe6c7",
+    "sun": {"rot": [55, 0, 35], "strength": 3.0},
+    "objects": [
+      {"name": "floor", "shape": "cube", "pos": [0, 0, -0.05], "scale": [16, 12, 0.1], "color": "#c9925b", "outline": false},
+      {"name": "back_wall", "shape": "cube", "pos": [0, 4, 3], "scale": [16, 0.3, 6], "color": "#f3e3c3"},
+      {"name": "left_wall", "shape": "cube", "pos": [-6, 0, 3], "scale": [0.3, 12, 6], "color": "#e9d3a9"},
+      {"name": "baseboard", "shape": "cube", "pos": [0, 3.83, 0.12], "scale": [16, 0.06, 0.24], "color": "#8a5a34", "outline": false},
+      {"name": "window_frame", "shape": "cube", "pos": [2.5, 3.82, 3.2], "scale": [2.4, 0.1, 1.8], "color": "#ffffff"},
+      {"name": "window_glass", "shape": "cube", "pos": [2.5, 3.76, 3.2], "scale": [2.1, 0.1, 1.5], "color": "#9fd8ff", "emit": true, "outline": false},
+      {"name": "picture_frame", "shape": "cube", "pos": [-2.8, 3.82, 3.3], "scale": [1.4, 0.08, 1.0], "color": "#2f2a3a"},
+      {"name": "picture", "shape": "cube", "pos": [-2.8, 3.76, 3.3], "scale": [1.2, 0.06, 0.8], "color": "#ff8a5c", "outline": false},
+      {"name": "desk_top", "shape": "cube", "pos": [3.2, 2.6, 0.95], "scale": [2.6, 1.1, 0.1], "color": "#7b4a2a"},
+      {"name": "desk_leg", "shape": "cube", "pos": [2.05, 2.2, 0.45], "scale": [0.12, 0.12, 0.9], "color": "#5a341c", "repeat": {"count": [2, 2, 1], "step": [2.3, 0.8, 0]}},
+      {"name": "laptop", "shape": "cube", "pos": [2.9, 2.6, 1.02], "scale": [0.7, 0.5, 0.04], "color": "#c0c6cf"},
+      {"name": "lamp_base", "shape": "cylinder", "pos": [3.9, 2.7, 1.05], "scale": [0.3, 0.3, 0.1], "color": "#333333"},
+      {"name": "lamp_stem", "shape": "cylinder", "pos": [3.9, 2.7, 1.35], "scale": [0.06, 0.06, 0.6], "color": "#333333"},
+      {"name": "lamp_shade", "shape": "cone", "pos": [3.9, 2.7, 1.75], "scale": [0.5, 0.5, 0.4], "color": "#ffd166"},
+      {"name": "pot", "shape": "cylinder", "pos": [-4.8, 3, 0.35], "scale": [0.7, 0.7, 0.7], "color": "#d1603d"},
+      {"name": "plant", "shape": "sphere", "pos": [-4.8, 3, 1.2], "scale": [1.2, 1.2, 1.3], "color": "#3fa34d"},
+      {"name": "rug", "shape": "cylinder", "pos": [0, 0.5, 0.01], "scale": [5, 5, 0.02], "color": "#5b6ee1", "outline": false}
+    ]
+  },
+
+  "street": {
+    "sky": "#8fd0ff",
+    "sun": {"rot": [50, 0, -30], "strength": 3.2},
+    "objects": [
+      {"name": "sidewalk", "shape": "cube", "pos": [0, 0, -0.1], "scale": [80, 6, 0.2], "color": "#c8c8c8", "outline": false},
+      {"name": "curb", "shape": "cube", "pos": [0, 3.05, -0.05], "scale": [80, 0.2, 0.2], "color": "#9a9a9a", "outline": false},
+      {"name": "road", "shape": "cube", "pos": [0, 7, -0.2], "scale": [80, 8, 0.2], "color": "#4a4a52", "outline": false},
+      {"name": "lane", "shape": "cube", "pos": [-38, 7, -0.09], "scale": [2, 0.2, 0.02], "color": "#ffffff", "outline": false, "repeat": {"count": [20, 1, 1], "step": [4, 0, 0]}},
+      {"name": "far_sidewalk", "shape": "cube", "pos": [0, 13, -0.1], "scale": [80, 4, 0.2], "color": "#c8c8c8", "outline": false},
+      {"name": "building", "shape": "cube", "pos": [-21, 18, 6], "scale": [6.5, 5, 12], "color": "#e76f51"},
+      {"name": "building", "shape": "cube", "pos": [-14, 18, 4.5], "scale": [6.5, 5, 9], "color": "#f4a261"},
+      {"name": "building", "shape": "cube", "pos": [-7, 18, 8], "scale": [6.5, 5, 16], "color": "#2a9d8f"},
+      {"name": "building", "shape": "cube", "pos": [0, 18, 5.5], "scale": [6.5, 5, 11], "color": "#e9c46a"},
+      {"name": "building", "shape": "cube", "pos": [7, 18, 7], "scale": [6.5, 5, 14], "color": "#8ab17d"},
+      {"name": "building", "shape": "cube", "pos": [14, 18, 4], "scale": [6.5, 5, 8], "color": "#b56576"},
+      {"name": "building", "shape": "cube", "pos": [21, 18, 6.5], "scale": [6.5, 5, 13], "color": "#6d6875"},
+      {"name": "window", "shape": "cube", "pos": [-9, 15.45, 2.5], "scale": [1, 0.1, 1.2], "color": "#ffe9a8", "emit": true, "outline": false, "repeat": {"count": [3, 1, 6], "step": [2, 0, 2.4]}},
+      {"name": "window", "shape": "cube", "pos": [-2, 15.45, 2.5], "scale": [1, 0.1, 1.2], "color": "#ffe9a8", "emit": true, "outline": false, "repeat": {"count": [3, 1, 4], "step": [2, 0, 2.4]}},
+      {"name": "window", "shape": "cube", "pos": [5, 15.45, 2.5], "scale": [1, 0.1, 1.2], "color": "#ffe9a8", "emit": true, "outline": false, "repeat": {"count": [3, 1, 5], "step": [2, 0, 2.4]}},
+      {"name": "door", "shape": "cube", "pos": [0, 15.45, 1.2], "scale": [1.6, 0.1, 2.4], "color": "#5c3d2e"},
+      {"name": "lamp_post", "shape": "cylinder", "pos": [-20, 2.6, 2], "scale": [0.15, 0.15, 4], "color": "#2d2d35", "repeat": {"count": [5, 1, 1], "step": [10, 0, 0]}},
+      {"name": "lamp_head", "shape": "sphere", "pos": [-20, 2.6, 4.1], "scale": [0.45, 0.45, 0.45], "color": "#fff3b0", "emit": true, "repeat": {"count": [5, 1, 1], "step": [10, 0, 0]}},
+      {"name": "trunk", "shape": "cylinder", "pos": [-15, 2.4, 1], "scale": [0.35, 0.35, 2], "color": "#7a4b2a", "repeat": {"count": [4, 1, 1], "step": [10, 0, 0]}},
+      {"name": "crown", "shape": "sphere", "pos": [-15, 2.4, 2.7], "scale": [2, 2, 2], "color": "#4caf50", "repeat": {"count": [4, 1, 1], "step": [10, 0, 0]}}
+    ]
+  },
+
+  "stage": {
+    "sky": "#1b1530",
+    "sun": {"rot": [40, 0, 20], "strength": 3.0},
+    "objects": [
+      {"name": "floor", "shape": "cylinder", "pos": [0, 1, -0.1], "scale": [14, 14, 0.2], "color": "#2b2350"},
+      {"name": "spot_ring", "shape": "cylinder", "pos": [0, 1, 0.01], "scale": [5, 5, 0.04], "color": "#ffd23f", "outline": false},
+      {"name": "backdrop", "shape": "cube", "pos": [0, 7, 5], "scale": [30, 0.4, 12], "color": "#ff5e7e"},
+      {"name": "stripe", "shape": "cube", "pos": [-10, 6.75, 5], "scale": [0.8, 0.1, 12], "color": "#ff86a0", "outline": false, "repeat": {"count": [6, 1, 1], "step": [4, 0, 0]}},
+      {"name": "truss", "shape": "cube", "pos": [0, 6, 10.5], "scale": [20, 0.3, 0.3], "color": "#222222"},
+      {"name": "spot_can", "shape": "cylinder", "pos": [-8, 5.6, 10], "scale": [0.6, 0.6, 0.8], "color": "#333333", "repeat": {"count": [5, 1, 1], "step": [4, 0, 0]}}
+    ]
+  }
+}
